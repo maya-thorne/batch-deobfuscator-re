@@ -77,9 +77,9 @@ flowchart TD
 | 📖 **[`BATCH_OBFUSCATION_MASTER_GUIDE.md`](../whitepapers/BATCH_OBFUSCATION_MASTER_GUIDE.md)** | **30-Year Evolution & Architecture Guide**: 1990s MS-DOS to 2026 AI, `cmd.exe` 5-stage parser state machine, 12 obfuscation techniques, 4-Tier 45-repo matrix, Sigma/YARA rules | **33.6 KB** |
 | 🛡️ **[`BATCH_OBFUSCATION_ENCYCLOPEDIA.md`](../whitepapers/BATCH_OBFUSCATION_ENCYCLOPEDIA.md)** | **Comprehensive Encyclopedia (v2.0)**: 48 repositories taxonomy, AST pushdown automata, Hugging Face dataset integration | **30.3 KB** |
 | 🧬 **[`DEEP_REVERSE_ENGINEERING_AND_SOURCE_ANALYSIS.md`](../whitepapers/DEEP_REVERSE_ENGINEERING_AND_SOURCE_ANALYSIS.md)** | **Extended Binary & Source Analysis**: Supplemental PE header forensics, `choice.exe` MSVC SEH frame (`fs:[0]`), and runtime hook tables | **42.8 KB** |
-| 🤗 **[`docs/HUGGINGFACE_MODELS_AND_DATASETS.md`](./docs/HUGGINGFACE_MODELS_AND_DATASETS.md)** | **AI Deobfuscation & Entropy Research**: `LLM4Decompile-SFT-Deobfuscate`, `c-deobfuscate-mt` (T5), JFrog Token Entropy (ArXiv:2510.26847), EDR Telemetry | **Full Report** |
-| 🕵️ **[`docs/RESEARCH_WHITEPAPERS_AND_REPORTS.md`](./docs/RESEARCH_WHITEPAPERS_AND_REPORTS.md)** | **Global Threat Intelligence Breakdown**: Mandiant (Daniel Bohannon `DOSfuscation` / `FIN7`) & Palo Alto Unit 42 (`BatCloak` / `ScrubCrypt`) | **Full Report** |
-| 📜 **[`docs/CLASSIC_TO_MODERN_EVOLUTION.md`](./docs/CLASSIC_TO_MODERN_EVOLUTION.md)** | **Historical Evolution & PoC Analysis**: Generation 1–5 batch obfuscation paradigms & `BatCloak`/`ScrubCrypt` 3-stage loader forensics | **Full Report** |
+| 🤗 **[`HUGGINGFACE_MODELS_AND_DATASETS.md`](../whitepapers/HUGGINGFACE_MODELS_AND_DATASETS.md)** | **AI Deobfuscation & Entropy Research**: `LLM4Decompile-SFT-Deobfuscate`, `c-deobfuscate-mt` (T5), JFrog Token Entropy (ArXiv:2510.26847), EDR Telemetry | **Full Report** |
+| 🕵️ **[`RESEARCH_WHITEPAPERS_AND_REPORTS.md`](../whitepapers/RESEARCH_WHITEPAPERS_AND_REPORTS.md)** | **Global Threat Intelligence Breakdown**: Mandiant (Daniel Bohannon `DOSfuscation` / `FIN7`) & Palo Alto Unit 42 (`BatCloak` / `ScrubCrypt`) | **Full Report** |
+| 📜 **[`CLASSIC_TO_MODERN_EVOLUTION.md`](../whitepapers/CLASSIC_TO_MODERN_EVOLUTION.md)** | **Historical Evolution & PoC Analysis**: Generation 1–5 batch obfuscation paradigms & `BatCloak`/`ScrubCrypt` 3-stage loader forensics | **Full Report** |
 
 ---
 
