@@ -1,0 +1,1 @@
+.\smi.exe inject -p "Risk of Rain 2" -a "E:\Programmieren\C#\RiskOfRain2Hack\RiskOfRain2Hack\bin\Debug\RiskOfRain2Hack.dll" -n RiskOfRain2Hack -c Loader -m load

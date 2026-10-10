@@ -1,0 +1,13 @@
+using System;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.IO;
+
+namespace Protected_By_Bat2Exe_By_123Studios //Modifying This File Can Break The Obfuscator
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {

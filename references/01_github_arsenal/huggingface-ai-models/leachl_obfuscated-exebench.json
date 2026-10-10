@@ -1,0 +1,547 @@
+﻿{
+    "_id":  "69a3153f5e0c29f05bf07411",
+    "id":  "leachl/obfuscated-exebench",
+    "author":  "leachl",
+    "sha":  "073b77ce37bd20675516fa77056426c160c60bc5",
+    "lastModified":  "2026-03-26T04:10:31.000Z",
+    "private":  false,
+    "gated":  false,
+    "disabled":  false,
+    "tags":  [
+                 "task_categories:translation",
+                 "language:en",
+                 "license:mit",
+                 "size_categories:100K\u003cn\u003c1M",
+                 "format:parquet",
+                 "modality:text",
+                 "library:datasets",
+                 "library:dask",
+                 "library:polars",
+                 "library:mlcroissant",
+                 "region:us",
+                 "assembly",
+                 "deobfuscation",
+                 "llvm-ir",
+                 "aarch64",
+                 "binary-analysis",
+                 "reverse-engineering",
+                 "code",
+                 "obfuscation",
+                 "tigress",
+                 "exebench"
+             ],
+    "description":  "\n\t\n\t\t\n\t\n\t\n\t\tObfuscated ExeBench (AArch64)\n\t\n\nA large-scale dataset of obfuscated AArch64 assembly functions paired with their clean LLVM IR, original C source code, and clean assembly.  Designed for training neural models that can deobfuscate and lift obfuscated binary code.\n\n\t\n\t\t\n\t\n\t\n\t\tDataset Summary\n\t\n\n\n\t\n\t\t\nProperty\nValue\n\n\n\t\t\nTraining samples\n~980,000 (from ExeBench train_synth_compilable)\n\n\nTest samples\n11,726 (3,909 Flatten / 3,908 EncodeArithmetic / 3,909 Combined)\n\n\nTest source… See the full description on the dataset page: https://huggingface.co/datasets/leachl/obfuscated-exebench.",
+    "downloads":  137,
+    "likes":  1,
+    "cardData":  {
+                     "license":  "mit",
+                     "task_categories":  [
+                                             "translation"
+                                         ],
+                     "language":  [
+                                      "en"
+                                  ],
+                     "tags":  [
+                                  "assembly",
+                                  "deobfuscation",
+                                  "llvm-ir",
+                                  "aarch64",
+                                  "binary-analysis",
+                                  "reverse-engineering",
+                                  "code",
+                                  "obfuscation",
+                                  "tigress",
+                                  "exebench"
+                              ],
+                     "pretty_name":  "Obfuscated ExeBench (AArch64)",
+                     "size_categories":  [
+                                             "100K\u003cn\u003c1M"
+                                         ],
+                     "configs":  [
+                                     {
+                                         "config_name":  "default",
+                                         "data_files":  [
+                                                            "@{split=train; path=data/train-*}",
+                                                            "@{split=test_flatten; path=data/test_flatten-*}",
+                                                            "@{split=test_encode_arithmetic; path=data/test_encode_arithmetic-*}",
+                                                            "@{split=test_combined; path=data/test_combined-*}"
+                                                        ]
+                                     }
+                                 ],
+                     "dataset_info":  {
+                                          "features":  [
+                                                           {
+                                                               "name":  "fname",
+                                                               "dtype":  "string"
+                                                           },
+                                                           {
+                                                               "name":  "func_def",
+                                                               "dtype":  "string"
+                                                           },
+                                                           {
+                                                               "name":  "technique",
+                                                               "dtype":  "string"
+                                                           },
+                                                           {
+                                                               "name":  "clean_asm",
+                                                               "dtype":  "string"
+                                                           },
+                                                           {
+                                                               "name":  "obfuscated_asm",
+                                                               "dtype":  "string"
+                                                           },
+                                                           {
+                                                               "name":  "clean_ir",
+                                                               "dtype":  "string"
+                                                           },
+                                                           {
+                                                               "name":  "obfuscated_c",
+                                                               "dtype":  "string"
+                                                           },
+                                                           {
+                                                               "name":  "tigress_seed",
+                                                               "dtype":  "int64"
+                                                           },
+                                                           {
+                                                               "name":  "exebench_split",
+                                                               "dtype":  "string"
+                                                           },
+                                                           {
+                                                               "name":  "c_deps",
+                                                               "dtype":  "string"
+                                                           },
+                                                           {
+                                                               "name":  "func_c_signature",
+                                                               "dtype":  "string"
+                                                           },
+                                                           {
+                                                               "name":  "cpp_wrapper",
+                                                               "dtype":  "string"
+                                                           },
+                                                           {
+                                                               "name":  "dummy_funcs",
+                                                               "dtype":  "string"
+                                                           },
+                                                           {
+                                                               "name":  "io_pairs",
+                                                               "dtype":  "string"
+                                                           }
+                                                       ],
+                                          "splits":  [
+                                                         {
+                                                             "name":  "train",
+                                                             "num_bytes":  10559367144,
+                                                             "num_examples":  980000
+                                                         },
+                                                         {
+                                                             "name":  "test_flatten",
+                                                             "num_bytes":  130049242,
+                                                             "num_examples":  3909
+                                                         },
+                                                         {
+                                                             "name":  "test_encode_arithmetic",
+                                                             "num_bytes":  126010317,
+                                                             "num_examples":  3908
+                                                         },
+                                                         {
+                                                             "name":  "test_combined",
+                                                             "num_bytes":  131099302,
+                                                             "num_examples":  3909
+                                                         }
+                                                     ],
+                                          "download_size":  1192158603,
+                                          "dataset_size":  10946526005
+                                      }
+                 },
+    "siblings":  [
+                     {
+                         "rfilename":  ".gitattributes"
+                     },
+                     {
+                         "rfilename":  "README.md"
+                     },
+                     {
+                         "rfilename":  "data/test_combined-00000-of-00001.parquet"
+                     },
+                     {
+                         "rfilename":  "data/test_combined/test-00000-of-00001.parquet"
+                     },
+                     {
+                         "rfilename":  "data/test_encode_arithmetic-00000-of-00001.parquet"
+                     },
+                     {
+                         "rfilename":  "data/test_encode_arithmetic/test-00000-of-00001.parquet"
+                     },
+                     {
+                         "rfilename":  "data/test_flatten-00000-of-00001.parquet"
+                     },
+                     {
+                         "rfilename":  "data/test_flatten/test-00000-of-00001.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00000-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00001-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00002-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00003-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00004-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00005-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00006-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00007-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00008-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00009-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00010-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00011-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00012-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00013-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00014-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00015-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00016-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00017-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00018-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00019-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00020-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00021-of-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00000.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00001.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00002.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00003.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00004.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00005.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00006.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00007.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00008.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00009.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00010.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00011.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00012.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00013.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00014.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00015.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00016.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00017.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00018.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00019.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00020.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00021.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00022.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00023.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00024.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00025.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00026.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00027.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00028.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00029.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00030.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00031.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00032.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00033.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00034.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00035.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00036.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00037.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00038.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00039.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00040.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00041.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00042.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00043.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00044.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00045.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00046.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00047.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00048.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00049.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00050.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00051.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00052.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00053.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00054.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00055.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00056.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00057.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00058.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00059.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00060.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00061.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00062.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00063.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00064.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00065.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00066.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00067.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00068.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00069.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00070.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00071.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00072.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00073.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00074.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00075.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00076.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00077.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00078.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00079.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00080.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00081.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00082.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00083.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00084.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00085.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00086.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00087.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00088.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00089.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00090.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00091.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00092.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00093.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00094.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00095.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00096.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train/shard-00097.parquet"
+                     },
+                     {
+                         "rfilename":  "tigress_runtime.c"
+                     }
+                 ],
+    "createdAt":  "2026-02-28T16:18:07.000Z",
+    "usedStorage":  99173444209
+}

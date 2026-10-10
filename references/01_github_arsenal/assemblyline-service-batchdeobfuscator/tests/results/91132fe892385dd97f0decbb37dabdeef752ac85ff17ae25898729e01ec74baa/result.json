@@ -1,0 +1,25 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 0,
+    "sections": []
+  },
+  "files": {
+    "extracted": [
+      {
+        "name": "00873ef1cc_deobfuscated.bat",
+        "sha256": "00873ef1ccd13af5030de5cda15cbf0b307cdfa8b8c4f922bf99db433a7d7452"
+      },
+      {
+        "name": "363b975e50.ps1",
+        "sha256": "6fe3492c15b5d1ee5806d54eafd524c9141f2e7c8d3d086a3683e489325e632a"
+      }
+    ],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [],
+    "tags": {},
+    "temp_submission_data": {}
+  }
+}

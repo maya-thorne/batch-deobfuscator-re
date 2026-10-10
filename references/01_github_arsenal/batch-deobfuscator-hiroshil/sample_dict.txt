@@ -1,0 +1,3 @@
+s%baka1%e%baka2%t "asd=A"
+s%baka3%e%baka4%t "fgh=B"
+s%baka5%e%baka6%t "hjk=C"

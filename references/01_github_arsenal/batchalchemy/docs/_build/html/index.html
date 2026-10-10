@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to Batchger’s documentation! &mdash; Batchger  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Deobfuscator" href="deobfuscator.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            Batchger
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deobfuscator.html">Deobfuscator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental.html">Experimental</a></li>
+<li class="toctree-l1"><a class="reference internal" href="formatting.html">Formatting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Batchger</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Welcome to Batchger’s documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="welcome-to-batchger-s-documentation">
+<h1>Welcome to Batchger’s documentation!<a class="headerlink" href="#welcome-to-batchger-s-documentation" title="Link to this heading"></a></h1>
+<p>This project revolves around a framework developed for the Batch scripting language, aimed at deobfuscating obfuscated Batch scripts. The emphasis lies on ensuring that the deobfuscation methods operate based on Abstract Syntax Trees (ASTs) of Batch scripts.
+The framework comprises two main components: the parser (<em>frontend</em>) and the toolbox of deobfuscation techniques (<em>backend</em>).</p>
+<section id="the-frontend">
+<h2>The frontend<a class="headerlink" href="#the-frontend" title="Link to this heading"></a></h2>
+<p>The parser is built on Tree-sitter (link to homepage: <a class="reference external" href="https://tree-sitter.github.io/tree-sitter/">https://tree-sitter.github.io/tree-sitter/</a>), a parser generator tool designed for the Batch syntax. It is written in JavaScript and leverages the Node.js execution environment provided by Tree-sitter. The parser primarily handles the parsing of Batch scripts and almost all syntax-related aspects. Parsing a Batch file with the parser yields an AST according to the Batch grammar developed by us.</p>
+<p>Typically, a Tree-sitter grammar consists of rules, which mostly employ regular expressions at their lowest level. The parsing process starts with the main rule (<code class="docutils literal notranslate"><span class="pre">source_file</span></code>), which gradually divides the entire Batch file into so-called <em>statements</em>, which are further broken down into finer-grained components until reaching the lowest level.</p>
+<p><em>For example</em>, given the Batch file containing the following line
+<code class="docutils literal notranslate"><span class="pre">ec%var_not_set%ho</span> <span class="pre">&amp;</span> <span class="pre">rem</span> <span class="pre">comment</span></code>
+the resulting AST would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">source_file</span>
+    <span class="p">(</span><span class="n">command</span>
+        <span class="p">(</span><span class="n">command_name</span>
+            <span class="p">(</span><span class="n">variable</span><span class="p">)))</span>
+    <span class="p">(</span><span class="n">comment</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This AST represents the entire Batch file (<code class="docutils literal notranslate"><span class="pre">source_file</span></code>), with two statements (separated by the unconditional execution symbol <code class="docutils literal notranslate"><span class="pre">&amp;</span></code>). The first statement is a command (<code class="docutils literal notranslate"><span class="pre">command</span></code>), consisting of a command name (<code class="docutils literal notranslate"><span class="pre">command_name</span></code>) containing a substitutable variable (<code class="docutils literal notranslate"><span class="pre">variable</span></code>).  The second statement is a simple comment (<code class="docutils literal notranslate"><span class="pre">comment</span></code>). Note that if the line gets executed by the Windows Command Prompt (<em>cmd.exe</em>), first the variable inside will be substituted; in case its value is <em>null</em>/empty, the line becomes <code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">&amp;</span> <span class="pre">rem</span> <span class="pre">comment</span></code>, which prints the current echo setting (<em>ON</em> or <em>OFF</em>).</p>
+<p>Statements are the basic building blocks identified for the Batch scripting language, representing the syntactic elements that a Batch file can consist of. These include, among others, for loops, conditional execution, labels, variable assignments, and more. A complete list is available in the <code class="docutils literal notranslate"><span class="pre">grammar.js</span></code> file located at <code class="docutils literal notranslate"><span class="pre">batchger/tree-sitter-batch/grammar.js</span></code>.</p>
+<p>Because the frontend is not yet submitted to the official tree-sitter contribution project, it has to be manually built to work. A detailed guide can be found on the tree-sitter homepage under “Creating parsers” (<a class="reference external" href="https://tree-sitter.github.io/tree-sitter/creating-parsers">https://tree-sitter.github.io/tree-sitter/creating-parsers</a>). To sum it up, you basically have to navigate in this project’s <em>tree-sitter-batch</em>-folder and execute <code class="docutils literal notranslate"><span class="pre">tree-sitter</span> <span class="pre">generate</span></code> (make sure to fulfill the prerequisites for tree-sitter, see <a class="reference external" href="https://tree-sitter.github.io/tree-sitter/creating-parsers#dependencies">https://tree-sitter.github.io/tree-sitter/creating-parsers#dependencies</a> and <a class="reference external" href="https://tree-sitter.github.io/tree-sitter/creating-parsers#installation">https://tree-sitter.github.io/tree-sitter/creating-parsers#installation</a>). After that, you can execute the test corpus via <code class="docutils literal notranslate"><span class="pre">tree-sitter</span> <span class="pre">test</span></code> or use the backend functionality located in the <em>batchger42/src</em> folder.</p>
+</section>
+<section id="the-backend">
+<h2>The backend<a class="headerlink" href="#the-backend" title="Link to this heading"></a></h2>
+<p>The second part of the framework is the backend, which comprises the collection of extensible functionalities for defeating obfuscators. For reasons of maintainability, extensibility, and usability, it is written in pure Python. The goal of the backend is not to have all deobfuscation techniques implemented upon release, but to provide analysts with a tool that allows them to build on existing knowledge or expand the existing Swiss army knife with new functionalities, without rigidly focusing on a specific obfuscator.</p>
+<p>The scenario is as follows: When encountering a new obfuscator, malware researchers can use the framework to generate the AST of the obfuscated Batch file using the Tree-sitter API, and then:</p>
+<ul class="simple">
+<li><p>utilize existing functions of the framework,</p></li>
+<li><p>write new ones (i.e., extend the optimizer), or</p></li>
+<li><p>link existing functions or new functions together to defeat any obfuscator.</p></li>
+</ul>
+<p>The backend is responsible for this functionality, and its features and usage are explained in this documentation. Below are the links to the documentation of the python files involved in the backend, comprising of five different categories, which can be seen under <strong>Contents</strong>.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="deobfuscator.html">Deobfuscator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deobfuscator.html#deobfuscator.command_name_cleaner"><code class="docutils literal notranslate"><span class="pre">command_name_cleaner()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="deobfuscator.html#deobfuscator.query_variable_assignments"><code class="docutils literal notranslate"><span class="pre">query_variable_assignments()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="deobfuscator.html#deobfuscator.variable_substitution"><code class="docutils literal notranslate"><span class="pre">variable_substitution()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="experimental.html">Experimental</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="experimental.html#experimental.modify_nodes"><code class="docutils literal notranslate"><span class="pre">modify_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="experimental.html#experimental.variable_expander"><code class="docutils literal notranslate"><span class="pre">variable_expander()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="formatting.html">Formatting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="formatting.html#formatting.format_sexp"><code class="docutils literal notranslate"><span class="pre">format_sexp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="formatting.html#formatting.query_separators"><code class="docutils literal notranslate"><span class="pre">query_separators()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="formatting.html#formatting.remove_separators"><code class="docutils literal notranslate"><span class="pre">remove_separators()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="formatting.html#formatting.to_lower_case"><code class="docutils literal notranslate"><span class="pre">to_lower_case()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optimizer.html#optimizer.constant_folding"><code class="docutils literal notranslate"><span class="pre">constant_folding()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Tests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#tests.test_abobus"><code class="docutils literal notranslate"><span class="pre">test_abobus()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#tests.test_baum1810"><code class="docutils literal notranslate"><span class="pre">test_baum1810()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#tests.test_baum1810_obfuscated_malware_samples"><code class="docutils literal notranslate"><span class="pre">test_baum1810_obfuscated_malware_samples()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#tests.test_count_errors_per_file"><code class="docutils literal notranslate"><span class="pre">test_count_errors_per_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#tests.test_either_missing_unexpected"><code class="docutils literal notranslate"><span class="pre">test_either_missing_unexpected()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#tests.test_missing_only"><code class="docutils literal notranslate"><span class="pre">test_missing_only()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#tests.test_parser_correctness"><code class="docutils literal notranslate"><span class="pre">test_parser_correctness()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#tests.test_redirection"><code class="docutils literal notranslate"><span class="pre">test_redirection()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#tests.test_to_lower_case"><code class="docutils literal notranslate"><span class="pre">test_to_lower_case()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#tests.test_unary_identifier_expression"><code class="docutils literal notranslate"><span class="pre">test_unary_identifier_expression()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.create_parser"><code class="docutils literal notranslate"><span class="pre">create_parser()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.query_variable_substitutions"><code class="docutils literal notranslate"><span class="pre">query_variable_substitutions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.remove_baum1810_overhead"><code class="docutils literal notranslate"><span class="pre">remove_baum1810_overhead()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.replace_first_occurrence"><code class="docutils literal notranslate"><span class="pre">replace_first_occurrence()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="deobfuscator.html" class="btn btn-neutral float-right" title="Deobfuscator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, BatchAlchemy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1081 @@
+{
+    "process_list": {
+        "552": {
+            "children": {
+                "624": {
+                    "children": {
+                        "1196": {
+                            "children": {},
+                            "cmd": "\"C:\\Windows\\system32\\rphcp.exe\" -w -d AAAABgAAAQsFAAAAIzkxNTc3OThjNTBhZjM3MmMubGMubGltYWNoYXJsaWUuaW8AAAABEAIBuwAAAQwFAAAAIzkxNTc3OThjNTBhZjM3MmMubGMubGltYWNoYXJsaWUuaW8AAAABEQIBuwAAAAiBAAAABQAAAAUHAAAAEP0utdjWbUiyuy8vp8UJXTYAAAAJBwAAABCRMbZPXABCioim/tjD559uAAAABAcAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAcDAAAAAAAAAAYDAAAAAAAAAQ4HAAABJjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL2SpxyNrur8WPuRUzJqn8rXqc1hMD/E2sy4lWZrafMcD0BIpxHEDWRj0NvNkUTa55RPAws5CPEiOiVrxfHYjrpXWxF8kzjZMFJZn/kWDFIqWEol9EwBKJZBOBe1D/MqSBOkHrfGe0+AbCpAERDpsZFzlPfMpyAijnyyNDxIgBYle/aDQmmitf4w1Tx3w46q/ND/XR24EJL/1zqwwG61GUCoL3VV/DToqWYXCY7Swdt8f1hicr8QgSVVeJ8o4/qTVKP9S40QuZe0fpiEEOW0eDUnpIg3uMUHp2QDulwXjKh6HuD7i8DUkXX37hzcJdMEsdcg+ZBo8Zwzo70tDDvDvW8CAwEAAQ==",
+                            "time": "2026-02-25 20:55:14",
+                            "epoch": 430593,
+                            "file_path": "C:\\Windows\\system32\\rphcp.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": [
+                                    {
+                                        "NETWORK_ACTIVITY": [
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "199.232.210.172",
+                                                    "PORT": 80
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59917
+                                                },
+                                                "TIMESTAMP": 430280,
+                                                "ENRICHMENT": []
+                                            }
+                                        ],
+                                        "PROCESS_ID": 1196,
+                                        "PARENT_PROCESS_ID": 624
+                                    },
+                                    {
+                                        "NETWORK_ACTIVITY": [
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "199.232.210.172",
+                                                    "PORT": 80
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59943
+                                                },
+                                                "TIMESTAMP": 493612,
+                                                "ENRICHMENT": []
+                                            },
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "104.18.38.233",
+                                                    "PORT": 80
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59944
+                                                },
+                                                "TIMESTAMP": 493752,
+                                                "ENRICHMENT": []
+                                            },
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "172.64.149.23",
+                                                    "PORT": 80
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59945
+                                                },
+                                                "TIMESTAMP": 493955,
+                                                "ENRICHMENT": []
+                                            },
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "23.62.92.45",
+                                                    "PORT": 80
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59946
+                                                },
+                                                "TIMESTAMP": 494080,
+                                                "ENRICHMENT": []
+                                            },
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "23.216.5.147",
+                                                    "PORT": 80
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59947
+                                                },
+                                                "TIMESTAMP": 494261,
+                                                "ENRICHMENT": []
+                                            }
+                                        ],
+                                        "PROCESS_ID": 1196,
+                                        "PARENT_PROCESS_ID": 624
+                                    },
+                                    {
+                                        "NETWORK_ACTIVITY": [
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "104.18.38.233",
+                                                    "PORT": 80
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 52494
+                                                },
+                                                "TIMESTAMP": 1083461,
+                                                "ENRICHMENT": []
+                                            },
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "104.18.38.233",
+                                                    "PORT": 80
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 52495
+                                                },
+                                                "TIMESTAMP": 1083617,
+                                                "ENRICHMENT": []
+                                            }
+                                        ],
+                                        "PROCESS_ID": 1196,
+                                        "PARENT_PROCESS_ID": 624
+                                    }
+                                ]
+                            },
+                            "documents": []
+                        },
+                        "1240": {
+                            "children": {},
+                            "cmd": "C:\\Windows\\system32\\svchost.exe -k NetworkService -p -s Dnscache",
+                            "time": "2026-02-25 20:55:15",
+                            "epoch": 431015,
+                            "file_path": "C:\\Windows\\system32\\svchost.exe",
+                            "network": {
+                                "dns_requests": [
+                                    {
+                                        "CNAME": "cdn-default.globalsigncdn.com",
+                                        "DNS_TYPE": 5,
+                                        "DOMAIN_NAME": "crl.globalsign.net",
+                                        "MESSAGE_ID": 265,
+                                        "PROCESS_ID": 1240
+                                    }
+                                ],
+                                "network_connections": []
+                            },
+                            "documents": []
+                        },
+                        "1648": {
+                            "children": {
+                                "3876": {
+                                    "children": {},
+                                    "cmd": "C:\\Windows\\System32\\sihclient.exe  /cv n+qKtgtIkkao5uGlKwUTTg.0.2",
+                                    "time": "2026-02-25 21:00:12",
+                                    "epoch": 728110,
+                                    "file_path": "C:\\Windows\\System32\\sihclient.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": [
+                                            {
+                                                "NETWORK_ACTIVITY": [
+                                                    {
+                                                        "DESTINATION": {
+                                                            "IP_ADDRESS": "74.179.77.204",
+                                                            "PORT": 443
+                                                        },
+                                                        "IS_OUTGOING": 1,
+                                                        "PROTOCOL": "tcp4",
+                                                        "SOURCE": {
+                                                            "IP_ADDRESS": "10.0.131.185",
+                                                            "PORT": 52474
+                                                        },
+                                                        "TIMESTAMP": 728766,
+                                                        "ENRICHMENT": []
+                                                    }
+                                                ],
+                                                "PROCESS_ID": 3876,
+                                                "PARENT_PROCESS_ID": 1648
+                                            }
+                                        ]
+                                    },
+                                    "documents": []
+                                }
+                            },
+                            "cmd": "unknown",
+                            "time": "2026-02-25 20:55:15",
+                            "epoch": 431030,
+                            "file_path": "\\Device\\HarddiskVolume2\\Windows\\System32\\upfc.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": []
+                            },
+                            "documents": []
+                        },
+                        "1960": {
+                            "children": {},
+                            "cmd": "C:\\Windows\\system32\\svchost.exe -k NetworkService -p -s CryptSvc",
+                            "time": "2026-02-25 20:55:15",
+                            "epoch": 431061,
+                            "file_path": "C:\\Windows\\system32\\svchost.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": [
+                                    {
+                                        "NETWORK_ACTIVITY": [
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "199.232.210.172",
+                                                    "PORT": 80
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59942
+                                                },
+                                                "TIMESTAMP": 490518,
+                                                "ENRICHMENT": []
+                                            }
+                                        ],
+                                        "PROCESS_ID": 1960,
+                                        "PARENT_PROCESS_ID": 624
+                                    },
+                                    {
+                                        "NETWORK_ACTIVITY": [
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "23.59.177.76",
+                                                    "PORT": 80
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 56320
+                                                },
+                                                "TIMESTAMP": 4076387,
+                                                "ENRICHMENT": []
+                                            }
+                                        ],
+                                        "PROCESS_ID": 1960,
+                                        "PARENT_PROCESS_ID": 624
+                                    }
+                                ]
+                            },
+                            "documents": []
+                        },
+                        "2400": {
+                            "children": {},
+                            "cmd": "\"C:\\Program Files\\Common Files\\Microsoft Shared\\ClickToRun\\OfficeClickToRun.exe\" /service",
+                            "time": "2026-02-25 20:55:15",
+                            "epoch": 431077,
+                            "file_path": "C:\\Program Files\\Common Files\\Microsoft Shared\\ClickToRun\\OfficeClickToRun.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": [
+                                    {
+                                        "NETWORK_ACTIVITY": [
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "151.101.194.133",
+                                                    "PORT": 80
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 56314
+                                                },
+                                                "TIMESTAMP": 3928825,
+                                                "ENRICHMENT": []
+                                            },
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "104.18.21.226",
+                                                    "PORT": 80
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 56315
+                                                },
+                                                "TIMESTAMP": 3928935,
+                                                "ENRICHMENT": []
+                                            }
+                                        ],
+                                        "PROCESS_ID": 2400,
+                                        "PARENT_PROCESS_ID": 624
+                                    }
+                                ]
+                            },
+                            "documents": []
+                        },
+                        "2912": {
+                            "children": {},
+                            "cmd": "C:\\Windows\\System32\\spoolsv.exe",
+                            "time": "2026-02-25 20:55:15",
+                            "epoch": 431358,
+                            "file_path": "C:\\Windows\\System32\\spoolsv.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": []
+                            },
+                            "documents": []
+                        },
+                        "3184": {
+                            "children": {},
+                            "cmd": "unknown",
+                            "time": "2026-02-25 20:55:15",
+                            "epoch": 431702,
+                            "file_path": "\\Device\\HarddiskVolume2\\Windows\\Sysmon64.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": []
+                            },
+                            "documents": []
+                        },
+                        "4656": {
+                            "children": {
+                                "4292": {
+                                    "children": {},
+                                    "cmd": "\"C:\\Windows\\system32\\SearchFilterHost.exe\" 0 808 812 820 8192 816 ",
+                                    "time": "2026-02-25 20:55:17",
+                                    "epoch": 433514,
+                                    "file_path": "C:\\Windows\\system32\\SearchFilterHost.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": []
+                                    },
+                                    "documents": []
+                                },
+                                "6132": {
+                                    "children": {},
+                                    "cmd": "\"C:\\Windows\\system32\\SearchFilterHost.exe\" 0 808 812 820 8192 816 ",
+                                    "time": "2026-02-25 20:56:35",
+                                    "epoch": 511229,
+                                    "file_path": "C:\\Windows\\system32\\SearchFilterHost.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": []
+                                    },
+                                    "documents": []
+                                },
+                                "2908": {
+                                    "children": {},
+                                    "cmd": "\"C:\\Windows\\system32\\SearchFilterHost.exe\" 0 808 812 820 8192 816 ",
+                                    "time": "2026-02-25 20:59:45",
+                                    "epoch": 701250,
+                                    "file_path": "C:\\Windows\\system32\\SearchFilterHost.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": []
+                                    },
+                                    "documents": []
+                                },
+                                "3816": {
+                                    "children": {},
+                                    "cmd": "\"C:\\Windows\\system32\\SearchFilterHost.exe\" 0 808 812 820 8192 816 ",
+                                    "time": "2026-02-25 21:04:01",
+                                    "epoch": 957727,
+                                    "file_path": "C:\\Windows\\system32\\SearchFilterHost.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": []
+                                    },
+                                    "documents": []
+                                },
+                                "2560": {
+                                    "children": {},
+                                    "cmd": "\"C:\\Windows\\system32\\SearchFilterHost.exe\" 0 808 812 820 8192 816 ",
+                                    "time": "2026-02-25 21:08:26",
+                                    "epoch": 1222555,
+                                    "file_path": "C:\\Windows\\system32\\SearchFilterHost.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": []
+                                    },
+                                    "documents": []
+                                },
+                                "2120": {
+                                    "children": {},
+                                    "cmd": "\"C:\\Windows\\system32\\SearchFilterHost.exe\" 0 808 812 820 8192 816 ",
+                                    "time": "2026-02-25 21:22:40",
+                                    "epoch": 2076649,
+                                    "file_path": "C:\\Windows\\system32\\SearchFilterHost.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": []
+                                    },
+                                    "documents": []
+                                },
+                                "3944": {
+                                    "children": {},
+                                    "cmd": "\"C:\\Windows\\system32\\SearchFilterHost.exe\" 0 808 812 820 8192 816 ",
+                                    "time": "2026-02-25 21:26:08",
+                                    "epoch": 2284649,
+                                    "file_path": "C:\\Windows\\system32\\SearchFilterHost.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": []
+                                    },
+                                    "documents": []
+                                },
+                                "5776": {
+                                    "children": {},
+                                    "cmd": "\"C:\\Windows\\system32\\SearchFilterHost.exe\" 0 808 812 820 8192 816 ",
+                                    "time": "2026-02-25 21:56:10",
+                                    "epoch": 4086231,
+                                    "file_path": "C:\\Windows\\system32\\SearchFilterHost.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": []
+                                    },
+                                    "documents": []
+                                },
+                                "740": {
+                                    "children": {},
+                                    "cmd": "\"C:\\Windows\\system32\\SearchFilterHost.exe\" 0 808 812 820 8192 816 ",
+                                    "time": "2026-02-25 21:59:43",
+                                    "epoch": 4299544,
+                                    "file_path": "C:\\Windows\\system32\\SearchFilterHost.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": []
+                                    },
+                                    "documents": []
+                                }
+                            },
+                            "cmd": "C:\\Windows\\system32\\SearchIndexer.exe /Embedding",
+                            "time": "2026-02-25 20:55:16",
+                            "epoch": 432452,
+                            "file_path": "C:\\Windows\\system32\\SearchIndexer.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": []
+                            },
+                            "documents": []
+                        },
+                        "1160": {
+                            "children": {
+                                "4604": {
+                                    "children": {},
+                                    "cmd": "\"C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe\" /c",
+                                    "time": "2026-02-25 20:55:17",
+                                    "epoch": 433484,
+                                    "file_path": "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": []
+                                    },
+                                    "documents": []
+                                }
+                            },
+                            "cmd": "\"C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe\" /svc",
+                            "time": "2026-02-25 20:55:16",
+                            "epoch": 432898,
+                            "file_path": "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": []
+                            },
+                            "documents": []
+                        },
+                        "988": {
+                            "children": {},
+                            "cmd": "C:\\Windows\\System32\\svchost.exe -k NetworkService -p",
+                            "time": "2026-02-25 20:55:18",
+                            "epoch": 434499,
+                            "file_path": "C:\\Windows\\System32\\svchost.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": []
+                            },
+                            "documents": [
+                                {
+                                    "file_path": "C:\\Users\\REDACTED\\AppData\\Local\\Temp\\__PSScriptPolicyTest_ikkk0k0t.r5l.ps1",
+                                    "hash": null,
+                                    "timestamp": 915970
+                                }
+                            ]
+                        },
+                        "3236": {
+                            "children": {},
+                            "cmd": "C:\\Windows\\system32\\sppsvc.exe",
+                            "time": "2026-02-25 20:55:19",
+                            "epoch": 435609,
+                            "file_path": "C:\\Windows\\system32\\sppsvc.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": []
+                            },
+                            "documents": []
+                        },
+                        "2168": {
+                            "children": {
+                                "5772": {
+                                    "children": {},
+                                    "cmd": "%systemroot%\\system32\\MusNotifyIcon.exe NotifyTrayIcon 10",
+                                    "time": "2026-02-25 21:02:16",
+                                    "epoch": 852314,
+                                    "file_path": "C:\\Windows\\system32\\MusNotifyIcon.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": []
+                                    },
+                                    "documents": []
+                                },
+                                "3272": {
+                                    "children": {},
+                                    "cmd": "%systemroot%\\system32\\MusNotifyIcon.exe NotifyTrayIcon 10",
+                                    "time": "2026-02-25 21:02:18",
+                                    "epoch": 854501,
+                                    "file_path": "C:\\Windows\\system32\\MusNotifyIcon.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": []
+                                    },
+                                    "documents": []
+                                },
+                                "592": {
+                                    "children": {},
+                                    "cmd": "%systemroot%\\system32\\MusNotifyIcon.exe NotifyTrayIcon 10",
+                                    "time": "2026-02-25 21:02:18",
+                                    "epoch": 854533,
+                                    "file_path": "C:\\Windows\\system32\\MusNotifyIcon.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": []
+                                    },
+                                    "documents": []
+                                }
+                            },
+                            "cmd": "C:\\Windows\\system32\\svchost.exe -k netsvcs -p -s UsoSvc",
+                            "time": "2026-02-25 20:55:23",
+                            "epoch": 439358,
+                            "file_path": "C:\\Windows\\system32\\svchost.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": [
+                                    {
+                                        "NETWORK_ACTIVITY": [
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "51.11.168.232",
+                                                    "PORT": 443
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 52486
+                                                },
+                                                "TIMESTAMP": 851845,
+                                                "ENRICHMENT": []
+                                            },
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "51.11.168.232",
+                                                    "PORT": 443
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 52487
+                                                },
+                                                "TIMESTAMP": 853814,
+                                                "ENRICHMENT": []
+                                            }
+                                        ],
+                                        "PROCESS_ID": 2168,
+                                        "PARENT_PROCESS_ID": 624
+                                    }
+                                ]
+                            },
+                            "documents": []
+                        },
+                        "5684": {
+                            "children": {},
+                            "cmd": "C:\\Windows\\system32\\svchost.exe -k netsvcs -p -s wisvc",
+                            "time": "2026-02-25 20:55:54",
+                            "epoch": 470046,
+                            "file_path": "C:\\Windows\\system32\\svchost.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": [
+                                    {
+                                        "NETWORK_ACTIVITY": [
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "52.191.219.104",
+                                                    "PORT": 443
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59938
+                                                },
+                                                "TIMESTAMP": 471393,
+                                                "ENRICHMENT": []
+                                            },
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "52.191.219.104",
+                                                    "PORT": 443
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59939
+                                                },
+                                                "TIMESTAMP": 471874,
+                                                "ENRICHMENT": []
+                                            },
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "52.191.219.104",
+                                                    "PORT": 443
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59940
+                                                },
+                                                "TIMESTAMP": 472171,
+                                                "ENRICHMENT": []
+                                            },
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "52.191.219.104",
+                                                    "PORT": 443
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59941
+                                                },
+                                                "TIMESTAMP": 472612,
+                                                "ENRICHMENT": []
+                                            }
+                                        ],
+                                        "PROCESS_ID": 5684,
+                                        "PARENT_PROCESS_ID": 624
+                                    }
+                                ]
+                            },
+                            "documents": []
+                        },
+                        "5716": {
+                            "children": {},
+                            "cmd": "\"C:\\Program Files\\Google\\Chrome\\Application\\141.0.7390.123\\elevation_service.exe\"",
+                            "time": "2026-02-25 20:56:51",
+                            "epoch": 527210,
+                            "file_path": "C:\\Program Files\\Google\\Chrome\\Application\\141.0.7390.123\\elevation_service.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": []
+                            },
+                            "documents": []
+                        },
+                        "1980": {
+                            "children": {
+                                "3988": {
+                                    "children": {},
+                                    "cmd": "\"C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe\" /ping PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48cmVxdWVzdCBwcm90b2NvbD0iMy4wIiB1cGRhdGVyPSJPbWFoYSIgdXBkYXRlcnZlcnNpb249IjEuMy4yMjEuMyIgc2hlbGxfdmVyc2lvbj0iMS4zLjIyMS4zIiBpc21hY2hpbmU9IjEiIHNlc3Npb25pZD0ie0I2NjM5ODlELTgwMjAtNDkzOS1BQzlGLTU4NDExMzAxNzUwN30iIHVzZXJpZD0ie0Y4NjY3RDk1LTJCRDUtNDk0QS05N0E1LTNFMzU5NDUxRjJDMH0iIGluc3RhbGxzb3VyY2U9ImxpbWl0ZWQiIHJlcXVlc3RpZD0iezdDNTZFNTBDLUEzNDktNEE0My1BODlGLTYyMUQzNTE1RkQ4Nn0iIGRlZHVwPSJjciIgZG9tYWluam9pbmVkPSIxIj48aHcgbG9naWNhbF9jcHVzPSI0IiBwaHlzbWVtb3J5PSI4IiBkaXNrX3R5cGU9IjIiIHNzZT0iMSIgc3NlMj0iMSIgc3NlMz0iMSIgc3NzZTM9IjEiIHNzZTQxPSIxIiBzc2U0Mj0iMSIgYXZ4PSIxIi8-PG9zIHBsYXRmb3JtPSJ3aW4iIHZlcnNpb249IjEwLjAuMTc3NjMuNzkxOSIgc3A9IiIgYXJjaD0ieDY0IiBwcm9kdWN0X3R5cGU9IjEyNSIgaXNfd2lwPSIwIiBpc19pbl9sb2NrZG93bl9tb2RlPSIwIi8-PG9lbSBwcm9kdWN0X21hbnVmYWN0dXJlcj0iIiBwcm9kdWN0X25hbWU9IiIvPjxleHAgZXRhZz0iJnF1b3Q7K1pGQWozU09JSTVCSnpvR3V6OE9wcjBoWjhIL3JEenFiL1FWcjNQWWg0ST0mcXVvdDsiLz48YXBwIGFwcGlkPSJ7OEE2OUQzNDUtRDU2NC00NjNjLUFGRjEtQTY5RDlFNTMwRjk2fSIgdmVyc2lvbj0iMTQxLjAuNzM5MC4xMjMiIG5leHR2ZXJzaW9uPSIiIGxhbmc9IiIgYnJhbmQ9Ik9OR1IiIGNsaWVudD0iIiBpbnN0YWxsYWdlPSI0NjUiIGluc3RhbGxkYXRldGltZT0iMTczMTgzMDg5MCIgb29iZV9pbnN0YWxsX3RpbWU9IjEzMzc2Mjc0OTYxMDA3MjUwOCI-PGV2ZW50IGV2ZW50dHlwZT0iMzEiIGV2ZW50cmVzdWx0PSIxIiBlcnJvcmNvZGU9IjAiIGV4dHJhY29kZTE9IjgzMjIyIiBzeXN0ZW1fdXB0aW1lX3RpY2tzPSIzMTk5MjQ2ODY3Ii8-PC9hcHA-PC9yZXF1ZXN0Pg",
+                                    "time": "2026-02-25 20:57:45",
+                                    "epoch": 581644,
+                                    "file_path": "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": []
+                                    },
+                                    "documents": []
+                                },
+                                "5100": {
+                                    "children": {
+                                        "5460": {
+                                            "children": {
+                                                "1852": {
+                                                    "children": {},
+                                                    "cmd": "\"C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{06BE48EB-A1D8-4ABA-A833-4F2D2A54CB4E}\\EDGEMITMP_8F1A2.tmp\\setup.exe\" --type=crashpad-handler /prefetch:4 --monitor-self-annotation=ptype=crashpad-handler --database=C:\\Windows\\SystemTemp\\MsEdgeCrashpad --annotation=IsOfficialBuild=1 --annotation=channel= --annotation=chromium-version=145.0.7632.110 \"--annotation=exe=C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{06BE48EB-A1D8-4ABA-A833-4F2D2A54CB4E}\\EDGEMITMP_8F1A2.tmp\\setup.exe\" --annotation=plat=Win64 --annotation=prod=Edge --annotation=ver=145.0.3800.70 --initial-client-data=0x244,0x248,0x24c,0x220,0x250,0x7ff7049ccc68,0x7ff7049ccc74,0x7ff7049ccc80",
+                                                    "time": "2026-02-25 20:59:59",
+                                                    "epoch": 715812,
+                                                    "file_path": "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{06BE48EB-A1D8-4ABA-A833-4F2D2A54CB4E}\\EDGEMITMP_8F1A2.tmp\\setup.exe",
+                                                    "network": {
+                                                        "dns_requests": [],
+                                                        "network_connections": []
+                                                    },
+                                                    "documents": []
+                                                },
+                                                "2568": {
+                                                    "children": {
+                                                        "5680": {
+                                                            "children": {},
+                                                            "cmd": "\"C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{06BE48EB-A1D8-4ABA-A833-4F2D2A54CB4E}\\EDGEMITMP_8F1A2.tmp\\setup.exe\" --type=crashpad-handler /prefetch:4 --monitor-self-annotation=ptype=crashpad-handler --database=C:\\Windows\\SystemTemp\\MsEdgeCrashpad --annotation=IsOfficialBuild=1 --annotation=channel= --annotation=chromium-version=145.0.7632.110 \"--annotation=exe=C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{06BE48EB-A1D8-4ABA-A833-4F2D2A54CB4E}\\EDGEMITMP_8F1A2.tmp\\setup.exe\" --annotation=plat=Win64 --annotation=prod=Edge --annotation=ver=145.0.3800.70 --initial-client-data=0x244,0x248,0x24c,0x220,0x250,0x7ff7049ccc68,0x7ff7049ccc74,0x7ff7049ccc80",
+                                                            "time": "2026-02-25 21:00:39",
+                                                            "epoch": 755391,
+                                                            "file_path": "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{06BE48EB-A1D8-4ABA-A833-4F2D2A54CB4E}\\EDGEMITMP_8F1A2.tmp\\setup.exe",
+                                                            "network": {
+                                                                "dns_requests": [],
+                                                                "network_connections": []
+                                                            },
+                                                            "documents": []
+                                                        }
+                                                    },
+                                                    "cmd": "\"C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{06BE48EB-A1D8-4ABA-A833-4F2D2A54CB4E}\\EDGEMITMP_8F1A2.tmp\\setup.exe\" --msedge --channel=stable --system-level --verbose-logging --create-shortcuts=2 --install-level=1",
+                                                    "time": "2026-02-25 21:00:39",
+                                                    "epoch": 755344,
+                                                    "file_path": "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{06BE48EB-A1D8-4ABA-A833-4F2D2A54CB4E}\\EDGEMITMP_8F1A2.tmp\\setup.exe",
+                                                    "network": {
+                                                        "dns_requests": [],
+                                                        "network_connections": []
+                                                    },
+                                                    "documents": []
+                                                },
+                                                "5132": {
+                                                    "children": {
+                                                        "1272": {
+                                                            "children": {},
+                                                            "cmd": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\145.0.3800.70\\Installer\\setup.exe\" --type=crashpad-handler /prefetch:4 --monitor-self-annotation=ptype=crashpad-handler --database=C:\\Windows\\SystemTemp\\MsEdgeCrashpad --annotation=IsOfficialBuild=1 --annotation=channel= --annotation=chromium-version=145.0.7632.110 \"--annotation=exe=C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\145.0.3800.70\\Installer\\setup.exe\" --annotation=plat=Win64 --annotation=prod=Edge --annotation=ver=145.0.3800.70 --initial-client-data=0x298,0x29c,0x2a0,0x274,0x2a4,0x7ff79d9dcc68,0x7ff79d9dcc74,0x7ff79d9dcc80",
+                                                            "time": "2026-02-25 21:00:47",
+                                                            "epoch": 763734,
+                                                            "file_path": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\145.0.3800.70\\Installer\\setup.exe",
+                                                            "network": {
+                                                                "dns_requests": [],
+                                                                "network_connections": []
+                                                            },
+                                                            "documents": []
+                                                        }
+                                                    },
+                                                    "cmd": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\145.0.3800.70\\Installer\\setup.exe\" --msedge --channel=stable --remove-deprecated-packages --verbose-logging --system-level",
+                                                    "time": "2026-02-25 21:00:47",
+                                                    "epoch": 763625,
+                                                    "file_path": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\145.0.3800.70\\Installer\\setup.exe",
+                                                    "network": {
+                                                        "dns_requests": [],
+                                                        "network_connections": []
+                                                    },
+                                                    "documents": []
+                                                }
+                                            },
+                                            "cmd": "\"C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{06BE48EB-A1D8-4ABA-A833-4F2D2A54CB4E}\\EDGEMITMP_8F1A2.tmp\\setup.exe\" --install-archive=\"C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{06BE48EB-A1D8-4ABA-A833-4F2D2A54CB4E}\\MicrosoftEdge_X64_145.0.3800.70.exe\" --msedge --verbose-logging --do-not-launch-msedge --system-level --channel=stable",
+                                            "time": "2026-02-25 20:59:59",
+                                            "epoch": 715688,
+                                            "file_path": "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{06BE48EB-A1D8-4ABA-A833-4F2D2A54CB4E}\\EDGEMITMP_8F1A2.tmp\\setup.exe",
+                                            "network": {
+                                                "dns_requests": [],
+                                                "network_connections": []
+                                            },
+                                            "documents": []
+                                        }
+                                    },
+                                    "cmd": "\"C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{06BE48EB-A1D8-4ABA-A833-4F2D2A54CB4E}\\MicrosoftEdge_X64_145.0.3800.70.exe\" --msedge --verbose-logging --do-not-launch-msedge --system-level --channel=stable",
+                                    "time": "2026-02-25 20:59:58",
+                                    "epoch": 714000,
+                                    "file_path": "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{06BE48EB-A1D8-4ABA-A833-4F2D2A54CB4E}\\MicrosoftEdge_X64_145.0.3800.70.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": []
+                                    },
+                                    "documents": []
+                                },
+                                "3328": {
+                                    "children": {
+                                        "2224": {
+                                            "children": {
+                                                "5176": {
+                                                    "children": {},
+                                                    "cmd": "\"C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{174FFA76-386F-4A09-AE65-E6EB984DFE2C}\\EDGEMITMP_C9FBD.tmp\\setup.exe\" --type=crashpad-handler /prefetch:4 --monitor-self-annotation=ptype=crashpad-handler --database=C:\\Windows\\SystemTemp\\MsEdgeCrashpad --annotation=IsOfficialBuild=1 --annotation=channel= --annotation=chromium-version=145.0.7632.110 \"--annotation=exe=C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{174FFA76-386F-4A09-AE65-E6EB984DFE2C}\\EDGEMITMP_C9FBD.tmp\\setup.exe\" --annotation=plat=Win64 --annotation=prod=Edge --annotation=ver=145.0.3800.70 --initial-client-data=0x244,0x248,0x24c,0x220,0x250,0x7ff7a0a8cc68,0x7ff7a0a8cc74,0x7ff7a0a8cc80",
+                                                    "time": "2026-02-25 21:01:26",
+                                                    "epoch": 802734,
+                                                    "file_path": "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{174FFA76-386F-4A09-AE65-E6EB984DFE2C}\\EDGEMITMP_C9FBD.tmp\\setup.exe",
+                                                    "network": {
+                                                        "dns_requests": [],
+                                                        "network_connections": []
+                                                    },
+                                                    "documents": []
+                                                }
+                                            },
+                                            "cmd": "\"C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{174FFA76-386F-4A09-AE65-E6EB984DFE2C}\\EDGEMITMP_C9FBD.tmp\\setup.exe\" --install-archive=\"C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{174FFA76-386F-4A09-AE65-E6EB984DFE2C}\\MicrosoftEdge_X64_145.0.3800.70.exe\" --msedgewebview --verbose-logging --do-not-launch-msedge --system-level",
+                                            "time": "2026-02-25 21:01:26",
+                                            "epoch": 802641,
+                                            "file_path": "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{174FFA76-386F-4A09-AE65-E6EB984DFE2C}\\EDGEMITMP_C9FBD.tmp\\setup.exe",
+                                            "network": {
+                                                "dns_requests": [],
+                                                "network_connections": []
+                                            },
+                                            "documents": []
+                                        }
+                                    },
+                                    "cmd": "\"C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{174FFA76-386F-4A09-AE65-E6EB984DFE2C}\\MicrosoftEdge_X64_145.0.3800.70.exe\" --msedgewebview --verbose-logging --do-not-launch-msedge --system-level",
+                                    "time": "2026-02-25 21:01:24",
+                                    "epoch": 800625,
+                                    "file_path": "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\Install\\{174FFA76-386F-4A09-AE65-E6EB984DFE2C}\\MicrosoftEdge_X64_145.0.3800.70.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": []
+                                    },
+                                    "documents": []
+                                },
+                                "2824": {
+                                    "children": {},
+                                    "cmd": "\"C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe\" /ping PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48cmVxdWVzdCBwcm90b2NvbD0iMy4wIiB1cGRhdGVyPSJPbWFoYSIgdXBkYXRlcnZlcnNpb249IjEuMy4yMjEuMyIgc2hlbGxfdmVyc2lvbj0iMS4zLjIyMS4zIiBpc21hY2hpbmU9IjEiIHNlc3Npb25pZD0ie0I2NjM5ODlELTgwMjAtNDkzOS1BQzlGLTU4NDExMzAxNzUwN30iIHVzZXJpZD0ie0Y4NjY3RDk1LTJCRDUtNDk0QS05N0E1LTNFMzU5NDUxRjJDMH0iIGluc3RhbGxzb3VyY2U9InNjaGVkdWxlciIgcmVxdWVzdGlkPSJ7RkVDMjBFNTktNzI1RS00ODc0LUFGMUMtQTEzNkJFMTYxMzEzfSIgZGVkdXA9ImNyIiBkb21haW5qb2luZWQ9IjEiPjxodyBsb2dpY2FsX2NwdXM9IjQiIHBoeXNtZW1vcnk9IjgiIGRpc2tfdHlwZT0iMiIgc3NlPSIxIiBzc2UyPSIxIiBzc2UzPSIxIiBzc3NlMz0iMSIgc3NlNDE9IjEiIHNzZTQyPSIxIiBhdng9IjEiLz48b3MgcGxhdGZvcm09IndpbiIgdmVyc2lvbj0iMTAuMC4xNzc2My43OTE5IiBzcD0iIiBhcmNoPSJ4NjQiIHByb2R1Y3RfdHlwZT0iMTI1IiBpc193aXA9IjAiIGlzX2luX2xvY2tkb3duX21vZGU9IjAiLz48b2VtIHByb2R1Y3RfbWFudWZhY3R1cmVyPSIiIHByb2R1Y3RfbmFtZT0iIi8-PGV4cCBldGFnPSImcXVvdDtsU2Q4YWJiSmhqcVBkdGFVT0VLMnZadGtib2sxMWI1RVkvWEIxUjMyZTlVPSZxdW90OyIvPjxhcHAgYXBwaWQ9IntGM0M0RkUwMC1FRkQ1LTQwM0ItOTU2OS0zOThBMjBGMUJBNEF9IiB2ZXJzaW9uPSIxLjMuMjIxLjMiIG5leHR2ZXJzaW9uPSIiIGxhbmc9IiIgYnJhbmQ9IkdHTFMiIGNsaWVudD0iIiBpbnN0YWxsYWdlPSI0NjUiIGluc3RhbGxkYXRlPSI2NTI0IiBjb2hvcnQ9InJyZkAwLjgwIj48dXBkYXRlY2hlY2svPjxwaW5nIHJkPSI2OTk2IiBwaW5nX2ZyZXNobmVzcz0iezUzREIzMEZFLUZGQTYtNDcwMS05OUQ1LTU1NjE0M0YxNEIwNn0iLz48L2FwcD48YXBwIGFwcGlkPSJ7NTZFQjE4RjgtQjAwOC00Q0JELUI2RDItOEM5N0ZFN0U5MDYyfSIgdmVyc2lvbj0iMTQxLjAuMzUzNy45OSIgbmV4dHZlcnNpb249IjE0NS4wLjM4MDAuNzAiIGxhbmc9IiIgYnJhbmQ9IkdHTFMiIGNsaWVudD0iIiBleHBlcmltZW50cz0iY29uc2VudD1mYWxzZSIgaW5zdGFsbGFnZT0iNDY1IiBpbnN0YWxsZGF0ZT0iNjUyNCIgY29ob3J0PSJycmZAMC4yOCIgdXBkYXRlX2NvdW50PSI3Ij48dXBkYXRlY2hlY2svPjxldmVudCBldmVudHR5cGU9IjEyIiBldmVudHJlc3VsdD0iMSIgZXJyb3Jjb2RlPSIwIiBleHRyYWNvZGUxPSIwIiBzeXN0ZW1fdXB0aW1lX3RpY2tzPSIzMjIwMzM4NTE2IiBkb25lX2JlZm9yZV9vb2JlX2NvbXBsZXRlPSIwIi8-PGV2ZW50IGV2ZW50dHlwZT0iMTMiIGV2ZW50cmVzdWx0PSIxIiBlcnJvcmNvZGU9IjAiIGV4dHJhY29kZTE9IjAiIHN5c3RlbV91cHRpbWVfdGlja3M9IjMyMjA0OTIyMzMiIGRvbmVfYmVmb3JlX29vYmVfY29tcGxldGU9IjAiLz48ZXZlbnQgZXZlbnR0eXBlPSIxNCIgZXZlbnRyZXN1bHQ9IjEiIGVycm9yY29kZT0iMCIgZXh0cmFjb2RlMT0iMCIgc3lzdGVtX3VwdGltZV90aWNrcz0iNDQ3NjI3NzYyNSIgc291cmNlX3VybF9pbmRleD0iMCIgZG9uZV9iZWZvcmVfb29iZV9jb21wbGV0ZT0iMCIgZG93bmxvYWRlcj0iZG8iIHVybD0iaHR0cDovL21zZWRnZS5iLnRsdS5kbC5kZWxpdmVyeS5tcC5taWNyb3NvZnQuY29tL2ZpbGVzdHJlYW1pbmdzZXJ2aWNlL2ZpbGVzLzM3OGMwNDJmLThkZGYtNGFiZS1hNmU2LTUwMmU2OTc3YTIxZD9QMT0xNzcyNjU3ODY3JmFtcDtQMj00MDQmYW1wO1AzPTImYW1wO1A0PWs1M21aJTJiMWJIMDk3c0hyRXJkNnRzSSUyYjZrTmVQZHdrZkxZTFU1Z1F6ejA1dHFnV1ZrVUFPaHA4bkdYTnhjNktEYnZrQjRBUDVLbUVUbGlrODBpRmFsQSUzZCUzZCIgc2VydmVyX2lwX2hpbnQ9IiIgY2RuX2NpZD0iLTEiIGNkbl9jY2M9IiIgY2RuX21zZWRnZV9yZWY9IiIgY2RuX2F6dXJlX3JlZl9vcmlnaW5fc2hpZWxkPSIiIGNkbl9jYWNoZT0iIiBjZG5fcDNwPSIiIGRvd25sb2FkZWQ9IjE4NjUyNjgxNiIgdG90YWw9IjE4NjUyNjgxNiIgZG93bmxvYWRfdGltZV9tcz0iMTIxMzI4Ii8-PGV2ZW50IGV2ZW50dHlwZT0iMTQiIGV2ZW50cmVzdWx0PSIxIiBlcnJvcmNvZGU9IjAiIGV4dHJhY29kZTE9IjAiIHN5c3RlbV91cHRpbWVfdGlja3M9IjQ0OTUzMzY3OTEiIHNvdXJjZV91cmxfaW5kZXg9IjAiIGRvbmVfYmVmb3JlX29vYmVfY29tcGxldGU9IjAiLz48ZXZlbnQgZXZlbnR0eXBlPSIxNSIgZXZlbnRyZXN1bHQ9IjEiIGVycm9yY29kZT0iMCIgZXh0cmFjb2RlMT0iMCIgc3lzdGVtX3VwdGltZV90aWNrcz0iNDUxMzE1MjEyMyIgZG9uZV9iZWZvcmVfb29iZV9jb21wbGV0ZT0iMCIvPjxldmVudCBldmVudHR5cGU9IjMiIGV2ZW50cmVzdWx0PSIxIiBlcnJvcmNvZGU9IjAiIGV4dHJhY29kZTE9IjE5Njc1NyIgc3lzdGVtX3VwdGltZV90aWNrcz0iNTMwMzE0OTI5MiIgc291cmNlX3VybF9pbmRleD0iMCIgZG9uZV9iZWZvcmVfb29iZV9jb21wbGV0ZT0iMCIgdXBkYXRlX2NoZWNrX3RpbWVfbXM9IjEwMTUiIGRvd25sb2FkX3RpbWVfbXM9IjEyNzQ2OCIgZG93bmxvYWRlZD0iMTg2NTI2ODE2IiB0b3RhbD0iMTg2NTI2ODE2IiBwYWNrYWdlX2NhY2hlX3Jlc3VsdD0iMCIgaW5zdGFsbF90aW1lX21zPSI3ODg3NCIvPjxwaW5nIGFjdGl2ZT0iMSIgYT0iMzgzIiBhZD0iNjYxMyIgcmQ9IjY5OTYiIHBpbmdfZnJlc2huZXNzPSJ7NTdFMDgyRkEtREM5Qi00MEUyLUE5MEMtNjc2NjdDOUIxOTY3fSIvPjwvYXBwPjxhcHAgYXBwaWQ9IntGMzAxNzIyNi1GRTJBLTQyOTUtOEJERi0wMEMzQTlBN0U0QzV9IiB2ZXJzaW9uPSIxNDEuMC4zNTM3Ljk5IiBuZXh0dmVyc2lvbj0iMTQ1LjAuMzgwMC43MCIgbGFuZz0iIiBicmFuZD0iRVVXViIgY2xpZW50PSIiIGV4cGVyaW1lbnRzPSJjb25zZW50PWZhbHNlIiBpbnN0YWxsYWdlPSI0NjUiIGluc3RhbGxkYXRlPSI2NTI0IiBjb2hvcnQ9InJyZkAwLjY4IiB1cGRhdGVfY291bnQ9IjYiPjx1cGRhdGVjaGVjay8-PGV2ZW50IGV2ZW50dHlwZT0iMTIiIGV2ZW50cmVzdWx0PSIxIiBlcnJvcmNvZGU9IjAiIGV4dHJhY29kZTE9IjAiIHN5c3RlbV91cHRpbWVfdGlja3M9IjMyMjA0OTIyMzMiIGRvbmVfYmVmb3JlX29vYmVfY29tcGxldGU9IjAiLz48ZXZlbnQgZXZlbnR0eXBlPSIxMyIgZXZlbnRyZXN1bHQ9IjEiIGVycm9yY29kZT0iMCIgZXh0cmFjb2RlMT0iMCIgc3lzdGVtX3VwdGltZV90aWNrcz0iNTMwMzMwODE5NSIgZG9uZV9iZWZvcmVfb29iZV9jb21wbGV0ZT0iMCIvPjxldmVudCBldmVudHR5cGU9IjE0IiBldmVudHJlc3VsdD0iMSIgZXJyb3Jjb2RlPSIwIiBleHRyYWNvZGUxPSIwIiBzeXN0ZW1fdXB0aW1lX3RpY2tzPSI1MzY2NzQyOTA3IiBkb25lX2JlZm9yZV9vb2JlX2NvbXBsZXRlPSIwIi8-PGV2ZW50IGV2ZW50dHlwZT0iMTUiIGV2ZW50cmVzdWx0PSIxIiBlcnJvcmNvZGU9IjAiIGV4dHJhY29kZTE9IjAiIHN5c3RlbV91cHRpbWVfdGlja3M9IjUzODQ3MTE5ODIiIGRvbmVfYmVmb3JlX29vYmVfY29tcGxldGU9IjAiLz48ZXZlbnQgZXZlbnR0eXBlPSIzIiBldmVudHJlc3VsdD0iMSIgZXJyb3Jjb2RlPSIwIiBleHRyYWNvZGUxPSIxOTY3NTciIHN5c3RlbV91cHRpbWVfdGlja3M9IjU2OTcyMjE5NjYiIGRvbmVfYmVmb3JlX29vYmVfY29tcGxldGU9IjAiIHVwZGF0ZV9jaGVja190aW1lX21zPSIxMDE1IiBkb3dubG9hZGVkPSIxODY1MjY4MTYiIHRvdGFsPSIxODY1MjY4MTYiIHBhY2thZ2VfY2FjaGVfcmVzdWx0PSIyIiBpbnN0YWxsX3RpbWVfbXM9IjMxMDE2Ii8-PHBpbmcgcmQ9IjY5OTYiIHBpbmdfZnJlc2huZXNzPSJ7QUI3RDI2ODMtQ0Y1Mi00QjUxLUJGQTAtNzcxQTA5MEUyMjZBfSIvPjwvYXBwPjwvcmVxdWVzdD4",
+                                    "time": "2026-02-25 21:01:55",
+                                    "epoch": 831595,
+                                    "file_path": "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe",
+                                    "network": {
+                                        "dns_requests": [],
+                                        "network_connections": []
+                                    },
+                                    "documents": []
+                                }
+                            },
+                            "cmd": "\"C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe\" /svc",
+                            "time": "2026-02-25 20:57:45",
+                            "epoch": 581150,
+                            "file_path": "C:\\Program Files (x86)\\Microsoft\\EdgeUpdate\\MicrosoftEdgeUpdate.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": [
+                                    {
+                                        "NETWORK_ACTIVITY": [
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "20.165.94.46",
+                                                    "PORT": 443
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59974
+                                                },
+                                                "TIMESTAMP": 582891,
+                                                "ENRICHMENT": []
+                                            }
+                                        ],
+                                        "PROCESS_ID": 1980,
+                                        "PARENT_PROCESS_ID": 624
+                                    }
+                                ]
+                            },
+                            "documents": []
+                        },
+                        "5280": {
+                            "children": {},
+                            "cmd": "C:\\Windows\\System32\\svchost.exe -k NetworkService -p -s DoSvc",
+                            "time": "2026-02-25 20:57:47",
+                            "epoch": 583781,
+                            "file_path": "C:\\Windows\\System32\\svchost.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": [
+                                    {
+                                        "NETWORK_ACTIVITY": [
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "72.153.5.141",
+                                                    "PORT": 443
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59975
+                                                },
+                                                "TIMESTAMP": 584906,
+                                                "ENRICHMENT": []
+                                            },
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "23.38.253.107",
+                                                    "PORT": 443
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59976
+                                                },
+                                                "TIMESTAMP": 585281,
+                                                "ENRICHMENT": []
+                                            },
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "23.38.253.107",
+                                                    "PORT": 443
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59977
+                                                },
+                                                "TIMESTAMP": 585609,
+                                                "ENRICHMENT": []
+                                            },
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "199.232.210.172",
+                                                    "PORT": 80
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59978
+                                                },
+                                                "TIMESTAMP": 586812,
+                                                "ENRICHMENT": []
+                                            },
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "23.216.5.158",
+                                                    "PORT": 80
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59979
+                                                },
+                                                "TIMESTAMP": 586937,
+                                                "ENRICHMENT": []
+                                            },
+                                            {
+                                                "DESTINATION": {
+                                                    "IP_ADDRESS": "23.216.5.150",
+                                                    "PORT": 80
+                                                },
+                                                "IS_OUTGOING": 1,
+                                                "PROTOCOL": "tcp4",
+                                                "SOURCE": {
+                                                    "IP_ADDRESS": "10.0.131.185",
+                                                    "PORT": 59980
+                                                },
+                                                "TIMESTAMP": 586937,
+                                                "ENRICHMENT": []
+                                            }
+                                        ],
+                                        "PROCESS_ID": 5280,
+                                        "PARENT_PROCESS_ID": 624
+                                    }
+                                ]
+                            },
+                            "documents": []
+                        },
+                        "4916": {
+                            "children": {},
+                            "cmd": "C:\\Windows\\system32\\sppsvc.exe",
+                            "time": "2026-02-25 20:58:59",
+                            "epoch": 655047,
+                            "file_path": "C:\\Windows\\system32\\sppsvc.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": []
+                            },
+                            "documents": []
+                        },
+                        "5496": {
+                            "children": {},
+                            "cmd": "C:\\Windows\\system32\\sppsvc.exe",
+                            "time": "2026-02-25 21:02:12",
+                            "epoch": 848548,
+                            "file_path": "C:\\Windows\\system32\\sppsvc.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": []
+                            },
+                            "documents": []
+                        },
+                        "2488": {
+                            "children": {},
+                            "cmd": "\"C:\\Program Files\\Google\\Chrome\\Application\\141.0.7390.123\\elevation_service.exe\"",
+                            "time": "2026-02-25 21:03:54",
+                            "epoch": 950070,
+                            "file_path": "C:\\Program Files\\Google\\Chrome\\Application\\141.0.7390.123\\elevation_service.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": []
+                            },
+                            "documents": []
+                        },
+                        "2568": {
+                            "children": {},
+                            "cmd": "\"C:\\Program Files\\Google\\Chrome\\Application\\141.0.7390.123\\elevation_service.exe\"",
+                            "time": "2026-02-25 21:04:19",
+                            "epoch": 975742,
+                            "file_path": "C:\\Program Files\\Google\\Chrome\\Application\\141.0.7390.123\\elevation_service.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": []
+                            },
+                            "documents": []
+                        },
+                        "2032": {
+                            "children": {},
+                            "cmd": "C:\\Windows\\system32\\vssvc.exe",
+                            "time": "2026-02-25 21:26:00",
+                            "epoch": 2276039,
+                            "file_path": "C:\\Windows\\system32\\vssvc.exe",
+                            "network": {
+                                "dns_requests": [],
+                                "network_connections": []
+                            },
+                            "documents": []
+                        }
+                    },
+                    "cmd": "unknown",
+                    "time": "2026-02-25 20:55:14",
+                    "epoch": 430405,
+                    "file_path": "\\Device\\HarddiskVolume2\\Windows\\System32\\services.exe",
+                    "network": {
+                        "dns_requests": [],
+                        "network_connections": []
+                    },
+                    "documents": []
+                },
+                "632": {
+                    "children": {},
+                    "cmd": "C:\\Windows\\system32\\lsass.exe",
+                    "time": "2026-02-25 20:55:14",
+                    "epoch": 430420,
+                    "file_path": "C:\\Windows\\system32\\lsass.exe",
+                    "network": {
+                        "dns_requests": [],
+                        "network_connections": []
+                    },
+                    "documents": []
+                },
+                "884": {
+                    "children": {},
+                    "cmd": "\"fontdrvhost.exe\"",
+                    "time": "2026-02-25 20:55:14",
+                    "epoch": 430577,
+                    "file_path": "C:\\Windows\\system32\\fontdrvhost.exe",
+                    "network": {
+                        "dns_requests": [],
+                        "network_connections": []
+                    },
+                    "documents": []
+                }
+            },
+            "cmd": "unknown",
+            "time": "2026-02-25 20:55:14",
+            "epoch": 430405,
+            "file_path": "\\Device\\HarddiskVolume2\\Windows\\System32\\wininit.exe",
+            "network": {
+                "dns_requests": [],
+                "network_connections": []
+            },
+            "documents": []
+        }
+    }
+}

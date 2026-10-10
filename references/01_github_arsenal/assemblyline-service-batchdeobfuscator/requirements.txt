@@ -1,0 +1,4 @@
+assemblyline
+assemblyline-v4-service
+assemblyline-service-utilities
+git+https://github.com/gdesmar/batch_deobfuscator.git

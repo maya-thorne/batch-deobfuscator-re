@@ -1,0 +1,21 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 0,
+    "sections": []
+  },
+  "files": {
+    "extracted": [
+      {
+        "name": "2a697eb2fd_deobfuscated.bat",
+        "sha256": "2a697eb2fd1d94050144862a9975ecc4c2e79692e3286f9e93f8ffdcd6a5327b"
+      }
+    ],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [],
+    "tags": {},
+    "temp_submission_data": {}
+  }
+}

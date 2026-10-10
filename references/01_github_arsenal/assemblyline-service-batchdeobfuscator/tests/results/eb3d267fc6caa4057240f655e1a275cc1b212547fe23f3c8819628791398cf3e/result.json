@@ -1,0 +1,154 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 450,
+    "sections": [
+      {
+        "auto_collapse": false,
+        "body": [
+          {
+            "Command": "%@chcp@%",
+            "Normalized": "chcp %%A>nul"
+          }
+        ],
+        "body_config": {
+          "column_order": [
+            "Command",
+            "Normalized"
+          ]
+        },
+        "body_format": "TABLE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": {
+          "attack_ids": [],
+          "frequency": 1,
+          "heur_id": 3,
+          "score": 250,
+          "score_map": {},
+          "signatures": {}
+        },
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Execution of variable content",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": [
+          {
+            "Command [trunc]": "%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfu",
+            "Count": 18,
+            "Normalized": "%%%%%%%%%%%%%%%%%%"
+          },
+          {
+            "Command [trunc]": "%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfu",
+            "Count": 14,
+            "Normalized": "%%%%%%%%%%%%%%"
+          },
+          {
+            "Command [trunc]": "%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfu",
+            "Count": 14,
+            "Normalized": "%%%%%%%%%%%%%%"
+          },
+          {
+            "Command [trunc]": "%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfu",
+            "Count": 54,
+            "Normalized": "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+          },
+          {
+            "Command [trunc]": "%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfu",
+            "Count": 60,
+            "Normalized": "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+          },
+          {
+            "Command [trunc]": "%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfu",
+            "Count": 60,
+            "Normalized": "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+          },
+          {
+            "Command [trunc]": "%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfu",
+            "Count": 60,
+            "Normalized": "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+          },
+          {
+            "Command [trunc]": "%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfu",
+            "Count": 60,
+            "Normalized": "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+          },
+          {
+            "Command [trunc]": "%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfu",
+            "Count": 60,
+            "Normalized": "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+          },
+          {
+            "Command [trunc]": "%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfu",
+            "Count": 60,
+            "Normalized": "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+          },
+          {
+            "Command [trunc]": "%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfu",
+            "Count": 60,
+            "Normalized": "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+          },
+          {
+            "Command [trunc]": "%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfuscation_Name%%Edit_here%%%%Obfu",
+            "Count": 108,
+            "Normalized [trunc]": "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+          }
+        ],
+        "body_config": {
+          "column_order": [
+            "Count",
+            "Command [trunc]",
+            "Normalized [trunc]"
+          ]
+        },
+        "body_format": "TABLE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": {
+          "attack_ids": [],
+          "frequency": 1,
+          "heur_id": 4,
+          "score": 200,
+          "score_map": {},
+          "signatures": {}
+        },
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Multiple variable were used on the same line",
+        "zeroize_on_tag_safe": false
+      }
+    ]
+  },
+  "files": {
+    "extracted": [
+      {
+        "name": "2af1b400d6.bat",
+        "sha256": "2e063de645bb0acbbada86c1616b06f6393eb83a720e7200fc2a50524119dba3"
+      },
+      {
+        "name": "62f487eef6_deobfuscated.bat",
+        "sha256": "62f487eef613ab28695aa75f15e739bf3e14b6ccafd617156331b4e4f3af2760"
+      }
+    ],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [
+      {
+        "attack_ids": [],
+        "heur_id": 3,
+        "signatures": []
+      },
+      {
+        "attack_ids": [],
+        "heur_id": 4,
+        "signatures": []
+      }
+    ],
+    "tags": {},
+    "temp_submission_data": {}
+  }
+}

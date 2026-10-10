@@ -1,0 +1,58 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 50,
+    "sections": [
+      {
+        "auto_collapse": false,
+        "body": [
+          {
+            "Command": "IF EXIST \"C:\\WINDOWS\\CouponsBar.dll\" regsvr32 /u /s \"C:\\WINDOWS\\CouponsBar.dll\" (",
+            "LOLBAS": "regsvr32"
+          }
+        ],
+        "body_config": {
+          "column_order": [
+            "LOLBAS",
+            "Command"
+          ]
+        },
+        "body_format": "TABLE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": {
+          "attack_ids": [],
+          "frequency": 1,
+          "heur_id": 2,
+          "score": 50,
+          "score_map": {},
+          "signatures": {}
+        },
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Possible rare LOLBAS found",
+        "zeroize_on_tag_safe": false
+      }
+    ]
+  },
+  "files": {
+    "extracted": [
+      {
+        "name": "e8ff16f2eb_deobfuscated.bat",
+        "sha256": "e8ff16f2ebf2b2932fae9af5458a013a8cce74a7a08a9a65185453b6c829e43f"
+      }
+    ],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [
+      {
+        "attack_ids": [],
+        "heur_id": 2,
+        "signatures": []
+      }
+    ],
+    "tags": {},
+    "temp_submission_data": {}
+  }
+}

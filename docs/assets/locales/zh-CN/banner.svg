@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 245" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#060913"/>
+      <stop offset="50%" stop-color="#0b1329"/>
+      <stop offset="100%" stop-color="#070a14"/>
+    </linearGradient>
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <pattern id="grid" width="26" height="26" patternUnits="userSpaceOnUse">
+      <path d="M 26 0 L 0 0 0 26" fill="none" stroke="#1e293b" stroke-width="0.7" stroke-opacity="0.38"/>
+    </pattern>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3.2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="920" height="245" rx="14" fill="url(#bgGrad)"/>
+  <rect width="920" height="245" rx="14" fill="url(#grid)"/>
+  <rect x="1" y="1" width="918" height="243" rx="13" fill="none" stroke="#1e293b" stroke-width="1.3"/>
+
+  <circle cx="118" cy="122" r="82" fill="#38bdf8" opacity="0.12" filter="blur(38px)"/>
+  <circle cx="790" cy="125" r="88" fill="#34d399" opacity="0.11" filter="blur(42px)"/>
+
+  <!-- Left Disassembler & Fixed-Point Convergence Core Schematic -->
+  <g transform="translate(48, 46)">
+    <rect x="0" y="0" width="136" height="152" rx="10" fill="#091122" stroke="#1e3a5f" stroke-width="1.8"/>
+    <rect x="6" y="6" width="124" height="140" rx="7" fill="none" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="18 8" filter="url(#glow)"/>
+    <text x="16" y="26" fill="#38bdf8" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="700">0x20EA0: pushal</text>
+    <text x="16" y="42" fill="#34d399" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="700">0x09F78: LZMA_RC</text>
+    <text x="16" y="58" fill="#c084fc" font-family="Consolas, 'Courier New', monospace" font-size="10" font-weight="700">0x00FCC: XOR_KEY</text>
+    <line x1="16" y1="68" x2="120" y2="68" stroke="#1e293b" stroke-width="1.2"/>
+    <circle cx="38" cy="95" r="7" fill="#0f172a" stroke="#38bdf8" stroke-width="2" filter="url(#glow)"/>
+    <circle cx="98" cy="95" r="7" fill="#0f172a" stroke="#34d399" stroke-width="2" filter="url(#glow)"/>
+    <circle cx="68" cy="128" r="8" fill="#0f172a" stroke="#c084fc" stroke-width="2" filter="url(#glow)"/>
+    <line x1="45" y1="95" x2="91" y2="95" stroke="#38bdf8" stroke-width="1.6"/>
+    <line x1="42" y1="101" x2="63" y2="122" stroke="#34d399" stroke-width="1.6"/>
+    <line x1="94" y1="101" x2="73" y2="122" stroke="#c084fc" stroke-width="1.6"/>
+  </g>
+
+  <!-- Right Main Content -->
+  <g transform="translate(212, 42)">
+    <g>
+      <rect x="0" y="0" width="212" height="24" rx="6" fill="#0c1e33" stroke="#0284c7" stroke-width="1"/>
+      <circle cx="12" cy="12" r="3.2" fill="#38bdf8" filter="url(#glow)"/>
+      <text x="22" y="15.5" fill="#7dd3fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="9.8" font-weight="700">GHIDRA MCP 二进制逆向</text>
+
+      <rect x="222" y="0" width="202" height="24" rx="6" fill="#0c261f" stroke="#059669" stroke-width="1"/>
+      <circle cx="234" cy="12" r="3.2" fill="#34d399" filter="url(#glow)"/>
+      <text x="244" y="15.5" fill="#6ee7b7" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="9.8" font-weight="700">不动点收敛 AST 反混淆引擎</text>
+
+      <rect x="434" y="0" width="228" height="24" rx="6" fill="#211233" stroke="#7e22ce" stroke-width="1"/>
+      <circle cx="446" cy="12" r="3.2" fill="#c084fc" filter="url(#glow)"/>
+      <text x="456" y="15.5" fill="#e9d5ff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="9.8" font-weight="700">48+ 开源与 HF 参考库</text>
+    </g>
+
+    <text x="0" y="68" fill="url(#titleGrad)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="31" font-weight="900" letter-spacing="-0.5">
+      batch-deobfuscator-re
+    </text>
+
+    <text x="0" y="103" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="600">
+      Windows 批处理多遍反混淆引擎、Ghidra PE 壳取证与核心源码深度剖析档案库
+    </text>
+
+    <text x="0" y="136" fill="#94a3b8" font-family="Consolas, 'Courier New', monospace" font-size="11.2" font-weight="500">
+      UPX NRV2B (0x20ea0) · Bytepress LZMA (0x9f78) · XOR 叠加层 (0xfcc) · CmdNode 钩子 (0x116B0) · Sigma/YARA
+    </text>
+  </g>
+</svg>

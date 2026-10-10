@@ -1,0 +1,86 @@
+﻿{
+    "_id":  "66339c894778e2b74faf0fd6",
+    "id":  "dessertlab/PSStrikes-commands",
+    "author":  "dessertlab",
+    "sha":  "1b71c152af5ebc8701c475c77097adcb5928b711",
+    "lastModified":  "2024-05-02T14:02:45.000Z",
+    "private":  false,
+    "gated":  false,
+    "disabled":  false,
+    "tags":  [
+                 "license:gpl-3.0",
+                 "size_categories:1K\u003cn\u003c10K",
+                 "format:parquet",
+                 "modality:text",
+                 "library:datasets",
+                 "library:pandas",
+                 "library:polars",
+                 "library:mlcroissant",
+                 "region:us"
+             ],
+    "downloads":  82,
+    "likes":  5,
+    "cardData":  {
+                     "license":  "gpl-3.0",
+                     "configs":  [
+                                     {
+                                         "config_name":  "default",
+                                         "data_files":  [
+                                                            "@{split=train; path=data/train-*}",
+                                                            "@{split=test; path=data/test-*}",
+                                                            "@{split=dev; path=data/dev-*}"
+                                                        ]
+                                     }
+                                 ],
+                     "dataset_info":  {
+                                          "features":  [
+                                                           {
+                                                               "name":  "nl",
+                                                               "dtype":  "string"
+                                                           },
+                                                           {
+                                                               "name":  "code",
+                                                               "dtype":  "string"
+                                                           }
+                                                       ],
+                                          "splits":  [
+                                                         {
+                                                             "name":  "train",
+                                                             "num_bytes":  177292,
+                                                             "num_examples":  901
+                                                         },
+                                                         {
+                                                             "name":  "test",
+                                                             "num_bytes":  24382,
+                                                             "num_examples":  113
+                                                         },
+                                                         {
+                                                             "name":  "dev",
+                                                             "num_bytes":  22451,
+                                                             "num_examples":  113
+                                                         }
+                                                     ],
+                                          "download_size":  116983,
+                                          "dataset_size":  224125
+                                      }
+                 },
+    "siblings":  [
+                     {
+                         "rfilename":  ".gitattributes"
+                     },
+                     {
+                         "rfilename":  "README.md"
+                     },
+                     {
+                         "rfilename":  "data/dev-00000-of-00001-103d0c71def277e5.parquet"
+                     },
+                     {
+                         "rfilename":  "data/test-00000-of-00001-95b5b6f3a27c8cce.parquet"
+                     },
+                     {
+                         "rfilename":  "data/train-00000-of-00001-25809ad170aa95b5.parquet"
+                     }
+                 ],
+    "createdAt":  "2024-05-02T14:00:41.000Z",
+    "usedStorage":  116983
+}

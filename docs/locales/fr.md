@@ -1,0 +1,167 @@
+<div align="center">
+
+<p align="center">
+  <a href="../../README.md">🇺🇸 English</a> · <a href="./ko.md">🇰🇷 한국어</a> · <a href="./zh-CN.md">🇨🇳 中文</a> · <a href="./es.md">🇪🇸 Español</a> · <a href="./hi.md">🇮🇳 हिन्दी</a><br />
+  <a href="./ar.md">🇸🇦 العربية</a> · <a href="./pt-BR.md">🇧🇷 Português</a> · <a href="./ru.md">🇷🇺 Русский</a> · <strong>🇫🇷 Français</strong> · <a href="./id.md">🇮🇩 Bahasa Indonesia</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/maya-thorne/batch-deobfuscator-re"><img src="../assets/locales/fr/banner.svg" alt="batch-deobfuscator-re banner" width="100%" /></a>
+</p>
+
+# 🔬 batch-deobfuscator-re
+
+**Moteur de Désobfuscation Batch Multi-Passes, Forensique PE sous Ghidra et Dissection de Sources**
+
+[![Ghidra MCP RE](https://img.shields.io/badge/Ghidra_MCP-7_PE_Binaries_Disassembled-0ea5e9.svg)](../../GHIDRA_BINARY_RE_AND_DEOBFUSCATOR_ENGINE_ANALYSIS.md)
+[![Deobfuscator Engine](https://img.shields.io/badge/Engine-Multi--Pass_Fixed--Point_AST-10b981.svg)](../../src/deobfuscator_engine.py)
+[![PE Unpacker](https://img.shields.io/badge/Forensics-UPX_%7C_LZMA_%7C_XOR_Overlay-a855f7.svg)](../../src/pe_packer_forensics.py)
+[![Detection Rules](https://img.shields.io/badge/SIEM_%2F_EDR-Sigma_%26_YARA_Rules-f59e0b.svg)](../../rules/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](../../LICENSE)
+
+<sub>Engineered &amp; Audited by **[Maya Thorne](https://github.com/maya-thorne)** · Low-Level Systems &amp; Reverse Engineering Research</sub>
+
+</div>
+
+---
+
+## 🏛️ 1. Architecture & Reverse Engineering Pipeline
+
+`batch-deobfuscator-re` combines **Ghidra MCP (`ghidra-re-operator`) binary reverse engineering** of Windows Batch-to-EXE compilers/packers, **line-by-line source code dissection of 7 flagship obfuscation/deobfuscation engines**, a **custom Python Multi-Pass Fixed-Point Static Deobfuscator (`src/deobfuscator_engine.py`)**, a **Static PE Packer Forensic Unpacker (`src/pe_packer_forensics.py`)**, and **48+ flattened open-source & Hugging Face AI references**.
+
+```mermaid
+flowchart TD
+    subgraph InputLayer ["1. Obfuscated Batch & Packed PE Input Layer"]
+        A1["Obfuscated Batch (.bat / .cmd)\nUTF-16LE BOM · Caret · Env Slicing · Caesar"]
+        A2["Compiled / Packed PE (.exe)\nbat2exe_12 · Bat2Exe-dehoisted · xorStub · BEDeCode"]
+    end
+
+    subgraph BinaryRE ["2. Ghidra MCP Binary Forensics (src/pe_packer_forensics.py)"]
+        B1["UPX0/UPX1 NRV2B Decompressor\nRVA 0x20ea0 (pushal / adc bitloop) + 7zS2.sfx"]
+        B2[".NET CLR & Bytepress LZMA RangeCoder\nOffset 0xa7d (UTF-16LE) & 0x9f78 (Deflate/LZMA)"]
+        B3["xorPacker Dual-XOR Overlay Unpacker\nOffset 0xfcc ('randomkey') & '***' Delimiter"]
+        B4["VB6 Native MSVBVM60!ThunRTMain\nRVA 0x1670 & CHRMAPSET Table"]
+    end
+
+    subgraph ASTEngine ["3. Multi-Pass Fixed-Point Deobfuscator (src/deobfuscator_engine.py)"]
+        C1["Pass 1: BOM (0xFF 0xFE / 0xFE 0xFF) & Certutil / X.509 Extraction"]
+        C2["Pass 2: Quote-Aware Caret (^) Unescaping & Delimiter Normalization"]
+        C3["Pass 3: Default Windows Env Map & Dynamic SET Symbol Resolution"]
+        C4["Pass 4: %VAR:~offset,len% Slicing & %VAR:old=new% Substitution"]
+        C5["Pass 5: Fixed-Point Convergence Loop (fp_prev == fp_curr)"]
+    end
+
+    subgraph RuntimeDefense ["4. Runtime Hooking, AI Recovery & SIEM/EDR Defense"]
+        D1["Exorcism Runtime Detour\ncmd.exe!FindFixAndRun (RVA 0x116B0)"]
+        D2["Hugging Face AI Models\nLLM4Decompile & JFrog Entropy (ArXiv:2510.26847)"]
+        D3["Production Detection Rules\nSigma (sigma_batch_obfuscation.yml) & YARA (yara_batch_obfuscation.yar)"]
+    end
+
+    A1 --> C1 --> C2 --> C3 --> C4 --> C5 --> D1 & D2 & D3
+    A2 --> B1 & B2 & B3 & B4 --> C1
+```
+
+---
+
+## 📚 2. Master Whitepapers & Core Documentation Index
+
+| Document | Scope & Technical Highlights | Size |
+| :--- | :--- | :---: |
+| 🔬 **[`GHIDRA_BINARY_RE_AND_DEOBFUSCATOR_ENGINE_ANALYSIS.md`](../../GHIDRA_BINARY_RE_AND_DEOBFUSCATOR_ENGINE_ANALYSIS.md)** | **Ghidra MCP 7-Binary Disassembly & 7-Tool Source Code Dissection**: `bat2exe_12.exe` (`0x20ea0` UPX NRV2B), `example_bytepressed.exe` (`0x9f78` LZMA RangeCoder), `xorStub.exe` (`0xfcc` `"randomkey"`), `BEDeCode.exe` (`0x1670` VB6 `ThunRTMain`), plus `Invoke-DOSfuscation`, `SomalifuscatorV2`, `BatCloak`, `Exorcism`, `0xidiz3r`, `Bat2Exe-dehoisted`, `batch_deobfuscator` | **43.7 KB** |
+| 📖 **[`BATCH_OBFUSCATION_MASTER_GUIDE.md`](../../BATCH_OBFUSCATION_MASTER_GUIDE.md)** | **30-Year Evolution & Architecture Guide**: 1990s MS-DOS to 2026 AI, `cmd.exe` 5-stage parser state machine, 12 obfuscation techniques, 4-Tier 45-repo matrix, Sigma/YARA rules | **33.6 KB** |
+| 🛡️ **[`BATCH_OBFUSCATION_ENCYCLOPEDIA.md`](../../BATCH_OBFUSCATION_ENCYCLOPEDIA.md)** | **Comprehensive Encyclopedia (v2.0)**: 48 repositories taxonomy, AST pushdown automata, Hugging Face dataset integration | **30.3 KB** |
+| 🧬 **[`DEEP_REVERSE_ENGINEERING_AND_SOURCE_ANALYSIS.md`](../../DEEP_REVERSE_ENGINEERING_AND_SOURCE_ANALYSIS.md)** | **Extended Binary & Source Analysis**: Supplemental PE header forensics, `choice.exe` MSVC SEH frame (`fs:[0]`), and runtime hook tables | **42.8 KB** |
+| 🤗 **[`docs/HUGGINGFACE_MODELS_AND_DATASETS.md`](../../docs/HUGGINGFACE_MODELS_AND_DATASETS.md)** | **AI Deobfuscation & Entropy Research**: `LLM4Decompile-SFT-Deobfuscate`, `c-deobfuscate-mt` (T5), JFrog Token Entropy (ArXiv:2510.26847), EDR Telemetry | **Full Report** |
+| 🕵️ **[`docs/RESEARCH_WHITEPAPERS_AND_REPORTS.md`](../../docs/RESEARCH_WHITEPAPERS_AND_REPORTS.md)** | **Global Threat Intelligence Breakdown**: Mandiant (Daniel Bohannon `DOSfuscation` / `FIN7`) & Palo Alto Unit 42 (`BatCloak` / `ScrubCrypt`) | **Full Report** |
+| 📜 **[`docs/CLASSIC_TO_MODERN_EVOLUTION.md`](../../docs/CLASSIC_TO_MODERN_EVOLUTION.md)** | **Historical Evolution & PoC Analysis**: Generation 1–5 batch obfuscation paradigms & `BatCloak`/`ScrubCrypt` 3-stage loader forensics | **Full Report** |
+
+---
+
+## 🔍 3. Ghidra MCP Binary Reverse Engineering Summary (7 PE Binaries)
+
+| Target Binary | Compiler / Packer | Entry RVA / Key Offset | Disassembled Mechanism & Forensic Finding |
+| :--- | :--- | :---: | :--- |
+| **`bat2exe_12.exe`** (`bat2exe-islamadel`) | Native C++ + **UPX NRV2B** + `7zS2.sfx` | `RVA 0x20ea0` (File `0xd2a0`) | `UPX0` (RVA `0x1000`, raw `0B`) + `UPX1` (RVA `0x14000`, raw `56,832B`). `pushal` saves registers, `lea edi, [esi-0x13000]` targets `UPX0`, and `add ebx, ebx` / `adc eax, eax` unpacks NRV2B bitstream; `bat2exe.cmd` merges `7zS2.sfx + config.txt + 7z` via `copy /b`. |
+| **`BEDeCode.exe`** (`Batch-Encryption-DeCoder`) | **VB6 Native Code** (`MSVBVM60.DLL`) | `RVA 0x1670` (File `0x1670`) | `PUSH 0x401968` (`VBHeader`) -> `CALL 0x0040166a` (`JMP [0x004010a0]` `ThunRTMain`). Contains `CHRMAPSET` substitution table at `0x32c8` (`w54s8a7d6f9j3k2l...`) to invert `0xFF 0xFE 0x0D 0x0A cls` header cipher. |
+| **`example.exe`** (`Bat2Exe-dehoisted`) | **C# .NET CLR** (`AnyCPU`) | `RVA 0x2050` / Offset `0xa7d` | Uncompressed `.text` section exposes UTF-16LE batch script (`@echo off...`) in `.NET` `#US` (User Strings) heap at `0xa7d`, passed directly to `Process.Start("cmd.exe", "/c ...")`. |
+| **`example_encoded.exe`** (`Bat2Exe-dehoisted`) | **C# .NET CLR** + Base64 Wrapper | Offset `0xa7d` (`#US` Heap) | Wraps batch payload in `Convert.FromBase64String(...)` inside `CMethods.ExecuteCommand`, still statically recoverable from `#US` stream. |
+| **`example_bytepressed.exe`** (`Bat2Exe-dehoisted`) | **C# .NET CLR** + **Bytepress LZMA** | Offset `0x9f78` (`RangeCoder`) | Embeds `bytepress.lib.LZMA.Compress.RangeCoder` (`BitTreeEncoder`, `LzBinTree`) and decompresses resource stream in-memory into `Assembly.Load(byte[])`. |
+| **`xorStub.exe`** (`xorPacker-master`) | **MSVC Native C++** (`PE Overlay`) | `RVA 0x2dcc` (File `0xfcc`) | Hardcodes 9-byte master key `"randomkey"` at `0xfcc`. Splits EOF overlay by `"***"` (`0x2A 0x2A 0x2A`), decrypts dynamic key via `XOR(part[2], "randomkey")`, then decrypts payload via `XOR(part[1], dyn_key)` into `%TEMP%\temp.exe`. |
+| **`choice.exe`** (`bat2exe-islamadel`) | **MSVC Native C** (`MSVCRT.dll`) | `RVA 0x1491` (CRT Startup) | Sets up x86 SEH frame (`mov eax, fs:[0]`, `push 0x4015c0 __except_handler3`), parses single-keystroke timeout for legacy batch menus. |
+
+---
+
+## 🛠️ 4. Quickstart: Running the Deobfuscator & PE Forensics Suite
+
+### 4.1 Multi-Pass Fixed-Point Batch Deobfuscator (`src/deobfuscator_engine.py`)
+```bash
+# Deobfuscate an obfuscated .bat/.cmd script to stdout or output file
+python src/deobfuscator_engine.py samples/01_env_slicing_sample.bat
+
+# Run against dynamic substitution table sample
+python src/deobfuscator_engine.py samples/03_dynamic_substitution_table_sample.bat
+```
+
+### 4.2 Static PE Packer Forensic Analyzer (`src/pe_packer_forensics.py`)
+```bash
+# Triage a compiled/packed Batch-to-EXE binary (UPX, Bytepress LZMA, xorPacker, VB6)
+python src/pe_packer_forensics.py references/01_github_arsenal/Bat2Exe-dehoisted/Example/example_bytepressed.exe
+python src/pe_packer_forensics.py references/01_github_arsenal/bat2exe-islamadel/bat2exe_12.exe
+```
+
+### 4.3 Run Automated Verification Suite (`tests/test_suite.py`)
+```bash
+python tests/test_suite.py
+```
+
+---
+
+## 📂 5. Repository Directory Structure
+
+```text
+batch-deobfuscator-re/
+├── GHIDRA_BINARY_RE_AND_DEOBFUSCATOR_ENGINE_ANALYSIS.md  # 🔬 Flagship Ghidra 7-Binary RE & 7-Tool Source Dissection
+├── BATCH_OBFUSCATION_MASTER_GUIDE.md                     # 📖 30-Year Evolution, cmd.exe 5-Stage Parser & 12 Techniques
+├── BATCH_OBFUSCATION_ENCYCLOPEDIA.md                     # 🛡️ Comprehensive Encyclopedia (v2.0, 48+ References)
+├── BATCH_OBFUSCATION_ARCHITECTURE_AND_CODE_ANALYSIS.md   # 🏛️ Architecture & Source Code Deconstruction Report
+├── DEEP_REVERSE_ENGINEERING_AND_SOURCE_ANALYSIS.md       # 🧬 Extended Binary & Runtime Hook Analysis
+│
+├── src/                                                  # ⚙️ Executable Deobfuscation & PE Forensic Engines
+│   ├── deobfuscator_engine.py                            # Multi-Pass Fixed-Point Convergence Batch Deobfuscator
+│   └── pe_packer_forensics.py                            # Ghidra-Derived Static PE Unpacker & Signature Analyzer
+│
+├── tests/                                                # ✅ Automated Unit & Integration Verification Suite
+│   └── test_suite.py                                     # Tests AST deobfuscation & xorPacker/PE overlay unpacking
+│
+├── rules/                                                # 🛡️ Production SIEM / EDR Detection Rules
+│   ├── sigma_batch_obfuscation.yml                       # Sigma rules for Caret, Env Slicing, BatCloak, Exorcism
+│   └── yara_batch_obfuscation.yar                        # YARA rules for UTF-16LE BOM, Somalifuscator, PE Packers
+│
+├── samples/                                              # 🧪 6 Classic & Modern PoC Samples + Deobfuscated Baselines
+│   ├── 01_env_slicing_sample.bat / .deobf.bat
+│   ├── 02_caret_and_delimiters_sample.bat / .deobf.bat
+│   ├── 03_dynamic_substitution_table_sample.bat / .deobf.bat
+│   ├── 04_reverse_reconstruction_sample.bat / .deobf.bat
+│   ├── 05_certutil_hex_pipeline_sample.bat / .deobf.bat
+│   └── 06_anti_vm_and_sandbox_evasion_sample.bat / .deobf.bat
+│
+├── docs/                                                 # 🌐 10-Language Locales, SVG Banners & Deep-Dive Reports
+│   ├── assets/locales/{en,ko,zh-CN,es,hi,ar,pt-BR,ru,fr,id}/banner.svg
+│   ├── locales/{ko,zh-CN,es,hi,ar,pt-BR,ru,fr,id}.md
+│   ├── HUGGINGFACE_MODELS_AND_DATASETS.md
+│   ├── RESEARCH_WHITEPAPERS_AND_REPORTS.md
+│   ├── CLASSIC_TO_MODERN_EVOLUTION.md
+│   └── BATCLOAK_SCRUBCRYPT_DEEP_DIVE.md
+│
+└── references/                                           # 📦 Flattened Open-Source & Hugging Face Reference Mirrors
+    ├── 01_github_arsenal/                                # 28+ Flattened GitHub Repositories (Zero nested .git)
+    ├── 02_huggingface_ai/                                # Hugging Face Model/Dataset Cards & SigmaForge Rules
+    ├── catalog.json                                      # Structured Metadata Catalog
+    └── references_index.json                             # Full Repository & Technique Index
+```
+
+---
+
+## 📜 License
+
+Licensed under the [MIT License](../../LICENSE). Copyright © 2026 Maya Thorne.

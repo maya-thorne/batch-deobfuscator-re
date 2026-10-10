@@ -1,0 +1,32 @@
+{
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.rulers": [
+            120
+        ],
+        "editor.tabSize": 4,
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.wordWrapColumn": 120
+    },
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "editor.formatOnSave": true,
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+    "isort.args": [
+        "-l",
+        "120",
+        "--profile=black"
+        // "--src=${workspaceFolder}"
+    ],
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.pytestEnabled": true,
+    "ruff.configuration": "pyproject.toml",
+    "ruff.lint.enable": true,
+    "ruff.lint.preview": true,
+    "flake8.enabled": false
+}

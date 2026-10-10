@@ -1,0 +1,1 @@
+start cmd /k .\node_modules\.bin\tree-sitter parse "test-scripts/**/*" --quiet --stat

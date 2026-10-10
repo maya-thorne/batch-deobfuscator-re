@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>experimental &mdash; Batchger  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Batchger
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../deobfuscator.html">Deobfuscator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experimental.html">Experimental</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formatting.html">Formatting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizer.html">Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tests.html">Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utils</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Batchger</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">experimental</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for experimental</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module contains experimental functions that are not meant to be used</span>
+<span class="sd">during production and are only meant for testing and demonstration purposes.&quot;&quot;&quot;</span>
+
+<span class="c1"># pylint: disable=pointless-string-statement</span>
+<span class="c1"># pylint: disable=line-too-long</span>
+<span class="c1"># pylint: disable=logging-not-lazy</span>
+<span class="c1"># flake8: noqa</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">utils</span>
+
+
+<div class="viewcode-block" id="modify_nodes">
+<a class="viewcode-back" href="../experimental.html#experimental.modify_nodes">[docs]</a>
+<span class="k">def</span> <span class="nf">modify_nodes</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test function meant to experiment with tree-sitter&#39;s node traversing.</span>
+<span class="sd">    This function can be ignored.</span>
+
+<span class="sd">    :param encoding: the encoding string to be used within ``string.decode()`` commands; default is *&quot;utf-8&quot;*</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">parser</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">create_parser</span><span class="p">()</span>
+
+    <span class="c1"># the goal of this function is to insert new nodes between `command4` and `command5` and to</span>
+    <span class="c1"># remove the comment</span>
+    <span class="n">src</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        command 1</span>
+<span class="s1">        command 2</span>
+<span class="s1">        command 3</span>
+<span class="s1">        :: this is a comment to be removed</span>
+<span class="s1">        command 4</span>
+<span class="s1">        command 5</span>
+<span class="s1">    &#39;&#39;&#39;</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;START:&quot;</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
+
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+    <span class="n">startb</span> <span class="o">=</span> <span class="n">comment</span><span class="o">.</span><span class="n">start_byte</span>
+    <span class="n">startp</span> <span class="o">=</span> <span class="n">comment</span><span class="o">.</span><span class="n">start_point</span>
+    <span class="n">endb</span> <span class="o">=</span> <span class="n">comment</span><span class="o">.</span><span class="n">end_byte</span>
+    <span class="n">endp</span> <span class="o">=</span> <span class="n">comment</span><span class="o">.</span><span class="n">end_point</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">startb</span><span class="p">,</span> <span class="n">startp</span><span class="p">,</span> <span class="n">endb</span><span class="p">,</span> <span class="n">endp</span><span class="p">)</span>
+
+    <span class="n">src</span> <span class="o">=</span> <span class="n">src</span><span class="p">[:</span><span class="n">startb</span><span class="p">]</span> <span class="o">+</span> <span class="n">src</span><span class="p">[</span><span class="n">endb</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
+
+    <span class="n">tree</span><span class="o">.</span><span class="n">edit</span><span class="p">(</span>
+        <span class="n">start_byte</span><span class="o">=</span><span class="n">startb</span><span class="p">,</span>
+        <span class="n">old_end_byte</span><span class="o">=</span><span class="n">endb</span><span class="p">,</span>
+        <span class="c1"># we subtract the length of the comment and the newline</span>
+        <span class="n">new_end_byte</span><span class="o">=</span><span class="p">(</span><span class="n">endb</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">comment</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">start_point</span><span class="o">=</span><span class="n">startp</span><span class="p">,</span>
+        <span class="n">old_end_point</span><span class="o">=</span><span class="n">endp</span><span class="p">,</span>
+        <span class="c1"># assuming the comment has a sibling, we can use its end point</span>
+        <span class="n">new_end_point</span><span class="o">=</span><span class="p">(</span><span class="n">startp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">comment</span><span class="o">.</span><span class="n">prev_sibling</span><span class="o">.</span><span class="n">end_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+    <span class="p">)</span>
+
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">),</span> <span class="n">tree</span><span class="p">)</span>
+
+    <span class="n">n1</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">n2</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+
+    <span class="n">src</span> <span class="o">=</span> <span class="n">src</span><span class="p">[:</span><span class="n">n1</span><span class="o">.</span><span class="n">end_byte</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;new_command</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">src</span><span class="p">[</span><span class="n">n2</span><span class="o">.</span><span class="n">start_byte</span><span class="p">:]</span>
+
+    <span class="n">tree</span><span class="o">.</span><span class="n">edit</span><span class="p">(</span>
+        <span class="n">start_byte</span><span class="o">=</span><span class="n">n1</span><span class="o">.</span><span class="n">end_byte</span><span class="p">,</span>
+        <span class="n">old_end_byte</span><span class="o">=</span><span class="n">n2</span><span class="o">.</span><span class="n">start_byte</span><span class="p">,</span>
+        <span class="n">new_end_byte</span><span class="o">=</span><span class="n">n2</span><span class="o">.</span><span class="n">start_byte</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="s2">&quot;new_command</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">),</span>
+        <span class="n">start_point</span><span class="o">=</span><span class="n">n1</span><span class="o">.</span><span class="n">end_point</span><span class="p">,</span>
+        <span class="n">old_end_point</span><span class="o">=</span><span class="n">n2</span><span class="o">.</span><span class="n">start_point</span><span class="p">,</span>
+        <span class="n">new_end_point</span><span class="o">=</span><span class="p">(</span><span class="n">n1</span><span class="o">.</span><span class="n">end_point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n1</span><span class="o">.</span><span class="n">end_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="s2">&quot;new_command</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)),</span>
+    <span class="p">)</span>
+
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">),</span> <span class="n">tree</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;END:&quot;</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># pylint: disable=dangerous-default-value</span>
+<div class="viewcode-block" id="variable_expander">
+<a class="viewcode-back" href="../experimental.html#experimental.variable_expander">[docs]</a>
+<span class="k">def</span> <span class="nf">variable_expander</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="p">{}):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test function meant to experiment with variable substitution in batch</span>
+<span class="sd">    files.</span>
+
+<span class="sd">    This function is</span>
+<span class="sd">    a rewrite of the function `variable_substitution` in the `deobfuscator` module.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span><span class="p">,</span> <span class="n">batch_lang</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">create_parser</span><span class="p">()</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">START:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">src</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">variable_substitution_helper</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">env</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
+        <span class="c1"># sleep(1)</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">capture</span> <span class="ow">in</span> <span class="n">batch_lang</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">            (assignment</span>
+<span class="s1">                (variable)</span>
+<span class="s1">                (operator)</span>
+<span class="s1">                (value)) @assign</span>
+
+<span class="s1">            (assignment</span>
+<span class="s1">                (variable)</span>
+<span class="s1">                (operator)) @unassign</span>
+
+<span class="s1">            (variable_substitution) @var</span>
+<span class="s1">        &#39;&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">captures</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;!!!&#39;</span><span class="p">,</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+
+            <span class="k">match</span> <span class="n">capture</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">case</span> <span class="s2">&quot;assign&quot;</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span>
+                            <span class="n">batch_lang</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">                        (variable_substitution) @var</span>
+<span class="s1">                    &#39;&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">captures</span><span class="p">(</span><span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">])):</span>
+                        <span class="k">continue</span>
+
+                    <span class="n">env</span><span class="p">[</span><span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span>
+                    <span class="p">)]</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+                <span class="k">case</span> <span class="s2">&quot;unassign&quot;</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">child_count</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="n">env</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span>
+
+                <span class="k">case</span> <span class="s2">&quot;var&quot;</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3&quot;</span><span class="p">)</span>
+                    <span class="n">var</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                    <span class="n">startb</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start_byte</span>
+                    <span class="n">endb</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_byte</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">var</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">env</span><span class="p">:</span>
+                        <span class="n">src</span> <span class="o">=</span> <span class="n">src</span><span class="p">[:</span><span class="n">startb</span><span class="p">]</span> <span class="o">+</span> <span class="n">src</span><span class="p">[</span><span class="n">endb</span><span class="p">:]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">src</span> <span class="o">=</span> <span class="n">src</span><span class="p">[:</span><span class="n">startb</span><span class="p">]</span> <span class="o">+</span> <span class="n">env</span><span class="p">[</span><span class="n">var</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="n">src</span><span class="p">[</span><span class="n">endb</span><span class="p">:]</span>
+
+                    <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">src</span>
+
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">src</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+        <span class="c1"># NOTE: env is passed by reference, so it is updated in the function whereas src is</span>
+        <span class="c1"># redefined in the function</span>
+        <span class="n">bb</span><span class="p">,</span> <span class="n">src</span> <span class="o">=</span> <span class="n">variable_substitution_helper</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bb</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;END:&quot;</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;END:&quot;</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">src</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, BatchAlchemy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

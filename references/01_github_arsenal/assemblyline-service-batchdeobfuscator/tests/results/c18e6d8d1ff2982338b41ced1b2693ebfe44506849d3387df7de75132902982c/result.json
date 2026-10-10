@@ -1,0 +1,63 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 0,
+    "sections": [
+      {
+        "auto_collapse": false,
+        "body": [
+          {
+            "Command [trunc]": "mshta \"vbscript:CreateObject(\"Shell.Application\").ShellExecute(\"C:\\Users\\al\\Downloads\\script.bat\", \""
+          }
+        ],
+        "body_config": {
+          "column_order": [
+            "Command [trunc]"
+          ]
+        },
+        "body_format": "TABLE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": null,
+        "promote_to": null,
+        "tags": {
+          "dynamic": {
+            "process": {
+              "command_line": [
+                "mshta \"vbscript:CreateObject(\"Shell.Application\").ShellExecute(\"C:\\Users\\al\\Downloads\\script.bat\", \"\", \"\", \"runas\", 1) & Close()\""
+              ]
+            }
+          }
+        },
+        "title_text": "Mshta command found",
+        "zeroize_on_tag_safe": false
+      }
+    ]
+  },
+  "files": {
+    "extracted": [
+      {
+        "name": "11e29a46ae_deobfuscated.bat",
+        "sha256": "11e29a46aef1682344c31b3eb71c7e54796798ac6ef79dc7df3b340fb83f1ca3"
+      },
+      {
+        "name": "decb59b6fa.ps1",
+        "sha256": "4592f85149cd15c9e6b9529d0037c3f15569edf912068d863cbd5c298854cda5"
+      }
+    ],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [],
+    "tags": {
+      "dynamic.process.command_line": [
+        {
+          "heur_id": null,
+          "signatures": [],
+          "value": "mshta \"vbscript:CreateObject(\"Shell.Application\").ShellExecute(\"C:\\Users\\al\\Downloads\\script.bat\", \"\", \"\", \"runas\", 1) & Close()\""
+        }
+      ]
+    },
+    "temp_submission_data": {}
+  }
+}

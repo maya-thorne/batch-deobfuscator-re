@@ -1,0 +1,1 @@
+C:\Users\Tim\AppData\Local\Android\Sdk\platform-tools\adb.exe connect 192.168.178.24

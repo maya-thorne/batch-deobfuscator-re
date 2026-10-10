@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tests &mdash; Batchger  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Batchger
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../deobfuscator.html">Deobfuscator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experimental.html">Experimental</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formatting.html">Formatting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizer.html">Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tests.html">Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utils</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Batchger</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">tests</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for tests</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module contains test functions that are meant for testing and evaluation purposes.&quot;&quot;&quot;</span>
+
+<span class="c1"># pylint: disable=pointless-string-statement</span>
+<span class="c1"># pylint: disable=line-too-long</span>
+<span class="c1"># flake8: noqa</span>
+
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">deobfuscator</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">formatting</span> <span class="kn">import</span> <span class="n">to_lower_case</span>
+<span class="kn">import</span> <span class="nn">utils</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<div class="viewcode-block" id="test_baum1810_obfuscated_malware_samples">
+<a class="viewcode-back" href="../tests.html#tests.test_baum1810_obfuscated_malware_samples">[docs]</a>
+<span class="k">def</span> <span class="nf">test_baum1810_obfuscated_malware_samples</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This method tests the entirety of malware-files which are located in the</span>
+<span class="sd">    baum1810-malware folder.</span>
+
+<span class="sd">    Note: I did not git-add the zip file, since I don&#39;t know if it is illegal to upload that on the Uni Info GitLab?</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path_to_malware</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;tree-sitter-batch&quot;</span><span class="p">,</span> <span class="s2">&quot;test-scripts&quot;</span><span class="p">,</span>
+                                   <span class="s2">&quot;malware&quot;</span><span class="p">,</span> <span class="s2">&quot;baum1810-malware&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path_to_malware</span><span class="p">):</span>
+        <span class="c1"># exclude tim&#39;s malware batch file and the zipped folder</span>
+        <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;raw&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;.7z&quot;</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">or</span> <span class="s2">&quot;baum1810&quot;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Skipping file&quot;</span> <span class="o">+</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_to_malware</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="c1"># Fill the brackets for how many symbols the file&#39;s content should be deobfuscated, or remove number to</span>
+            <span class="c1">#  fully process the files (but it takes ages on my computer xD)</span>
+            <span class="n">obfuscated_malware</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())[:</span><span class="mi">2000</span><span class="p">]</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Using variable_substitution() on file&quot;</span> <span class="o">+</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="c1"># Print the malware&#39;s content after its variables being substituted</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">variable_substitution</span><span class="p">(</span><span class="n">obfuscated_malware</span><span class="p">))</span>
+
+        <span class="n">input_</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> has been processed. Press N to exit or anything else to continue with the next file.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">input_</span> <span class="o">==</span> <span class="s2">&quot;N&quot;</span><span class="p">:</span>
+            <span class="k">return</span></div>
+
+
+
+<div class="viewcode-block" id="test_to_lower_case">
+<a class="viewcode-back" href="../tests.html#tests.test_to_lower_case">[docs]</a>
+<span class="k">def</span> <span class="nf">test_to_lower_case</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Use this as a temporary testing functionality for the to_lower_case()</span>
+<span class="sd">    function:</span>
+
+<span class="sd">    string for testing purposes only; it addresses many of the tricky</span>
+<span class="sd">    parts of lower casing the correct tokens only casting it to upper</span>
+<span class="sd">    case is just to easily visualize which parts got lower cased by this</span>
+<span class="sd">    function</span>
+
+<span class="sd">    pipeline flawlessly  (thus after implementing removal of carets)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">out_string</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;iF eXISt eXAMPle-file.bat (</span>
+<span class="s2">        eCHo The fILe eXiSts.</span>
+<span class="s2">        ) ELsE (</span>
+<span class="s2">        eCHo &quot;The file does not EXIst.&quot;</span>
+<span class="s2">        )</span>
+<span class="s2">        fOr </span><span class="si">%%</span><span class="s2">i iN (&quot;C:\WinDOws\sYStem32\*.exe&quot;) DO @eChO </span><span class="si">%%</span><span class="s2">I</span>
+<span class="s2">        SET variable = not an existing value</span>
+<span class="s2">        if </span><span class="si">%e</span><span class="s2">qu</span><span class="si">% e</span><span class="s2">qu </span><span class="si">%e</span><span class="s2">qu% (echo EXIST) :: tHis is A comMent</span>
+<span class="s2">        :lLLllLLlL</span>
+<span class="s2">        cmd%ACTUALLYSETVARIABLE%name /a ArguMents</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">to_lower_case</span><span class="p">(</span><span class="n">out_string</span><span class="p">,</span> <span class="n">keywords</span><span class="o">=</span><span class="kc">None</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="test_parser_correctness">
+<a class="viewcode-back" href="../tests.html#tests.test_parser_correctness">[docs]</a>
+<span class="k">def</span> <span class="nf">test_parser_correctness</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Evaluation functionality for chapter **4 - Front End Correctness**.</span>
+
+<span class="sd">    This function first grabs all test files from the directory *eval-src* and parses them according to the Batch-</span>
+<span class="sd">    parser. The resulting ASTs are written to a folder called *parsed*. Files that couldn&#39;t be parsed due to Unicode-</span>
+<span class="sd">    DecodeErrors are put in a separate directory named *unicode-errors*. Lastly, all AST files which contain at least</span>
+<span class="sd">    one of either of tree-sitter&#39;s main error keywords (ERROR, MISSING) are copied into a third directory named</span>
+<span class="sd">    *eval_errors*.</span>
+
+<span class="sd">    :param encoding: the encoding string to be used within ``string.encode()`` commands; default is *&quot;utf-8&quot;*</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span><span class="p">,</span> <span class="n">batch_lang</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">create_parser</span><span class="p">()</span>
+
+    <span class="c1"># Set up paths and folders</span>
+    <span class="n">path_to_tests</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;tree-sitter-batch&quot;</span><span class="p">,</span> <span class="s2">&quot;test-scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;eval-src&quot;</span><span class="p">)</span>
+    <span class="n">parsed_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;tree-sitter-batch&quot;</span><span class="p">,</span> <span class="s2">&quot;test-scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;parsed&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">parsed_path</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">parsed_path</span><span class="p">)</span>
+    <span class="n">unicode_error_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;tree-sitter-batch&quot;</span><span class="p">,</span> <span class="s2">&quot;test-scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;unicode_errors&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">unicode_error_path</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">unicode_error_path</span><span class="p">)</span>
+    <span class="n">error_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;tree-sitter-batch&quot;</span><span class="p">,</span> <span class="s2">&quot;test-scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;eval_errors&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">error_directory</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">error_directory</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting with parsing all files...&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path_to_tests</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_to_tests</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="c1"># print(f&quot;Parsing file: {filename}&quot;)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">file_content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="n">parsed_content</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">file_content</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+                <span class="c1"># ast = parsed_content.text.decode(encoding)</span>
+                <span class="c1"># ast = format_s_exp(parsed_content.root_node.sexp())</span>
+                <span class="n">ast</span> <span class="o">=</span> <span class="n">parsed_content</span><span class="o">.</span><span class="n">root_node</span><span class="o">.</span><span class="n">sexp</span><span class="p">()</span>
+
+                <span class="c1"># Write the AST to a new file</span>
+                <span class="n">output_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_AST.txt&quot;</span>
+                <span class="n">output_dest</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parsed_path</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_dest</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">output_file</span><span class="p">:</span>
+                    <span class="n">output_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ast</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">UnicodeDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;UnicodeDecodeError occured: &quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="c1"># Copying the file containing the UnicodeError to a new folder</span>
+                <span class="n">output_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_UNICODE_ERROR.bat&quot;</span>
+                <span class="n">output_dest</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unicode_error_path</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">)</span>
+                <span class="n">src</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_to_tests</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">output_dest</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parsing finished.&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Now starting with finding parsed files containing errors...&quot;</span><span class="p">)</span>
+    <span class="n">error_files</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">parsed_path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_AST.txt&quot;</span><span class="p">):</span>
+            <span class="c1"># print(f&quot;Checking file: {filename}&quot;)</span>
+            <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parsed_path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">keyword</span> <span class="ow">in</span> <span class="n">content</span> <span class="k">for</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;MISSING&#39;</span><span class="p">]):</span>
+                    <span class="n">error_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Successfully iterated over all files in search of errors.&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Now starting with copying all files containing errors into a separate directory...&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">error_files</span><span class="p">:</span>
+        <span class="c1"># print(f&quot;Copying file: {filename}&quot;)</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parsed_path</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">error_directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_error.txt&#39;</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Successfully copied all error files.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_redirection">
+<a class="viewcode-back" href="../tests.html#tests.test_redirection">[docs]</a>
+<span class="k">def</span> <span class="nf">test_redirection</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Evaluation functionality for chapter **4 - Front End Correctness**.</span>
+
+<span class="sd">    This function counts how many files include an error related to grammar.js&#39;s redirection rule. The existance of this</span>
+<span class="sd">    function is the result of manual analysis of error files and realizing that this concept in particular was worth</span>
+<span class="sd">    taking a closer look at.</span>
+
+<span class="sd">    Outputs the number of files which contain errors related to the parser&#39;s rule *redirection*.</span>
+<span class="sd">    On top of that, all files in the directory *eval-errors* get marked by prepending a mark to their names</span>
+<span class="sd">    (*redir_err_*).</span>
+
+<span class="sd">    :param: None</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">error_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;tree-sitter-batch&quot;</span><span class="p">,</span> <span class="s2">&quot;test-scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;eval_errors&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">error_dir</span><span class="p">):</span>
+        <span class="c1"># print(f&quot;Checking file: {filename} for unexpected redirections&quot;)</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">error_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">op</span> <span class="ow">in</span> <span class="n">content</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;&amp;&#39;</span><span class="p">,</span> <span class="s1">&#39;&gt;&amp;&#39;</span><span class="p">]):</span>
+                <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="s2">&quot;redir_err_&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">error_dir</span><span class="p">,</span> <span class="s2">&quot;redir_err_&quot;</span> <span class="o">+</span> <span class="n">filename</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> files include errors related to redirect operations.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_missing_only">
+<a class="viewcode-back" href="../tests.html#tests.test_missing_only">[docs]</a>
+<span class="k">def</span> <span class="nf">test_missing_only</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Evaluation functionality for chapter **4 - Front End Correctness**.</span>
+
+<span class="sd">    This function counts how many files include an error related to tree-sitter&#39;s *MISSING* error keyword. The</span>
+<span class="sd">    existance of this function is the result of manual analysis of error files and realizing that this concept in</span>
+<span class="sd">    particular was worth taking a closer look at.</span>
+
+<span class="sd">    Outputs the number of files which contain only errors related to tree-sitter&#39;s *MISSING* keyword, hinting at test</span>
+<span class="sd">    cases where the parser probably works in a bit too rigid way.</span>
+<span class="sd">    On top of that, all files in the directory *eval-errors* get marked by prepending a mark to their names</span>
+<span class="sd">    (*missing_only_*).</span>
+
+<span class="sd">    :param: None</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">error_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;tree-sitter-batch&quot;</span><span class="p">,</span> <span class="s2">&quot;test-scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;eval_errors&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">error_dir</span><span class="p">):</span>
+        <span class="c1"># print(f&quot;Checking file: {filename} for only containing MISSING error keyword&quot;)</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">error_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s1">&#39;ERROR&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">content</span> <span class="ow">and</span> <span class="s1">&#39;MISSING&#39;</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+                <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="s2">&quot;redir_err_&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">and</span> <span class="s2">&quot;missing_only_&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">error_dir</span><span class="p">,</span> <span class="s2">&quot;missing_only_&quot;</span> <span class="o">+</span> <span class="n">filename</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> files include errors related only to MISSING keyword.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_either_missing_unexpected">
+<a class="viewcode-back" href="../tests.html#tests.test_either_missing_unexpected">[docs]</a>
+<span class="k">def</span> <span class="nf">test_either_missing_unexpected</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Evaluation functionality for chapter **4 - Front End Correctness**.</span>
+
+<span class="sd">    This function counts how many files include an error related to tree-sitter&#39;s *MISSING* or *UNEXPECTED* error</span>
+<span class="sd">    keywords. The existance of this function is the result of manual analysis of error files and realizing that these</span>
+<span class="sd">    concepts in particular was worth taking a closer look at.</span>
+
+<span class="sd">    Outputs the number of files which contain either of the errors related to tree-sitter&#39;s *MISSING* or *UNEXPECTED*</span>
+<span class="sd">    keywords, hinting at test cases where the parser probably works in a bit too rigid way.</span>
+<span class="sd">    On top of that, all files in the directory *eval-errors* get marked by prepending a mark to their names</span>
+<span class="sd">    (*miss_unexp_*).</span>
+
+<span class="sd">    :param: None</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">error_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;tree-sitter-batch&quot;</span><span class="p">,</span> <span class="s2">&quot;test-scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;eval_errors&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">error_dir</span><span class="p">):</span>
+        <span class="c1"># print(f&quot;Checking file: {filename} for only containing MISSING error keyword&quot;)</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">error_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s1">&#39;UNEXPECTED&#39;</span> <span class="ow">in</span> <span class="n">content</span> <span class="ow">or</span> <span class="s1">&#39;MISSING&#39;</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+                <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="s2">&quot;redir_err_&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">and</span> <span class="s2">&quot;miss_unexp_&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">error_dir</span><span class="p">,</span> <span class="s2">&quot;miss_unexp_&quot;</span> <span class="o">+</span> <span class="n">filename</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> files include errors related to either MISSING or UNEXPECTED keywords.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_unary_identifier_expression">
+<a class="viewcode-back" href="../tests.html#tests.test_unary_identifier_expression">[docs]</a>
+<span class="k">def</span> <span class="nf">test_unary_identifier_expression</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Evaluation functionality for chapter **4 - Front End Correctness**.</span>
+
+<span class="sd">    This function counts how many files include an error related to grammar.js&#39;s unary_identifier_expression. The</span>
+<span class="sd">    existance of this function is the result of manual analysis of error files and realizing that this concept in</span>
+<span class="sd">    particular was worth taking a closer look at.</span>
+
+<span class="sd">    Outputs the number of files which contain errors related to the parser&#39;s rule *unary_identifier_expression*.</span>
+<span class="sd">    On top of that, all files in the directory *eval-errors* get marked by prepending a mark to their names</span>
+<span class="sd">    (*unary_id_err_*).</span>
+
+<span class="sd">    :param: None</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parsed_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;tree-sitter-batch&quot;</span><span class="p">,</span> <span class="s2">&quot;test-scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;parsed&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">parsed_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">parsed_dir</span><span class="p">)</span>
+    <span class="n">error_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;tree-sitter-batch&quot;</span><span class="p">,</span> <span class="s2">&quot;test-scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;eval_errors&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">error_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">error_dir</span><span class="p">)</span>
+
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">parsed_dir</span><span class="p">):</span>
+        <span class="c1"># print(f&quot;Checking file: {filename} for containing errors w.r.t. unary_identifier_expressions&quot;)</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parsed_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;unary_identifier_expression (MISSING text)&quot;</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;redir_err_&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span> <span class="ow">and</span> <span class="s2">&quot;missing_only_&quot;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">error_dir</span><span class="p">,</span> <span class="s2">&quot;unary_id_err_&quot;</span> <span class="o">+</span> <span class="n">filename</span><span class="p">))</span>
+                    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                <span class="c1"># count += 1</span>
+                <span class="c1"># print(filename)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> files include errors related to unary_identifier_expressions errors.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_count_errors_per_file">
+<a class="viewcode-back" href="../tests.html#tests.test_count_errors_per_file">[docs]</a>
+<span class="k">def</span> <span class="nf">test_count_errors_per_file</span><span class="p">(</span><span class="n">lower_bound</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">upper_bound</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Evaluation functionality for chapter **4 - Front End Correctness**.</span>
+
+<span class="sd">    This function takes all previously parsed evaluation Batch files from the *parsed* directory and counts how many</span>
+<span class="sd">    errors appearing for each one during parsing. By using the two parameters lower_bound and upper_bound, the function</span>
+<span class="sd">    checks for every parsed file, whether or not a file contains a number of parsing errors within the specified range.</span>
+
+<span class="sd">    Outputs the number of files which have a number of parsing errors included in the range given as arguments to</span>
+<span class="sd">    stdout.</span>
+
+<span class="sd">    :param lower_bound: The number a of the interval [a,b]. This interval tells the function which files should be used</span>
+<span class="sd">        for the final counting.</span>
+<span class="sd">    :param upper_bound: The number b of the interval [a,b]. This interval tells the function which files should be used</span>
+<span class="sd">        for the final counting.</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parsed_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;tree-sitter-batch&quot;</span><span class="p">,</span> <span class="s2">&quot;test-scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;parsed&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">parsed_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">parsed_dir</span><span class="p">)</span>
+
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">parsed_dir</span><span class="p">):</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parsed_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="n">subcount</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">subcount</span> <span class="o">+=</span> <span class="n">content</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">content</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;MISSING&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;ERROR&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">content</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;MISSING&quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">lower_bound</span> <span class="o">&lt;=</span> <span class="n">subcount</span> <span class="o">&lt;=</span> <span class="n">upper_bound</span><span class="p">:</span>
+                <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c1"># print(filename)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> files contain the certain range of number of errors.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_baum1810">
+<a class="viewcode-back" href="../tests.html#tests.test_baum1810">[docs]</a>
+<span class="k">def</span> <span class="nf">test_baum1810</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Testing functionality for baum1810 obfuscator. A pipeline of deobfuscating and optimizing functions is applied</span>
+<span class="sd">        to the obfuscated string (static in code).</span>
+
+<span class="sd">        As a reference, the following code was obfuscated using:</span>
+<span class="sd">        https://github.com/baum1810/batchobfuscator</span>
+<span class="sd">        -------------------------------------------</span>
+
+<span class="sd">        set malicious=evil.exe</span>
+<span class="sd">        echo &quot;Doing malicious stuff in folder %TMP%\%malicious%&quot;</span>
+<span class="sd">        if test.bat not exists goto l</span>
+<span class="sd">        set malicious=beneign.bat</span>
+<span class="sd">        @echo &quot;Nothing to see here %TMP%\%malicious%&quot; ::This line will be executed twice</span>
+<span class="sd">        :l</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">obfuscated_code</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;&#39;&#39;::obfuscated by https://github.com/baum1810</span>
+<span class="s1">        s%vCC</span><span class="si">%e</span><span class="s1">%NDRx%t%C</span><span class="si">% %</span><span class="s1">nqfQ%m%KsimJs</span><span class="si">%a</span><span class="s1">%nBHGRyGvcX</span><span class="si">%l%</span><span class="s1">ezbRljbcv</span><span class="si">%i</span><span class="s1">%S</span><span class="si">%c</span><span class="s1">%LD</span><span class="si">%i%X</span><span class="s1">vtNaFKHQW</span><span class="si">%o</span><span class="s1">%HgBkXaC</span><span class="si">%u</span><span class="s1">%IixjhbxBj</span><span class="si">%s</span><span class="s1">%wqXKr%=</span><span class="si">%u</span><span class="s1">BIeFb</span><span class="si">%e</span><span class="s1">%ZCjDeS%v</span><span class="si">%E</span><span class="s1">lGlELShpv</span><span class="si">%i</span><span class="s1">%YNHYzXYEL</span><span class="si">%l%</span><span class="s1">t%.%TjioMnxYXB</span><span class="si">%e</span><span class="s1">%ya</span><span class="si">%x</span><span class="s1">%wlaqCn</span><span class="si">%e%e</span><span class="s1">r%</span>
+<span class="s1">        e%YvHKymPX</span><span class="si">%c%o</span><span class="s1">OtxWBK</span><span class="si">%h%</span><span class="s1">PvM</span><span class="si">%o%E% %</span><span class="s1">z%&quot;%NkFNqwKKlQ%D%BJVf</span><span class="si">%o</span><span class="s1">%wfjrmwYYf</span><span class="si">%i</span><span class="s1">%HLTTND%n%wTwPFc</span><span class="si">%g%a</span><span class="s1">AQpYIi</span><span class="si">% %</span><span class="s1">bB%m%ybQeN</span><span class="si">%a</span><span class="s1">%HFAIXrvcDe</span><span class="si">%l%</span><span class="s1">G</span><span class="si">%i</span><span class="s1">%j</span><span class="si">%c%r</span><span class="s1">E</span><span class="si">%i</span><span class="s1">%WxDQOct</span><span class="si">%o%G</span><span class="s1">DqiIaabd</span><span class="si">%u</span><span class="s1">%QCwjItqRR</span><span class="si">%s</span><span class="s1">%JIwrXT</span><span class="si">% %</span><span class="s1">vgjGB</span><span class="si">%s</span><span class="s1">%HZHiXpY%t%QtWVp</span><span class="si">%u</span><span class="s1">%v</span><span class="si">%f%r</span><span class="s1">rFZC</span><span class="si">%f%e</span><span class="s1">wtn</span><span class="si">% %</span><span class="s1">DGGL</span><span class="si">%i</span><span class="s1">%Sdrh%n%CwAlgLKmQM</span><span class="si">% %</span><span class="s1">XwsCBJ</span><span class="si">%f</span><span class="s1">%PVsCT</span><span class="si">%o%s</span><span class="s1">eBTiT</span><span class="si">%l%</span><span class="s1">JB</span><span class="si">%d</span><span class="s1">%w</span><span class="si">%e</span><span class="s1">%CBXbIO</span><span class="si">%r</span><span class="s1">%UzwSsZcCn</span><span class="si">% %</span><span class="s1">BoajK</span><span class="si">%%</span><span class="s1">TMP%\%wcaDLmH</span><span class="si">%%</span><span class="s1">malicious%&quot;%TBZdzlHyNZ%</span>
+<span class="s1">        i%S</span><span class="si">%f</span><span class="s1">%AbGu</span><span class="si">% %</span><span class="s1">T%t%JnWFEh</span><span class="si">%e</span><span class="s1">%qqzHl</span><span class="si">%s</span><span class="s1">%DFnIUOX%t</span><span class="si">%G</span><span class="s1">Tgcnvn%.%QwUwkSWHjw%b%koIv</span><span class="si">%a</span><span class="s1">%Dh%t%B</span><span class="si">% %</span><span class="s1">uRI%n</span><span class="si">%c</span><span class="s1">PJvyUmuP</span><span class="si">%o%o</span><span class="s1">%t%HnQG</span><span class="si">% %</span><span class="s1">ZtDHeN</span><span class="si">%e</span><span class="s1">%DXPWNB</span><span class="si">%x</span><span class="s1">%H</span><span class="si">%i%r%s%i</span><span class="s1">l%t</span><span class="si">%r</span><span class="s1">d</span><span class="si">%s</span><span class="s1">%IfUJD</span><span class="si">% %</span><span class="s1">DgKxZqudU</span><span class="si">%g%G</span><span class="s1">GP</span><span class="si">%o</span><span class="s1">%WP%t</span><span class="si">%c</span><span class="s1">xZOx</span><span class="si">%o%E% %</span><span class="s1">WmESPbExj</span><span class="si">%l%</span><span class="s1">flgUKtXl%</span>
+<span class="s1">        s</span><span class="si">%l%</span><span class="s1">e</span><span class="si">%r</span><span class="s1">qcmxLaT%t%kvCNFlgJM</span><span class="si">% %</span><span class="s1">RPu%m%khdppa</span><span class="si">%a</span><span class="s1">%U</span><span class="si">%l%</span><span class="s1">ykDluq</span><span class="si">%i</span><span class="s1">%SMSiKGbFWB</span><span class="si">%c</span><span class="s1">%YeFzNBlvNh</span><span class="si">%i</span><span class="s1">%DtW</span><span class="si">%o%lE</span><span class="s1">GwJm</span><span class="si">%u%u</span><span class="s1">LMqOb</span><span class="si">%s%e</span><span class="s1">sV%=%k%b%mOwhlnSRXy</span><span class="si">%e</span><span class="s1">%qwiUt%n%HLskdpCJ</span><span class="si">%e</span><span class="s1">%SJ</span><span class="si">%i%i</span><span class="s1">xaNvRXgA</span><span class="si">%g</span><span class="s1">%M%n%piCTCAIKm%.</span><span class="si">%e</span><span class="s1">X%b%bs</span><span class="si">%a</span><span class="s1">%pZxQ%t</span><span class="si">%o</span><span class="s1">ws%</span>
+<span class="s1">        @echo &quot;Nothing to see here %TMP%\%malicious%&quot; ::This line will be executed twice</span>
+<span class="s1">        @%tOnhOPtaI</span><span class="si">%e</span><span class="s1">%CkWN</span><span class="si">%c%r</span><span class="s1">bMgiep</span><span class="si">%h%</span><span class="s1">pJy</span><span class="si">%o</span><span class="s1">%qQGniOP</span><span class="si">% %</span><span class="s1">KzJW%&quot;%QKKB%N%SqFn</span><span class="si">%o</span><span class="s1">%KoWmwdP%t</span><span class="si">%X%h%</span><span class="s1">nBX</span><span class="si">%i</span><span class="s1">%lk%n%NnvysMuC</span><span class="si">%g%X</span><span class="s1">mANRHG</span><span class="si">% %</span><span class="s1">kZGui%t%pxgeoiyQ</span><span class="si">%o</span><span class="s1">%hAJPHGaE</span><span class="si">% %</span><span class="s1">SvMthTzu</span><span class="si">%s</span><span class="s1">%mqXuelL</span><span class="si">%e</span><span class="s1">%RKg</span><span class="si">%e</span><span class="s1">%KpVIbwATWu</span><span class="si">% %</span><span class="s1">IdYrhrl</span><span class="si">%h%</span><span class="s1">irWgZqi</span><span class="si">%e%o</span><span class="s1">QzwpB</span><span class="si">%r</span><span class="s1">%pZ</span><span class="si">%e%o</span><span class="s1">AfwJZy</span><span class="si">% %</span><span class="s1">wohpJFfq</span><span class="si">%%</span><span class="s1">TMP%\%nOwZuj</span><span class="si">%%</span><span class="s1">malicious%&quot;%U</span><span class="si">% %</span><span class="s1">xe%:</span><span class="si">%lo</span><span class="s1">gxTJDCB%:%Bd%T%jIJaCIIQJV</span><span class="si">%h%</span><span class="s1">Z</span><span class="si">%i</span><span class="s1">%ynQK</span><span class="si">%s</span><span class="s1">%ABGtRc</span><span class="si">% %</span><span class="s1">IjIh</span><span class="si">%l%</span><span class="s1">zvvUVwWHG</span><span class="si">%i%e</span><span class="s1">TlM%n%W</span><span class="si">%e</span><span class="s1">%DfvQJ</span><span class="si">% %</span><span class="s1">Xad%w%PxNLCcoLFi</span><span class="si">%i%g%l%</span><span class="s1">rmkMmloX</span><span class="si">%l%</span><span class="s1">oroGYEMZB</span><span class="si">% %</span><span class="s1">Bav%b%wlQrxKg</span><span class="si">%e%c</span><span class="s1">vTzLx</span><span class="si">% %</span><span class="s1">jKh</span><span class="si">%e</span><span class="s1">%I</span><span class="si">%x</span><span class="s1">%ALZdZWtTun</span><span class="si">%e</span><span class="s1">%JCSU</span><span class="si">%c</span><span class="s1">%qRJ</span><span class="si">%u%g</span><span class="s1">wjqKtiSwQ%t%KAYe</span><span class="si">%e</span><span class="s1">%pJid</span><span class="si">%d</span><span class="s1">%Ust</span><span class="si">% %</span><span class="s1">rxvueNytx%t%RueHxmSQY%w%por</span><span class="si">%i%s</span><span class="s1">bHbJLS</span><span class="si">%c</span><span class="s1">%Y</span><span class="si">%e%d</span><span class="s1">Gc%</span>
+<span class="s1">        :l</span>
+<span class="s1">        :</span><span class="si">%e</span><span class="s1">lclXFQBS</span><span class="si">%l%</span><span class="s1">RPvh%</span>
+<span class="s1">    &#39;&#39;&#39;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">Before deobfuscation:</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="si">{</span><span class="n">obfuscated_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">deobfuscated_code</span> <span class="o">=</span> <span class="n">variable_substitution</span><span class="p">(</span><span class="n">obfuscated_code</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">After 1st run of variable_substitution:</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="si">{</span><span class="n">deobfuscated_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># sole purpose is to test the functions (for increased fine-granularity)</span>
+    <span class="n">query_variable_assignments</span><span class="p">(</span><span class="n">deobfuscated_code</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="s1">&#39;stdout&#39;</span><span class="p">)</span>
+    <span class="n">query_variable_substitutions</span><span class="p">(</span><span class="n">deobfuscated_code</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="s1">&#39;stdout&#39;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># deobfuscated_code = remove_baum1810_overhead(deobfuscated_code)</span>
+    <span class="c1"># print(f&quot;---\nAfter 1st run of remove_invalid_labels:\n---\n{deobfuscated_code}&quot;)</span>
+
+
+<div class="viewcode-block" id="test_abobus">
+<a class="viewcode-back" href="../tests.html#tests.test_abobus">[docs]</a>
+<span class="k">def</span> <span class="nf">test_abobus</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Testing functionality for ABOBUS obfuscator. A pipeline of deobfuscating and optimizing functions is applied</span>
+<span class="sd">        to the obfuscated string (static in code).</span>
+
+<span class="sd">        As a reference, the following code was obfuscated using:</span>
+<span class="sd">        https://github.com/EscaLag/Abobus-obfuscator</span>
+<span class="sd">        using the following mechanics:</span>
+<span class="sd">        random_at, random_semicolon, cleaning_comments, lower_upper_character, china_symbol</span>
+<span class="sd">        --------------------------------------------</span>
+
+<span class="sd">        set malicious=evil.exe</span>
+<span class="sd">        echo &quot;Doing malicious stuff in folder %TMP%\%malicious%&quot;</span>
+<span class="sd">        if test.bat not exists goto l</span>
+<span class="sd">        set malicious=beneign.bat</span>
+<span class="sd">        @echo &quot;Nothing to see here %TMP%\%malicious%&quot; ::This line will be executed twice</span>
+<span class="sd">        :lL</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">obfuscated_code</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        FFFEFFFE&gt;nul 2&gt;&amp;1 &amp;cls</span>
+<span class="s2">        @(@chcp%┌( ಠ_ಠ)┘(⊙ω⊙)(⊙ω⊙)┌( ಠ_ಠ)┘┌( ಠ_ಠ)┘^(◕‿◕)</span><span class="si">%%</span><span class="s2">(⊙ω⊙)ヾ(⌐■_■)ノ┌( ಠ_ಠ)┘┌( ಠ_ಠ)┘(◕‿◕^)(◕‿◕)%.%(◕‿◕)(⊙ω⊙)ヾ(⌐■_■)ノヾ(⌐■_■)ノ┌( ಠ_ಠ)┘(^◕‿◕)</span><span class="si">%c</span><span class="s2">o^m 43^7)&gt;Nu^l&amp;@ec%┌( ಠ_ಠ)┘(◕‿◕)ヾ(⌐■_■)ノヾ(⌐^■_■)ノ(⊙ω⊙)(◕‿◕)</span><span class="si">%%</span><span class="s2">┌( ಠ_ಠ)┘┌( ಠ_ಠ)┘ヾ(⌐■_■)ノヾ(⌐■_^■)ノ┌( ಠ_ಠ)┘┌( ಠ_ಠ)┘</span><span class="si">%h%</span><span class="s2">(◕‿◕)ヾ(⌐■_■)^ノ┌( ಠ_ಠ)┘ヾ(⌐■_■)ノ(◕‿◕)(◕‿◕)%^o o%製製字^訊人無</span><span class="si">%f</span><span class="s2">^%保神複這法^此</span><span class="si">%f</span><span class="s2">&amp;c%ﯔ◯سﮢ^ﺖﭫ%l^%ﮢت^ت◯ﯤﮚ</span><span class="si">%s</span><span class="s2">&amp;&amp;se%┌( ಠ_ಠ)┘ヾ(⌐■_■)ノ(⊙^ω⊙)(◕‿◕)(◕‿◕)(⊙ω⊙)%^%┌( ಠ_ಠ)┘(◕‿◕)(◕‿◕)┌( ಠ_ಠ)┘(⊙ω⊙)┌^( ಠ_ಠ)┘%t ii%ﮢ^ﺼﮱﯤﺹﻁ</span><span class="si">%i</span><span class="s2">lll%ﯔ^ﯤك﷽ﻁﯤ</span><span class="si">%li</span><span class="s2">ii%ﭲﺼﺼ^ﮕﯔﭲ%^l=%0&amp;s^%(◕‿◕^)ヾ(⌐■_■)ノ┌( ಠ_ಠ)┘ヾ(⌐■_■)ノヾ(⌐■_■)ノ(⊙ω⊙)</span><span class="si">%e</span><span class="s2">%ヾ(⌐■_■)ノ┌( ಠ_ಠ)┘(⊙ω⊙)(⊙ω⊙)┌( ಠ_^ಠ)┘┌( ಠ_ಠ)┘%t 𝧽= c</span>
+<span class="s2">        @:ABOBUS-OBFUSCATOR</span>
+
+<span class="s2">        ;SE^T &quot;__author__=EscaLag&quot;</span>
+<span class="s2">        ;SE^T &quot;__github__=github.com/EscaLag/Abobus-obfuscator&quot;</span>
+
+<span class="s2">        @@s%┌( ಠ_ಠ)┘(⊙ω⊙)ヾ(⌐■_■)ノ┌( ಠ_ಠ)┘(◕‿◕)┌( ಠ_ಠ^)┘</span><span class="si">%%</span><span class="s2">(◕‿◕)┌( ಠ_ಠ)┘┌( ಠ_ಠ)┘(⊙^ω⊙)ヾ(⌐■_■)ノ(⊙ω⊙)</span><span class="si">%%</span><span class="s2">(◕‿◕)┌( ^ಠ_ಠ)┘┌( ಠ_ಠ)┘(◕‿◕)(◕‿◕)(⊙ω⊙)</span><span class="si">%e</span><span class="s2">^t malicious=evil.exe</span>
+<span class="s2">        @E%ﭫﯤﮱﮚ^◯ﭲ</span><span class="si">%%</span><span class="s2">ﮚﭲس^◯ﮚﭲ</span><span class="si">%%</span><span class="s2">تﭲﺹﯤﺼ^ﭫ</span><span class="si">%c</span><span class="s2">h^^o &quot;Doing malicious stuff in folder %TMP%\%malicious%&quot;</span>
+<span class="s2">        ;@i^F not exist test.bat goto l  :: Comment</span>
+<span class="s2">        @Se%(⊙ω⊙)ヾ(⌐■_■)ノ(⊙ω⊙)(◕‿◕)(^⊙ω⊙)(⊙ω⊙)%T%ヾ(⌐■_■)ノ┌( ಠ_ಠ)┘(⊙ω⊙)^(◕‿◕)(◕‿◕)(⊙ω⊙)</span><span class="si">%%</span><span class="s2">ヾ(⌐■_■)ノ^ヾ(⌐■_■)ノ┌( ಠ_ಠ)┘(◕‿◕)(⊙ω⊙)┌( ಠ_ಠ)┘%^ malicious=beneign.bat</span>
+<span class="s2">        @E%ﻁﮕﯔﮢ﷽^ﮢ%^%سﮢس﷽◯^ﯤ%^%ﮢ^كﮕﺼﻁﮢ%ChO &quot;Nothing to see here %TMP%\%malicious%&quot; ::This line will be executed twice</span>
+<span class="s2">        @:lL</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="n">obfuscated_code</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        @@s%┌( ಠ_ಠ)┘(⊙ω⊙)ヾ(⌐■_■)ノ┌( ಠ_ಠ)┘(◕‿◕)┌( ಠ_ಠ^)┘</span><span class="si">%%</span><span class="s2">(◕‿◕)┌( ಠ_ಠ)┘┌( ಠ_ಠ)┘(⊙^ω⊙)ヾ(⌐■_■)ノ(⊙ω⊙)</span><span class="si">%%</span><span class="s2">(◕‿◕)┌( ^ಠ_ಠ)┘┌( ಠ_ಠ)┘(◕‿◕)(◕‿◕)(⊙ω⊙)</span><span class="si">%e</span><span class="s2">^t malicious=evil.exe</span>
+<span class="s2">        @E%ﭫﯤﮱﮚ^◯ﭲ</span><span class="si">%%</span><span class="s2">ﮚﭲس^◯ﮚﭲ</span><span class="si">%%</span><span class="s2">تﭲﺹﯤﺼ^ﭫ</span><span class="si">%c</span><span class="s2">h^^o &quot;Doing malicious stuff in folder %TMP%\%malicious%&quot;</span>
+<span class="s2">        ;@i^F not exist test.bat goto l  :: Comment</span>
+<span class="s2">        @Se%(⊙ω⊙)ヾ(⌐■_■)ノ(⊙ω⊙)(◕‿◕)(^⊙ω⊙)(⊙ω⊙)%T%ヾ(⌐■_■)ノ┌( ಠ_ಠ)┘(⊙ω⊙)^(◕‿◕)(◕‿◕)(⊙ω⊙)</span><span class="si">%%</span><span class="s2">ヾ(⌐■_■)ノ^ヾ(⌐■_■)ノ┌( ಠ_ಠ)┘(◕‿◕)(⊙ω⊙)┌( ಠ_ಠ)┘%^ malicious=beneign.bat</span>
+<span class="s2">        @E%ﻁﮕﯔﮢ﷽^ﮢ%^%سﮢس﷽◯^ﯤ%^%ﮢ^كﮕﺼﻁﮢ%ChO &quot;Nothing to see here %TMP%\%malicious%&quot; ::This line will be executed twice</span>
+<span class="s2">        @:lL</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">Before deobfuscation:</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="si">{</span><span class="n">obfuscated_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">deobfuscated_code</span> <span class="o">=</span> <span class="n">obfuscated_code</span>
+
+    <span class="n">deobfuscated_code</span> <span class="o">=</span> <span class="n">variable_substitution</span><span class="p">(</span><span class="n">deobfuscated_code</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">After 1st run of variable_substitution:</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="si">{</span><span class="n">deobfuscated_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">deobfuscated_code</span> <span class="o">=</span> <span class="n">command_name_cleaner</span><span class="p">(</span><span class="n">deobfuscated_code</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">After 1st run of command_name_cleaner:</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="si">{</span><span class="n">deobfuscated_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># deobfuscated_code = remove_separators(deobfuscated_code)</span>
+    <span class="c1"># print(f&quot;---\nAfter 1st run of remove_separators:\n---\n{deobfuscated_code}&quot;)</span>
+
+    <span class="n">deobfuscated_code</span> <span class="o">=</span> <span class="n">to_lower_case</span><span class="p">(</span><span class="n">deobfuscated_code</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;---</span><span class="se">\n</span><span class="s2">After 1st run of to_lower_case:</span><span class="se">\n</span><span class="s2">---</span><span class="se">\n</span><span class="si">{</span><span class="n">deobfuscated_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, BatchAlchemy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

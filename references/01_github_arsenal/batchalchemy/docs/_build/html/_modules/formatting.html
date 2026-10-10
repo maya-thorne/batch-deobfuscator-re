@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>formatting &mdash; Batchger  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Batchger
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../deobfuscator.html">Deobfuscator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experimental.html">Experimental</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formatting.html">Formatting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizer.html">Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tests.html">Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utils</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Batchger</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">formatting</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for formatting</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module contains functions to format batch files.&quot;&quot;&quot;</span>
+
+<span class="c1"># pylint: disable=pointless-string-statement</span>
+<span class="c1"># pylint: disable=line-too-long</span>
+<span class="c1"># pylint: disable=logging-not-lazy</span>
+<span class="c1"># pylint: disable=too-many-locals</span>
+<span class="c1"># pylint: disable=too-many-branches</span>
+<span class="c1"># pylint: disable=too-many-statements</span>
+<span class="c1"># flake8: noqa</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">utils</span>
+
+
+<span class="c1"># pylint: disable=unreachable</span>
+<div class="viewcode-block" id="remove_separators">
+<a class="viewcode-back" href="../formatting.html#formatting.remove_separators">[docs]</a>
+<span class="k">def</span> <span class="nf">remove_separators</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;#&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Removes all separators which are to be identified by the separator-node</span>
+<span class="sd">    of the AST. Processes the given input in just one run and returns the</span>
+<span class="sd">    processed string.</span>
+
+<span class="sd">    :param src: a string representing the current state of the batch file</span>
+<span class="sd">    :param encoding: the encoding string to be used within ``string.decode()`` commands; default is *&quot;utf-8&quot;*</span>
+<span class="sd">    :param placeholder: an ascii bytes literal of length 1 that is used to temporarily mark separator positions;</span>
+<span class="sd">        after all the marking is done, every grouped occurrence of it gets replaced by a single whitespace</span>
+<span class="sd">        character. Caution! To guarantee correctness, this parameter should not occur in src anywhere. Defaults to</span>
+<span class="sd">        *b&#39;#&#39;*</span>
+<span class="sd">    :return: the processed string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+        <span class="s2">&quot;This function can&#39;t be implemented anymore since separators have been removed! Check commit d320fbc&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">out_string</span> <span class="o">=</span> <span class="n">src</span>
+
+    <span class="n">parser</span><span class="p">,</span> <span class="n">batch_lang</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">create_parser</span><span class="p">()</span>
+
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">out_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+
+    <span class="c1"># log an overview of all variables at the start; debug purposes only</span>
+    <span class="n">query_separators</span><span class="p">(</span><span class="n">out_string</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="s1">&#39;logging&#39;</span><span class="p">)</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">START:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">tree</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+
+    <span class="c1"># query all separators found in batch</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">batch_lang</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">                (separators) @sep</span>
+<span class="s1">            &#39;&#39;&#39;</span><span class="p">)</span>
+
+    <span class="c1"># grab occurrences of separators which are meant to be marked with the placeholder</span>
+    <span class="k">for</span> <span class="n">capture</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">captures</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="p">):</span>
+        <span class="n">separators_as_str</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Now marking with placeholder $.separators:&quot;</span> <span class="o">+</span> <span class="n">separators_as_str</span><span class="p">)</span>
+
+        <span class="c1"># keep in mind that this all starts at (0,0), unlike e.g. the Pycharm IDE, which starts at (1,1)</span>
+        <span class="n">startb</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start_byte</span>
+        <span class="n">endb</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_byte</span>
+
+        <span class="c1"># simply cut out the variable since it has no value</span>
+        <span class="c1"># since we only get positional information of the byte representation, operate on bytes here</span>
+        <span class="n">out_bytes</span> <span class="o">=</span> <span class="n">out_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+        <span class="c1"># for each single separator character replace it by the placeholder character</span>
+        <span class="n">out_string</span> <span class="o">=</span> <span class="p">(</span><span class="n">out_bytes</span><span class="p">[:</span><span class="n">startb</span><span class="p">]</span> <span class="o">+</span> <span class="n">placeholder</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">endb</span> <span class="o">-</span> <span class="n">startb</span><span class="p">)</span> <span class="o">+</span>
+                      <span class="n">out_bytes</span><span class="p">[</span><span class="n">endb</span><span class="p">:])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+
+        <span class="c1"># reparsing using the old tree, just for efficiency</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">out_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">tree</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+
+    <span class="c1"># cleaning step: replace placeholder with a single whitespace each</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">placeholder</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;+&quot;</span>
+    <span class="n">out_string</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">out_string</span><span class="p">)</span>
+
+    <span class="c1"># cleaning step: remove left leading whitespaces for a clean indentation of the batch script</span>
+    <span class="n">out_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">out_string</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">out_string</span></div>
+
+
+
+<div class="viewcode-block" id="format_sexp">
+<a class="viewcode-back" href="../formatting.html#formatting.format_sexp">[docs]</a>
+<span class="k">def</span> <span class="nf">format_sexp</span><span class="p">(</span><span class="n">input_str</span><span class="p">,</span> <span class="n">indent_size</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Given a string as input which is a valid S-expression which again is</span>
+<span class="sd">    formatted in one line only, this function processes this string and returns</span>
+<span class="sd">    the semantically same S-expression but with added newlines and indentations</span>
+<span class="sd">    to make it a visually appealing tree structure. This helps in visualizing</span>
+<span class="sd">    S-expressions returned by tree-sitter&#39;s ``tree-sitter.Node.sexp()`` method.</span>
+
+<span class="sd">    :param input_str: a valid S-expression one-liner</span>
+<span class="sd">    :param indent_size: an integer stating the size of individual</span>
+<span class="sd">        indentations, defaults to *4*</span>
+<span class="sd">    :return: the formatted input_string with indentations and newline</span>
+<span class="sd">        suited for output</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">output_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">indentation</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">input_str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">char</span><span class="o">.</span><span class="n">isspace</span><span class="p">():</span>
+            <span class="n">output_string</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="n">indentation</span>
+        <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span>
+            <span class="c1"># reset indentation if multiple lines are given</span>
+            <span class="n">indentation</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s1">&#39;(&#39;</span><span class="p">:</span>
+            <span class="n">output_string</span> <span class="o">+=</span> <span class="n">char</span>
+            <span class="n">indentation</span> <span class="o">+=</span> <span class="n">indent_size</span>
+        <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s1">&#39;)&#39;</span><span class="p">:</span>
+            <span class="n">output_string</span> <span class="o">+=</span> <span class="n">char</span>
+            <span class="n">indentation</span> <span class="o">-=</span> <span class="n">indent_size</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">output_string</span> <span class="o">+=</span> <span class="n">char</span>
+
+    <span class="k">return</span> <span class="n">output_string</span></div>
+
+
+
+<div class="viewcode-block" id="to_lower_case">
+<a class="viewcode-back" href="../formatting.html#formatting.to_lower_case">[docs]</a>
+<span class="k">def</span> <span class="nf">to_lower_case</span><span class="p">(</span>
+    <span class="n">src</span><span class="p">,</span>
+    <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+    <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">keywords</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;for&#39;</span><span class="p">,</span> <span class="s1">&#39;set&#39;</span><span class="p">,</span> <span class="s1">&#39;if&#39;</span><span class="p">,</span> <span class="s1">&#39;errorlevel&#39;</span><span class="p">,</span> <span class="s1">&#39;cmdextversion&#39;</span><span class="p">,</span> <span class="s1">&#39;defined&#39;</span><span class="p">,</span> <span class="s1">&#39;exist&#39;</span><span class="p">,</span> <span class="s1">&#39;else&#39;</span><span class="p">),</span>
+    <span class="n">rules</span><span class="o">=</span><span class="p">(</span>
+        <span class="s1">&#39;(command (command_name) @cmdname)&#39;</span><span class="p">,</span>
+        <span class="c1"># &#39;(command) @cmd&#39;,</span>
+        <span class="c1"># &#39;(if_statement) @if&#39;,</span>
+        <span class="c1"># &#39;(assignment) @ass&#39;,</span>
+        <span class="c1"># &#39;(for_statement) @for&#39;,</span>
+        <span class="s1">&#39;(comment) @comment&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;(label_definition) @label&#39;</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Given an input batch file, this function transforms its content to lower</span>
+<span class="sd">    case. For that, three different modes are available. The first is to simply</span>
+<span class="sd">    force lower case across the entire input. In case of enabling the first</span>
+<span class="sd">    mode (force), the other two are being skipped automatically. The second and</span>
+<span class="sd">    the third can be used separately or in tandem. One of which is to state a</span>
+<span class="sd">    number of rules (formatted as tree-sitter S-expressions). This processes</span>
+<span class="sd">    the batch file in a way that every matched character within any match of</span>
+<span class="sd">    this set of rules gets lower cased. The last mode is meant to just lower</span>
+<span class="sd">    case a set of keywords which can be processed by the batch parser. This</span>
+<span class="sd">    aims at preventing the loss of information concerning semantically relevant</span>
+<span class="sd">    case-sensitiveness. Caution! In its current state of implementation, not</span>
+<span class="sd">    every keyword can be lower cased fully correctly. Thus, the function&#39;s</span>
+<span class="sd">    default values are set to yield stable solutions only.</span>
+
+<span class="sd">    TODOs:</span>
+
+<span class="sd">    - TODO currently assumes a certain degree of previous deobfuscation (no escaping carets, detectable rules, thus</span>
+<span class="sd">      after resolved variable expansions)</span>
+<span class="sd">    - TODO hence, either implement carets in the RegExes of re.sub() or implement the deobfuscating function itself</span>
+<span class="sd">      and beware the changes in the ranges! aka update tree!</span>
+
+<span class="sd">    :param src: a string representation of the batch source file</span>
+<span class="sd">    :param encoding: the encoding string to be used within ``string.decode()`` commands; default is *&quot;utf-8&quot;*</span>
+<span class="sd">    :param force: boolean specifying whether to force the entire batch file to lower case or not. Defaults to</span>
+<span class="sd">        *False*.</span>
+<span class="sd">    :param keywords: iterable of strings representing keywords which can be processed by the batch parser. Valid</span>
+<span class="sd">        strings are *&#39;for&#39;, &#39;in&#39;, &#39;do&#39;, &#39;set&#39;, &#39;if&#39;, &#39;not&#39;, &#39;else&#39;, &#39;errorlevel&#39;, &#39;cmdextversion&#39;, &#39;defined&#39;,</span>
+<span class="sd">        &#39;exist&#39;, &#39;equ&#39;, &#39;neq&#39;, &#39;lss&#39;, &#39;lew&#39;, &#39;gtr&#39;* and *&#39;geq&#39;*. For each listed keyword, the function lower cases</span>
+<span class="sd">        every match of that keyword in src. This parameter is only taken into account if the force parameter is set</span>
+<span class="sd">        to False. Defaults to *(&#39;for&#39;, &#39;set&#39;, &#39;if&#39;, &#39;errorlevel&#39;, &#39;cmdextversion&#39;, &#39;defined&#39;, &#39;exist&#39;, &#39;else&#39;)*,</span>
+<span class="sd">        because these are the currently stable ones for processing correctly to lower case. Use remaining keywords</span>
+<span class="sd">        with caution.</span>
+<span class="sd">    :param rules: iterable of strings representing rules which can be processed by the batch parser. Each rule must</span>
+<span class="sd">        have the format of a typical tree-sitter S-expression, including an identifier (which consists out of an</span>
+<span class="sd">        ``@`` character and an alphabetical string immediately thereafter). The S-expression is used to check the</span>
+<span class="sd">        AST of the input batch file for any occurrence of that parsing structure, whereas the identifier marks the</span>
+<span class="sd">        position / the part of the S-expression which should be lower cased. To mark a specific part of the</span>
+<span class="sd">        S-expression, the identifier must be placed after the corresponding closing parenthesis, including a</span>
+<span class="sd">        whitespace. The actual name of the identifier is not relevant, as it is only used as a marker. Note that</span>
+<span class="sd">        variables stay case sensitive. This parameter is only taken into account if the force parameter is set to</span>
+<span class="sd">        False.</span>
+
+<span class="sd">        Defaults to the following iterable, which includes three rules, that is to process command names, comments</span>
+<span class="sd">        and label definitions:</span>
+
+<span class="sd">        *(&#39;(command (command_name) @cmdname)&#39;,*</span>
+
+<span class="sd">        *&#39;(comment) @comment&#39;,*</span>
+
+<span class="sd">        *&#39;(label_definition) @label&#39;)*</span>
+<span class="sd">    :return: the processed string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">out_string</span> <span class="o">=</span> <span class="n">src</span>
+
+    <span class="n">parser</span><span class="p">,</span> <span class="n">batch_lang</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">create_parser</span><span class="p">()</span>
+
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">out_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">START:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">tree</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+
+    <span class="c1"># if desired, use the following debugging code line to show the AST after each step</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">format_sexp</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="o">.</span><span class="n">sexp</span><span class="p">()))</span>
+
+    <span class="c1">#################</span>
+    <span class="c1"># MODE 1: FORCE #</span>
+    <span class="c1">#################</span>
+    <span class="c1"># the force flag is dominant; lower case everything and just return</span>
+    <span class="k">if</span> <span class="n">force</span><span class="p">:</span>
+        <span class="n">out_string</span> <span class="o">=</span> <span class="n">out_string</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">out_string</span>
+
+    <span class="c1">####################</span>
+    <span class="c1"># MODE 2: KEYWORDS #</span>
+    <span class="c1">####################</span>
+    <span class="c1"># categorize keywords into lists: each list makes use of another query for the processing</span>
+    <span class="n">for_keywords</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;for&#39;</span><span class="p">,</span> <span class="s1">&#39;in&#39;</span><span class="p">,</span> <span class="s1">&#39;do&#39;</span><span class="p">]</span>
+    <span class="n">set_keywords</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;set&#39;</span><span class="p">]</span>
+    <span class="n">if_keywords</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;if&#39;</span><span class="p">,</span> <span class="s1">&#39;not&#39;</span><span class="p">]</span>
+    <span class="n">else_keywords</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;else&#39;</span><span class="p">]</span>
+    <span class="n">unexp_keywords</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;errorlevel&#39;</span><span class="p">,</span> <span class="s1">&#39;cmdextversion&#39;</span><span class="p">]</span>
+    <span class="n">uiexp_keywords</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;defined&#39;</span><span class="p">,</span> <span class="s1">&#39;exist&#39;</span><span class="p">]</span>
+    <span class="n">comp_keywords</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;equ&#39;</span><span class="p">,</span> <span class="s1">&#39;neq&#39;</span><span class="p">,</span> <span class="s1">&#39;lss&#39;</span><span class="p">,</span> <span class="s1">&#39;lew&#39;</span><span class="p">,</span> <span class="s1">&#39;gtr&#39;</span><span class="p">,</span> <span class="s1">&#39;geq&#39;</span><span class="p">]</span>
+
+    <span class="c1"># a list containing all of the lists above to be able to iterate over all of the lists for the for loop below</span>
+    <span class="n">keywords_lists</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">for_keywords</span><span class="p">,</span> <span class="n">set_keywords</span><span class="p">,</span> <span class="n">if_keywords</span><span class="p">,</span> <span class="n">else_keywords</span><span class="p">,</span> <span class="n">unexp_keywords</span><span class="p">,</span> <span class="n">uiexp_keywords</span><span class="p">,</span>
+        <span class="n">comp_keywords</span>
+    <span class="p">]</span>
+
+    <span class="c1"># for each list of keywords</span>
+    <span class="k">for</span> <span class="n">keywords_list</span> <span class="ow">in</span> <span class="n">keywords_lists</span><span class="p">:</span>
+        <span class="c1"># check if there is a cut between the currently iterated list and the list of keywords which should be</span>
+        <span class="c1">#  considered for the lower case processing step; if not, just skip all the keywords in that list</span>
+        <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">keywords</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">keywords_list</span><span class="p">)):</span>
+            <span class="c1"># make the decision what list we are currently taking a look at (and prepare the query for the next steps)</span>
+            <span class="k">if</span> <span class="n">keywords_list</span> <span class="o">==</span> <span class="n">for_keywords</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Now starting the lower case transforming with keyword-list: for_keywords&quot;</span><span class="p">)</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">batch_lang</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;(for_statement) @for&quot;&quot;&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">keywords_list</span> <span class="o">==</span> <span class="n">set_keywords</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Now starting the lower case transforming with keyword-list: set_keywords&quot;</span><span class="p">)</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">batch_lang</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;(assignment) @set&quot;&quot;&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">keywords_list</span> <span class="o">==</span> <span class="n">if_keywords</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Now starting the lower case transforming with keyword-list: if_keywords&quot;</span><span class="p">)</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">batch_lang</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;(if_statement) @if&quot;&quot;&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">keywords_list</span> <span class="o">==</span> <span class="n">else_keywords</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Now starting the lower case transforming with keyword-list: else_keywords&quot;</span><span class="p">)</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">batch_lang</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;(else_clause) @else&quot;&quot;&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">keywords_list</span> <span class="o">==</span> <span class="n">unexp_keywords</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Now starting the lower case transforming with keyword-list: unexp_keywords&quot;</span><span class="p">)</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">batch_lang</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;(unary_numerical_expression) @unexp&quot;&quot;&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">keywords_list</span> <span class="o">==</span> <span class="n">uiexp_keywords</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Now starting the lower case transforming with keyword-list: uiexp_keywords&quot;</span><span class="p">)</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">batch_lang</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;(unary_identifier_expression) @uiexp&quot;&quot;&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">keywords_list</span> <span class="o">==</span> <span class="n">comp_keywords</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Now starting the lower case transforming with keyword-list: comp_keywords&quot;</span><span class="p">)</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">batch_lang</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;(comparison_expression) @comp&quot;&quot;&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># only take a look at the processing loop if there are any matches for the current query / keyword_list</span>
+            <span class="k">if</span> <span class="n">query</span><span class="o">.</span><span class="n">captures</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="p">):</span>
+                <span class="c1"># iterate over all matches found in the batch for the current keyword_list</span>
+                <span class="k">for</span> <span class="n">capture</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">captures</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="p">):</span>
+                    <span class="n">capture_as_str</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+                    <span class="n">startb</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start_byte</span>
+                    <span class="n">endb</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_byte</span>
+                    <span class="c1"># iterate over all keywords that are in the current list AND that should be lower cased (see param)</span>
+                    <span class="k">for</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">keywords</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">keywords_list</span><span class="p">)):</span>
+                        <span class="c1"># substitute the first occurrence of the keyword with its lower case</span>
+                        <span class="n">capture_as_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">keyword</span><span class="p">,</span> <span class="n">keyword</span><span class="p">,</span> <span class="n">capture_as_str</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+                        <span class="n">out_bytes</span> <span class="o">=</span> <span class="n">out_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+                        <span class="c1"># update output, taking the old output but having the processed keywords replaced</span>
+                        <span class="n">out_string</span> <span class="o">=</span> <span class="p">(</span><span class="n">out_bytes</span><span class="p">[:</span><span class="n">startb</span><span class="p">]</span> <span class="o">+</span> <span class="n">capture_as_str</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span> <span class="o">+</span>
+                                      <span class="n">out_bytes</span><span class="p">[</span><span class="n">endb</span><span class="p">:])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+
+                <span class="c1"># reparsing using the old tree, just for efficiency</span>
+                <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">out_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">),</span> <span class="n">tree</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;---&gt;After lower case transforming with the keyword-list:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+                              <span class="n">tree</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+
+    <span class="c1">#################</span>
+    <span class="c1"># MODE 3: RULES #</span>
+    <span class="c1">#################</span>
+    <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">rules</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Now starting the lower case transforming with rule:&quot;</span> <span class="o">+</span> <span class="n">rule</span><span class="p">)</span>
+
+        <span class="c1"># query variables which are set in this batch file to make list of variables which should not be gotten rid of</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">batch_lang</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+
+        <span class="c1"># finish when nothing was captured anymore, meaning that no %variables% are left in the batch file</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">query</span><span class="o">.</span><span class="n">captures</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="k">for</span> <span class="n">capture</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">captures</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="p">):</span>
+            <span class="n">query_as_str</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;---&gt;Now transforming to lower case:&quot;</span> <span class="o">+</span> <span class="n">query_as_str</span><span class="p">)</span>
+
+            <span class="c1"># keep in mind that this all starts at (0,0), unlike e.g. the Pycharm IDE, which starts at (1,1)</span>
+            <span class="n">startb</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start_byte</span>
+            <span class="n">endb</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_byte</span>
+
+            <span class="n">lower_case_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+            <span class="c1"># since variable names are case sensitive, do not lower case them, even if they are part of a</span>
+            <span class="k">if</span> <span class="s1">&#39;%&#39;</span> <span class="ow">in</span> <span class="n">query_as_str</span><span class="p">:</span>
+                <span class="n">inside_variable</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">query_as_str</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s1">&#39;%&#39;</span><span class="p">:</span>
+                        <span class="n">inside_variable</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">inside_variable</span>
+                    <span class="n">lower_case_string</span> <span class="o">+=</span> <span class="n">char</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">inside_variable</span> <span class="k">else</span> <span class="n">char</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># if there is no variable in it, simply lower case the entire rule, as intended</span>
+                <span class="n">lower_case_string</span> <span class="o">=</span> <span class="n">query_as_str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+            <span class="n">lower_case_bytes</span> <span class="o">=</span> <span class="n">lower_case_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+
+            <span class="n">out_bytes</span> <span class="o">=</span> <span class="n">out_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+            <span class="c1"># update output, taking the old output but having the part which is matched by the rule replaced</span>
+            <span class="n">out_string</span> <span class="o">=</span> <span class="p">(</span><span class="n">out_bytes</span><span class="p">[:</span><span class="n">startb</span><span class="p">]</span> <span class="o">+</span> <span class="n">lower_case_bytes</span> <span class="o">+</span> <span class="n">out_bytes</span><span class="p">[</span><span class="n">endb</span><span class="p">:])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+
+            <span class="c1"># reparsing using the old tree, just for efficiency</span>
+            <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">out_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">),</span> <span class="n">tree</span><span class="p">)</span>
+
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">tree</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">END:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">tree</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">out_string</span></div>
+
+
+
+<div class="viewcode-block" id="query_separators">
+<a class="viewcode-back" href="../formatting.html#formatting.query_separators">[docs]</a>
+<span class="k">def</span> <span class="nf">query_separators</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="s2">&quot;logging&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Given the current state of a batch file, query the file for any</span>
+<span class="sd">    separators which are detectable in the AST right now. Prints all found</span>
+<span class="sd">    separators either to stdout or on the logging DEBUG level, separated by</span>
+<span class="sd">    newlines each.</span>
+
+<span class="sd">    :param src: a string representation of the batch source file</span>
+<span class="sd">    :param encoding: the encoding string to be used within ``string.decode()`` commands; default is &quot;utf-8&quot;</span>
+<span class="sd">    :param stream: a string that specifies the stream to which the list of found variables should be printed.</span>
+<span class="sd">        Possible values are *&quot;logging&quot;* to log via root logger or *&quot;stdout&quot;* to print to standard output. Defaults</span>
+<span class="sd">        to *&quot;logging&quot;*. Note that the logger&#39;s level must be set to ``logging.DEBUG`` to actually make the result</span>
+<span class="sd">        visible.</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">parser</span><span class="p">,</span> <span class="n">batch_lang</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">create_parser</span><span class="p">()</span>
+
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+
+    <span class="c1"># query all separators found in batch to log an overview at the start; debug purposes only</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">batch_lang</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">                                (separators) @sep</span>
+<span class="s1">                            &#39;&#39;&#39;</span><span class="p">)</span>
+
+    <span class="c1"># initialize string to append the output to</span>
+    <span class="n">out_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="k">for</span> <span class="n">capture</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">captures</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="p">):</span>
+        <span class="n">out_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Found separator: </span><span class="si">{</span><span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="k">if</span> <span class="n">stream</span> <span class="o">==</span> <span class="s1">&#39;logging&#39;</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">out_string</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">stream</span> <span class="o">==</span> <span class="s1">&#39;stdout&#39;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">out_string</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;Invalid value for stream parameter in query_variable_substitutions() specified. Hence,&quot;</span>
+            <span class="s2">&quot;nothing will be printed.&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, BatchAlchemy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
