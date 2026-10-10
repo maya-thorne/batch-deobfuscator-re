@@ -13,6 +13,9 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38bdf8"/>
+    </marker>
   </defs>
 
   <rect width="920" height="380" rx="12" fill="url(#diaBg)"/>
@@ -59,7 +62,7 @@
     <text x="14" y="23" fill="#e9d5ff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="700">3. 고정점 수렴 AST 엔진 (deobfuscator_engine.py)</text>
     <text x="14" y="65" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Pass 1: UTF-16LE BOM 제거 및 따옴표 정규화</text>
     <text x="14" y="115" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Pass 2: 캐럿(^) 탈출 및 비표준 구분자 분해</text>
-    <text x="14" y="165" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Pass 3: OS 환경변수 맵핑 & 동적 SET 기호표 복원</text>
+    <text x="14" y="165" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Pass 3: OS 환경변수 맵핑 &amp; 동적 SET 기호표 복원</text>
     <text x="14" y="225" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Pass 4: 고정점 수렴 루프 (fp_prev == fp_curr)</text>
   </g>
 

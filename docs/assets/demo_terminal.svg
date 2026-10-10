@@ -81,7 +81,7 @@
       <text x="0" y="222" fill="#38bdf8" font-weight="700">$ python src/pe_packer_forensics.py bat2exe_12.exe</text>
       <text x="0" y="246" fill="#10b981">[+] Family: UPX NRV2B Packed Native Binary (bat2exe_12 / 7zS2.sfx Wrapper)</text>
       <text x="0" y="266" fill="#f59e0b">  ↳ RVA 0x20ea0: pushal bitloop decompressor targeting UPX0 (0x1000..0x14000)</text>
-      <text x="0" y="286" fill="#f59e0b">  ↳ Embedded 7-Zip SFX header (7z¼¯') at offset 0xd2a0 verified.</text>
+      <text x="0" y="286" fill="#f59e0b">  ↳ Embedded 7-Zip SFX header (7z 0xBC 0xAF 0x27 0x1C) at offset 0xd2a0 verified.</text>
       <text x="0" y="306" fill="#38bdf8" font-weight="700">✓ All 4 invariant tests PASSED in 0.008s.</text>
       <rect x="360" y="295" width="8" height="15" fill="#38bdf8" class="cursor"/>
     </g>

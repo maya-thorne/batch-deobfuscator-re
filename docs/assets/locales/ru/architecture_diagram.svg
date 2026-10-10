@@ -13,6 +13,9 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38bdf8"/>
+    </marker>
   </defs>
 
   <rect width="920" height="380" rx="12" fill="url(#diaBg)"/>

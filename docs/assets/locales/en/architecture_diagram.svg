@@ -13,6 +13,9 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38bdf8"/>
+    </marker>
   </defs>
 
   <rect width="920" height="380" rx="12" fill="url(#diaBg)"/>
@@ -20,7 +23,7 @@
 
   <!-- Title Header -->
   <text x="460" y="32" fill="#38bdf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="800" text-anchor="middle" filter="url(#diagGlow)">
-    Ghidra MCP PE Binary Reverse Engineering & Multi-Pass Deobfuscator Pipeline
+    Ghidra MCP PE Binary Reverse Engineering &amp; Multi-Pass Deobfuscator Pipeline
   </text>
 
   <!-- 4 Architecture Cards -->
@@ -29,7 +32,7 @@
     <rect width="200" height="280" rx="9" fill="#0b1324" stroke="#0284c7" stroke-width="1.5"/>
     <rect x="0" y="0" width="200" height="36" rx="9" fill="#0e2238"/>
     <rect x="0" y="24" width="200" height="12" fill="#0e2238"/>
-    <text x="14" y="23" fill="#7dd3fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="700">1. OBFUSCATED SCRIPT & PACKED PE</text>
+    <text x="14" y="23" fill="#7dd3fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="700">1. OBFUSCATED SCRIPT &amp; PACKED PE</text>
     <text x="14" y="65" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Raw Batch (.bat / .cmd) with Caret/BOM/Caesar</text>
     <text x="14" y="115" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Compiled PE (UPX, LZMA RangeCoder, XOR)</text>
   </g>
@@ -57,9 +60,9 @@
     <rect x="0" y="0" width="200" height="36" rx="9" fill="#25123d"/>
     <rect x="0" y="24" width="200" height="12" fill="#25123d"/>
     <text x="14" y="23" fill="#e9d5ff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="700">3. FIXED-POINT AST ENGINE (deobfuscator_engine.py)</text>
-    <text x="14" y="65" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Pass 1: UTF-16LE BOM & Quote Normalization</text>
-    <text x="14" y="115" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Pass 2: Caret (^) & Delimiter Disintegration</text>
-    <text x="14" y="165" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Pass 3: Windows Env Map & Dynamic SET Table</text>
+    <text x="14" y="65" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Pass 1: UTF-16LE BOM &amp; Quote Normalization</text>
+    <text x="14" y="115" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Pass 2: Caret (^) &amp; Delimiter Disintegration</text>
+    <text x="14" y="165" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Pass 3: Windows Env Map &amp; Dynamic SET Table</text>
     <text x="14" y="225" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Pass 4: Fixed-Point Loop (fp_prev == fp_curr)</text>
   </g>
 
@@ -71,7 +74,7 @@
     <rect width="200" height="280" rx="9" fill="#18131d" stroke="#d97706" stroke-width="1.5"/>
     <rect x="0" y="0" width="200" height="36" rx="9" fill="#361b0c"/>
     <rect x="0" y="24" width="200" height="12" fill="#361b0c"/>
-    <text x="14" y="23" fill="#fde68a" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="700">4. EDR DEFENSE & SIEM RULES</text>
+    <text x="14" y="23" fill="#fde68a" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="700">4. EDR DEFENSE &amp; SIEM RULES</text>
     <text x="14" y="65" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• cmd.exe!FindFixAndRun Detour (0x116B0)</text>
     <text x="14" y="125" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Production Sigma (sigma_batch_obfuscation.yml)</text>
     <text x="14" y="185" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Production YARA (yara_batch_obfuscation.yar)</text>

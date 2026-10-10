@@ -13,6 +13,9 @@
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38bdf8"/>
+    </marker>
   </defs>
 
   <rect width="920" height="380" rx="12" fill="url(#diaBg)"/>
@@ -29,7 +32,7 @@
     <rect width="200" height="280" rx="9" fill="#0b1324" stroke="#0284c7" stroke-width="1.5"/>
     <rect x="0" y="0" width="200" height="36" rx="9" fill="#0e2238"/>
     <rect x="0" y="24" width="200" height="12" fill="#0e2238"/>
-    <text x="14" y="23" fill="#7dd3fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="700">1. SCRIPT OBFUSQUÉ & PE COMPACTÉ</text>
+    <text x="14" y="23" fill="#7dd3fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="700">1. SCRIPT OBFUSQUÉ &amp; PE COMPACTÉ</text>
     <text x="14" y="65" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Fichiers Batch (.bat / .cmd) avec Caret/BOM/César</text>
     <text x="14" y="115" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Exécutables compilés (UPX, LZMA, Overlay XOR)</text>
   </g>
@@ -71,7 +74,7 @@
     <rect width="200" height="280" rx="9" fill="#18131d" stroke="#d97706" stroke-width="1.5"/>
     <rect x="0" y="0" width="200" height="36" rx="9" fill="#361b0c"/>
     <rect x="0" y="24" width="200" height="12" fill="#361b0c"/>
-    <text x="14" y="23" fill="#fde68a" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="700">4. DÉFENSE EDR & RÈGLES SIEM</text>
+    <text x="14" y="23" fill="#fde68a" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="700">4. DÉFENSE EDR &amp; RÈGLES SIEM</text>
     <text x="14" y="65" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Détournement cmd.exe!FindFixAndRun (0x116B0)</text>
     <text x="14" y="125" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Règles Sigma (sigma_batch_obfuscation.yml)</text>
     <text x="14" y="185" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Règles YARA (yara_batch_obfuscation.yar)</text>
