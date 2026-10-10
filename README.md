@@ -13,12 +13,12 @@
 
 **Multi-Pass Batch Deobfuscator Engine, Ghidra PE Unpacker Forensics & Reference Archive**
 
-[![Ghidra MCP RE](https://img.shields.io/badge/Ghidra_MCP-7_PE_Binaries_Disassembled-0ea5e9.svg)](./GHIDRA_BINARY_RE_AND_DEOBFUSCATOR_ENGINE_ANALYSIS.md)
+[![Ghidra MCP RE](https://img.shields.io/badge/Ghidra_MCP-7_PE_Binaries_Disassembled-0ea5e9.svg)](./docs/whitepapers/GHIDRA_BINARY_RE_AND_DEOBFUSCATOR_ENGINE_ANALYSIS.md)
 [![Deobfuscator Engine](https://img.shields.io/badge/Engine-Multi--Pass_Fixed--Point_AST-10b981.svg)](./src/deobfuscator_engine.py)
 [![PE Unpacker](https://img.shields.io/badge/Forensics-UPX_%7C_LZMA_%7C_XOR_Overlay-a855f7.svg)](./src/pe_packer_forensics.py)
 [![Detection Rules](https://img.shields.io/badge/SIEM_%2F_EDR-Sigma_%26_YARA_Rules-f59e0b.svg)](./rules/)
 [![Release](https://img.shields.io/github/v/release/maya-thorne/batch-deobfuscator-re?color=10b981&label=Release&logo=github)](https://github.com/maya-thorne/batch-deobfuscator-re/releases)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![License: MT-SRL](https://img.shields.io/badge/License-MT--SRL-blue.svg)](./LICENSE)
 
 <sub>Engineered &amp; Audited by **[Maya Thorne](https://github.com/maya-thorne)** · Low-Level Systems &amp; Reverse Engineering Research</sub>
 
@@ -73,13 +73,13 @@ flowchart TD
 
 | Document | Scope & Technical Highlights | Size |
 | :--- | :--- | :---: |
-| 🔬 **[`GHIDRA_BINARY_RE_AND_DEOBFUSCATOR_ENGINE_ANALYSIS.md`](./GHIDRA_BINARY_RE_AND_DEOBFUSCATOR_ENGINE_ANALYSIS.md)** | **Ghidra MCP 7-Binary Disassembly & 7-Tool Source Code Dissection**: `bat2exe_12.exe` (`0x20ea0` UPX NRV2B), `example_bytepressed.exe` (`0x9f78` LZMA RangeCoder), `xorStub.exe` (`0xfcc` `"randomkey"`), `BEDeCode.exe` (`0x1670` VB6 `ThunRTMain`), plus `Invoke-DOSfuscation`, `SomalifuscatorV2`, `BatCloak`, `Exorcism`, `0xidiz3r`, `Bat2Exe-dehoisted`, `batch_deobfuscator` | **43.7 KB** |
-| 📖 **[`BATCH_OBFUSCATION_MASTER_GUIDE.md`](./BATCH_OBFUSCATION_MASTER_GUIDE.md)** | **30-Year Evolution & Architecture Guide**: 1990s MS-DOS to 2026 AI, `cmd.exe` 5-stage parser state machine, 12 obfuscation techniques, 4-Tier 45-repo matrix, Sigma/YARA rules | **33.6 KB** |
-| 🛡️ **[`BATCH_OBFUSCATION_ENCYCLOPEDIA.md`](./BATCH_OBFUSCATION_ENCYCLOPEDIA.md)** | **Comprehensive Encyclopedia (v2.0)**: 48 repositories taxonomy, AST pushdown automata, Hugging Face dataset integration | **30.3 KB** |
-| 🧬 **[`DEEP_REVERSE_ENGINEERING_AND_SOURCE_ANALYSIS.md`](./DEEP_REVERSE_ENGINEERING_AND_SOURCE_ANALYSIS.md)** | **Extended Binary & Source Analysis**: Supplemental PE header forensics, `choice.exe` MSVC SEH frame (`fs:[0]`), and runtime hook tables | **42.8 KB** |
-| 🤗 **[`docs/HUGGINGFACE_MODELS_AND_DATASETS.md`](./docs/HUGGINGFACE_MODELS_AND_DATASETS.md)** | **AI Deobfuscation & Entropy Research**: `LLM4Decompile-SFT-Deobfuscate`, `c-deobfuscate-mt` (T5), JFrog Token Entropy (ArXiv:2510.26847), EDR Telemetry | **Full Report** |
-| 🕵️ **[`docs/RESEARCH_WHITEPAPERS_AND_REPORTS.md`](./docs/RESEARCH_WHITEPAPERS_AND_REPORTS.md)** | **Global Threat Intelligence Breakdown**: Mandiant (Daniel Bohannon `DOSfuscation` / `FIN7`) & Palo Alto Unit 42 (`BatCloak` / `ScrubCrypt`) | **Full Report** |
-| 📜 **[`docs/CLASSIC_TO_MODERN_EVOLUTION.md`](./docs/CLASSIC_TO_MODERN_EVOLUTION.md)** | **Historical Evolution & PoC Analysis**: Generation 1–5 batch obfuscation paradigms & `BatCloak`/`ScrubCrypt` 3-stage loader forensics | **Full Report** |
+| 🔬 **[`GHIDRA_BINARY_RE_AND_DEOBFUSCATOR_ENGINE_ANALYSIS.md`](./docs/whitepapers/GHIDRA_BINARY_RE_AND_DEOBFUSCATOR_ENGINE_ANALYSIS.md)** | **Ghidra MCP 7-Binary Disassembly & 7-Tool Source Code Dissection**: `bat2exe_12.exe` (`0x20ea0` UPX NRV2B), `example_bytepressed.exe` (`0x9f78` LZMA RangeCoder), `xorStub.exe` (`0xfcc` `"randomkey"`), `BEDeCode.exe` (`0x1670` VB6 `ThunRTMain`), plus `Invoke-DOSfuscation`, `SomalifuscatorV2`, `BatCloak`, `Exorcism`, `0xidiz3r`, `Bat2Exe-dehoisted`, `batch_deobfuscator` | **43.7 KB** |
+| 📖 **[`BATCH_OBFUSCATION_MASTER_GUIDE.md`](./docs/whitepapers/BATCH_OBFUSCATION_MASTER_GUIDE.md)** | **30-Year Evolution & Architecture Guide**: 1990s MS-DOS to 2026 AI, `cmd.exe` 5-stage parser state machine, 12 obfuscation techniques, 4-Tier 45-repo matrix, Sigma/YARA rules | **33.6 KB** |
+| 🛡️ **[`BATCH_OBFUSCATION_ENCYCLOPEDIA.md`](./docs/whitepapers/BATCH_OBFUSCATION_ENCYCLOPEDIA.md)** | **Comprehensive Encyclopedia (v2.0)**: 48 repositories taxonomy, AST pushdown automata, Hugging Face dataset integration | **30.3 KB** |
+| 🧬 **[`DEEP_REVERSE_ENGINEERING_AND_SOURCE_ANALYSIS.md`](./docs/whitepapers/DEEP_REVERSE_ENGINEERING_AND_SOURCE_ANALYSIS.md)** | **Extended Binary & Source Analysis**: Supplemental PE header forensics, `choice.exe` MSVC SEH frame (`fs:[0]`), and runtime hook tables | **42.8 KB** |
+| 🤗 **[`docs/HUGGINGFACE_MODELS_AND_DATASETS.md`](./docs/whitepapers/HUGGINGFACE_MODELS_AND_DATASETS.md)** | **AI Deobfuscation & Entropy Research**: `LLM4Decompile-SFT-Deobfuscate`, `c-deobfuscate-mt` (T5), JFrog Token Entropy (ArXiv:2510.26847), EDR Telemetry | **Full Report** |
+| 🕵️ **[`docs/RESEARCH_WHITEPAPERS_AND_REPORTS.md`](./docs/whitepapers/RESEARCH_WHITEPAPERS_AND_REPORTS.md)** | **Global Threat Intelligence Breakdown**: Mandiant (Daniel Bohannon `DOSfuscation` / `FIN7`) & Palo Alto Unit 42 (`BatCloak` / `ScrubCrypt`) | **Full Report** |
+| 📜 **[`docs/CLASSIC_TO_MODERN_EVOLUTION.md`](./docs/whitepapers/CLASSIC_TO_MODERN_EVOLUTION.md)** | **Historical Evolution & PoC Analysis**: Generation 1–5 batch obfuscation paradigms & `BatCloak`/`ScrubCrypt` 3-stage loader forensics | **Full Report** |
 
 ---
 
@@ -135,7 +135,7 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
 
 ### 4.3 Static PE Packer Forensic Analyzer (`src/pe_packer_forensics.py`)
 ```bash
-python src/pe_packer_forensics.py references/01_github_arsenal/bat2exe-islamadel/bat2exe_12.exe
+python src/pe_packer_forensics.py references/github_arsenal/bat2exe-islamadel/bat2exe_12.exe
 ```
 
 ### 4.4 Automated Verification Test Suites
@@ -153,18 +153,23 @@ python tests/test_suite.py   # 4 core AST deobfuscation & PE overlay tests
 batch-deobfuscator-re/
 ├── pyproject.toml                         # 📦 PEP 517/621 Standard Package Configuration
 ├── README.md                              # 📖 Master Documentation & Architecture Hub
-├── LICENSE                                # 📜 MIT License
+├── LICENSE                                # 📜 Maya Thorne Systems & Security Research License (MT-SRL)
 │
-├── deobfuscator/                          # 🛠️ Production CLI Toolchain Package
+├── deobfuscator/                          # 🛠️ Production CLI Toolchain Package (python -m deobfuscator)
 │   ├── __init__.py                        # Version 1.0.0 & Public API exports
-│   ├── __main__.py                        # python -m deobfuscator entrypoint
-│   ├── cli.py                             # Rich CLI (argparse, JSON, Diff, Colors)
+│   ├── __main__.py                        # Module CLI execution entrypoint
+│   ├── cli.py                             # Rich CLI Interface (argparse, JSON, Diff, Colors)
 │   ├── core.py                            # Multi-Pass Fixed-Point Convergence Engine
 │   ├── normalizers.py                     # Modular Caret, BOM, Quote, Env Normalizers
 │   └── diff.py                            # Terminal Color Unified Diff Generator
 │
-├── src/                                   # ⚙️ Legacy & Standalone Forensic Engines
-│   ├── deobfuscator_engine.py             # Standalone Batch Deobfuscator
+├── docs/                                  # 🌐 Documentation Hub (Slim Root Architecture)
+│   ├── whitepapers/                       # 🔬 9 Flagship Technical & Forensic Analysis Papers
+│   ├── locales/                           # 🌍 10-Language Localized Documentation Hub
+│   └── assets/                            # 🎨 Localized SVGs & Terminal Animation Demo
+│
+├── src/                                   # ⚙️ Standalone Core Forensic Engines
+│   ├── deobfuscator_engine.py             # Multi-Pass Static Normalizer Engine
 │   └── pe_packer_forensics.py             # Ghidra-Derived Static PE Unpacker
 │
 ├── tests/                                 # ✅ Automated Test Suites (10 Tests Total)
@@ -172,16 +177,13 @@ batch-deobfuscator-re/
 │   └── test_suite.py                      # 4 AST convergence & PE unpacking tests
 │
 ├── rules/                                 # 🛡️ Production SIEM / EDR Detection Rules
-│   ├── sigma_batch_obfuscation.yml
-│   └── yara_batch_obfuscation.yar
+│   ├── sigma_batch_obfuscation.yml        # Sigma Rules for Carets, Slicing, Exorcism
+│   └── yara_batch_obfuscation.yar         # YARA Rules for BOMs, Somalifuscator, UPX
 │
 ├── samples/                               # 🧪 6 Classic & Modern Obfuscated Samples
-├── docs/                                  # 🌐 10-Language Locales, SVG Banners & Assets
-│   ├── assets/demo_terminal.svg           # Animated Terminal Vector Demo
-│   ├── assets/locales/<lang>/*.svg        # Localized Banners & Architecture Diagrams
-│   └── locales/<lang>.md                  # 10 Localized Guides
-│
 └── references/                            # 📦 48+ Flattened Open-Source & AI Mirrors
+    ├── github_arsenal/                    # 28+ Deconstructed Open-Source Projects
+    └── huggingface_ai/                    # Hugging Face AI Models & Datasets
 ```
 
 ---
