@@ -39,3 +39,15 @@
 - 표준 패키징: `pyproject.toml` (PEP 517/621 규격)
 - 플래그: `-o`, `-p/--passes`, `-d/--diff`, `--format {text,json}`, `-v/--verbose`, `--version`
 - 단위/통합 테스트: `tests/test_cli.py` (6개 테스트 전수 통과) + `tests/test_suite.py` (4개 테스트 전수 통과)
+
+---
+
+## 🔍 피드백 리팩토링 & 키워드 기억 리트리벌 (Memory Recall Protocol)
+> **[전담 피드백 체크리스트]**: `memory/feedback_audit.md` (상위: `_BY_PASSS/WORKER_FEEDBACK_GUIDE.md`)
+> **[기억 소환 키워드]**: 프롬프트나 태스크에서 아래 키워드가 언급되면 즉시 해당 규칙을 엄격히 소환하여 실행합니다:
+- **`@clean-root`**: 루트 항목을 6~7개로 극도 슬림화 (백서는 `docs/whitepapers/`, 레퍼런스는 `references/`로 이동하여 첫 뷰포트 배너 노출 보장).
+- **`@english-naming`**: 한글 폴더/파일명 전면 금지, 100% 영문 표준 네이밍 치환.
+- **`@semantic-commit`**: 일괄 커밋 도배 금지, 파일/모듈별 개별 맥락 커밋 메시지 적용.
+- **`@security-audit`**: `.env`, 캐시, 불필요 바이너리 등 배제 및 클린 커밋 검증.
+- **`@custom-license`**: Maya Thorne 전용 연구 라이선스(MT-SRL) 적용.
+- **`@feedback`**: 사용자 3대 시각 피드백 종합 반영 체크리스트 완수.
