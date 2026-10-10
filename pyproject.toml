@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "batch-deobfuscator"
+version = "1.0.0"
+description = "Multi-Pass Windows Batch Script Deobfuscator & Static Forensics CLI Toolchain"
+readme = "README.md"
+authors = [
+  { name = "Maya Thorne", email = "maya-thorne@users.noreply.github.com" }
+]
+license = { text = "MIT" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Topic :: Security",
+    "Topic :: Software Development :: Disassemblers"
+]
+requires-python = ">=3.8"
+dependencies = []
+
+[project.scripts]
+batch-deobfuscator = "deobfuscator.cli:main"

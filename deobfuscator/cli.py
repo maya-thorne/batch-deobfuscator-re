@@ -1,0 +1,163 @@
+"""
+Command-Line Interface (CLI) for batch-deobfuscator.
+Production security toolchain for static reverse engineering and batch deobfuscation.
+"""
+
+import argparse
+import sys
+import os
+import json
+from pathlib import Path
+
+from . import __version__
+from .core import BatchDeobfuscator
+from .normalizers import normalize_bom
+from .diff import generate_unified_diff
+
+def create_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="batch-deobfuscator",
+        description="batch-deobfuscator: Industrial-grade Multi-Pass Batch Script Deobfuscator & Forensics Engine",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Deobfuscate script to stdout
+  batch-deobfuscator samples/01_env_slicing_sample.bat
+
+  # Deobfuscate and save to output file
+  batch-deobfuscator input.bat -o output_clean.bat
+
+  # View colorized before/after syntax diff
+  batch-deobfuscator input.bat --diff
+
+  # Output full forensic telemetry and symbol tables as JSON
+  batch-deobfuscator input.bat --format json
+
+  # Increase maximum convergence passes with verbose telemetry
+  batch-deobfuscator input.bat --passes 25 --verbose
+
+Engineered by Maya Thorne.
+        """
+    )
+
+    parser.add_argument(
+        "input",
+        help="Path to obfuscated .bat or .cmd script file"
+    )
+
+    parser.add_argument(
+        "-o", "--output",
+        help="Path to save deobfuscated output script (defaults to stdout)"
+    )
+
+    parser.add_argument(
+        "-p", "--passes",
+        type=int,
+        default=15,
+        help="Maximum fixed-point deobfuscation passes (default: 15)"
+    )
+
+    parser.add_argument(
+        "-d", "--diff",
+        action="store_true",
+        help="Show unified color diff between obfuscated and deobfuscated code"
+    )
+
+    parser.add_argument(
+        "--format",
+        choices=["text", "json"],
+        default="text",
+        help="Output format: 'text' (default) or 'json' (with full forensic telemetry)"
+    )
+
+    parser.add_argument(
+        "-v", "--verbose",
+        action="store_true",
+        help="Print verbose step-by-step pass convergence telemetry to stderr"
+    )
+
+    parser.add_argument(
+        "--no-color",
+        action="store_true",
+        help="Disable ANSI colors in terminal output"
+    )
+
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}"
+    )
+
+    return parser
+
+def main(args=None) -> int:
+    try:
+        if hasattr(sys.stdout, "reconfigure"):
+            sys.stdout.reconfigure(encoding="utf-8")
+        if hasattr(sys.stderr, "reconfigure"):
+            sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
+    parser = create_parser()
+    opts = parser.parse_args(args)
+
+    input_path = Path(opts.input)
+    if not input_path.exists():
+        sys.stderr.write(f"[-] Error: Input file not found: {input_path}\n")
+        return 1
+
+    try:
+        raw_bytes = input_path.read_bytes()
+        script_text = normalize_bom(raw_bytes)
+    except Exception as e:
+        sys.stderr.write(f"[-] Error reading file: {e}\n")
+        return 1
+
+    engine = BatchDeobfuscator(max_passes=opts.passes)
+    clean_text, meta = engine.deobfuscate(script_text)
+
+    if opts.verbose:
+        sys.stderr.write(f"\n[+] Analysis for: {input_path.name}\n")
+        sys.stderr.write(f"  ↳ Passes executed: {meta['passes_executed']} (Converged: {meta['converged']})\n")
+        sys.stderr.write(f"  ↳ Elapsed time: {meta['elapsed_ms']} ms\n")
+        sys.stderr.write(f"  ↳ Resolved dynamic symbols: {meta['symbols_resolved_count']}\n")
+        if meta["symbol_table"]:
+            sys.stderr.write("  ↳ Symbol Table:\n")
+            for k, v in list(meta["symbol_table"].items())[:10]:
+                sys.stderr.write(f"     • %{k}% = {repr(v)}\n")
+            if len(meta["symbol_table"]) > 10:
+                sys.stderr.write(f"     ... and {len(meta['symbol_table']) - 10} more symbols\n")
+        sys.stderr.write("\n")
+
+    # Handle output writing or diff
+    if opts.output:
+        out_path = Path(opts.output)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(clean_text, encoding="utf-8")
+        if opts.verbose or opts.diff:
+            sys.stderr.write(f"[+] Clean script written to: {out_path}\n")
+
+    if opts.diff:
+        diff_output = generate_unified_diff(
+            script_text,
+            clean_text,
+            filename=input_path.name,
+            use_color=not opts.no_color
+        )
+        print(diff_output)
+    elif opts.format == "json":
+        payload = {
+            "file": str(input_path),
+            "meta": meta,
+            "deobfuscated_script": clean_text
+        }
+        print(json.dumps(payload, indent=2, ensure_ascii=False))
+    elif not opts.output:
+        # If output file not specified, print clean script to stdout
+        sys.stdout.write(clean_text + ("\n" if not clean_text.endswith("\n") else ""))
+
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())

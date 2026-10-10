@@ -97,78 +97,91 @@ flowchart TD
 
 ---
 
-## 🛠️ 4. Quickstart
+## 🛠️ 4. 빠른 시작: CLI 도구체인 및 탈난독화 엔진 (Quickstart)
 
 <p align="center">
   <a href="https://github.com/maya-thorne/batch-deobfuscator-re"><img src="../assets/demo_terminal.svg" alt="Terminal Demo" width="100%" /></a>
 </p>
-: Running the Deobfuscator & PE Forensics Suite
 
-### 4.1 Multi-Pass Fixed-Point Batch Deobfuscator (`src/deobfuscator_engine.py`)
+### 4.1 프로덕션 CLI 사용법 (`batch-deobfuscator` / `python -m deobfuscator`)
 ```bash
-# Deobfuscate an obfuscated .bat/.cmd script to stdout or output file
-python src/deobfuscator_engine.py samples/01_env_slicing_sample.bat
+# 1. PEP 517/621 규격 로컬 설치
+pip install .
 
-# Run against dynamic substitution table sample
-python src/deobfuscator_engine.py samples/03_dynamic_substitution_table_sample.bat
+# 2. 원클릭 표준 출력 또는 파일 저장 탈난독화
+batch-deobfuscator samples/01_env_slicing_sample.bat
+batch-deobfuscator samples/02_caret_and_delimiters_sample.bat -o clean.bat
+
+# 3. 터미널 컬러 구문 Before & After Diff 확인
+batch-deobfuscator samples/02_caret_and_delimiters_sample.bat --diff
+
+# 4. JSON 포맷으로 포렌식 메타데이터 및 기호표 추출
+batch-deobfuscator samples/03_dynamic_substitution_table_sample.bat --format json
+
+# 5. 별도 설치 없이 파이썬 모듈 직통 실행
+python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
 ```
 
-### 4.2 Static PE Packer Forensic Analyzer (`src/pe_packer_forensics.py`)
+### 4.2 CLI 옵션 및 플래그 일람표
+| 플래그 | 설명 | 기본값 |
+| :--- | :--- | :---: |
+| `<input>` | 분석 대상 난독화 `.bat` 또는 `.cmd` 경로 | *필수* |
+| `-o, --output` | 복원된 배치 스크립트 저장 경로 | `stdout` |
+| `-p, --passes` | 최대 고정점 수렴 루프 횟수 | `15` |
+| `-d, --diff` | 원본 대비 복원 라인 컬러 유니파이드 Diff 출력 | `False` |
+| `--format` | 출력 포맷: `text` 또는 `json` (원격 관제/포렌식 연동) | `text` |
+| `-v, --verbose` | 패스별 수렴 상태 및 복원 기호표 상세 출력 | `False` |
+| `--version` | 도구 버전 및 개발자 정보 출력 | `1.0.0` |
+
+### 4.3 정적 PE 패커 포렌식 분석기 (`src/pe_packer_forensics.py`)
 ```bash
-# Triage a compiled/packed Batch-to-EXE binary (UPX, Bytepress LZMA, xorPacker, VB6)
-python src/pe_packer_forensics.py references/01_github_arsenal/Bat2Exe-dehoisted/Example/example_bytepressed.exe
 python src/pe_packer_forensics.py references/01_github_arsenal/bat2exe-islamadel/bat2exe_12.exe
 ```
 
-### 4.3 Run Automated Verification Suite (`tests/test_suite.py`)
+### 4.4 자동화 검증 테스트 스위트
 ```bash
-python tests/test_suite.py
+python tests/test_cli.py     # CLI 6개 단위/통합 테스트 (Diff, JSON, 인코딩 검증)
+python tests/test_suite.py   # 코어 AST 엔진 & PE 오버레이 4개 검증
 ```
 
 ---
+
 
 ## 📂 5. Repository Directory Structure
 
 ```text
 batch-deobfuscator-re/
-├── GHIDRA_BINARY_RE_AND_DEOBFUSCATOR_ENGINE_ANALYSIS.md  # 🔬 Flagship Ghidra 7-Binary RE & 7-Tool Source Dissection
-├── BATCH_OBFUSCATION_MASTER_GUIDE.md                     # 📖 30-Year Evolution, cmd.exe 5-Stage Parser & 12 Techniques
-├── BATCH_OBFUSCATION_ENCYCLOPEDIA.md                     # 🛡️ Comprehensive Encyclopedia (v2.0, 48+ References)
-├── BATCH_OBFUSCATION_ARCHITECTURE_AND_CODE_ANALYSIS.md   # 🏛️ Architecture & Source Code Deconstruction Report
-├── DEEP_REVERSE_ENGINEERING_AND_SOURCE_ANALYSIS.md       # 🧬 Extended Binary & Runtime Hook Analysis
+├── pyproject.toml                         # 📦 PEP 517/621 Standard Package Configuration
+├── README.md                              # 📖 Master Documentation & Architecture Hub
+├── LICENSE                                # 📜 MIT License
 │
-├── src/                                                  # ⚙️ Executable Deobfuscation & PE Forensic Engines
-│   ├── deobfuscator_engine.py                            # Multi-Pass Fixed-Point Convergence Batch Deobfuscator
-│   └── pe_packer_forensics.py                            # Ghidra-Derived Static PE Unpacker & Signature Analyzer
+├── deobfuscator/                          # 🛠️ Production CLI Toolchain Package
+│   ├── __init__.py                        # Version 1.0.0 & Public API exports
+│   ├── __main__.py                        # python -m deobfuscator entrypoint
+│   ├── cli.py                             # Rich CLI (argparse, JSON, Diff, Colors)
+│   ├── core.py                            # Multi-Pass Fixed-Point Convergence Engine
+│   ├── normalizers.py                     # Modular Caret, BOM, Quote, Env Normalizers
+│   └── diff.py                            # Terminal Color Unified Diff Generator
 │
-├── tests/                                                # ✅ Automated Unit & Integration Verification Suite
-│   └── test_suite.py                                     # Tests AST deobfuscation & xorPacker/PE overlay unpacking
+├── src/                                   # ⚙️ Legacy & Standalone Forensic Engines
+│   ├── deobfuscator_engine.py             # Standalone Batch Deobfuscator
+│   └── pe_packer_forensics.py             # Ghidra-Derived Static PE Unpacker
 │
-├── rules/                                                # 🛡️ Production SIEM / EDR Detection Rules
-│   ├── sigma_batch_obfuscation.yml                       # Sigma rules for Caret, Env Slicing, BatCloak, Exorcism
-│   └── yara_batch_obfuscation.yar                        # YARA rules for UTF-16LE BOM, Somalifuscator, PE Packers
+├── tests/                                 # ✅ Automated Test Suites (10 Tests Total)
+│   ├── test_cli.py                        # 6 CLI flags, JSON, and diff tests
+│   └── test_suite.py                      # 4 AST convergence & PE unpacking tests
 │
-├── samples/                                              # 🧪 6 Classic & Modern PoC Samples + Deobfuscated Baselines
-│   ├── 01_env_slicing_sample.bat / .deobf.bat
-│   ├── 02_caret_and_delimiters_sample.bat / .deobf.bat
-│   ├── 03_dynamic_substitution_table_sample.bat / .deobf.bat
-│   ├── 04_reverse_reconstruction_sample.bat / .deobf.bat
-│   ├── 05_certutil_hex_pipeline_sample.bat / .deobf.bat
-│   └── 06_anti_vm_and_sandbox_evasion_sample.bat / .deobf.bat
+├── rules/                                 # 🛡️ Production SIEM / EDR Detection Rules
+│   ├── sigma_batch_obfuscation.yml
+│   └── yara_batch_obfuscation.yar
 │
-├── docs/                                                 # 🌐 10-Language Locales, SVG Banners & Deep-Dive Reports
-│   ├── assets/locales/{en,ko,zh-CN,es,hi,ar,pt-BR,ru,fr,id}/banner.svg
-│   ├── locales/{ko,zh-CN,es,hi,ar,pt-BR,ru,fr,id}.md
-│   ├── HUGGINGFACE_MODELS_AND_DATASETS.md
-│   ├── RESEARCH_WHITEPAPERS_AND_REPORTS.md
-│   ├── CLASSIC_TO_MODERN_EVOLUTION.md
-│   └── BATCLOAK_SCRUBCRYPT_DEEP_DIVE.md
+├── samples/                               # 🧪 6 Classic & Modern Obfuscated Samples
+├── docs/                                  # 🌐 10-Language Locales, SVG Banners & Assets
+│   ├── assets/demo_terminal.svg           # Animated Terminal Vector Demo
+│   ├── assets/locales/<lang>/*.svg        # Localized Banners & Architecture Diagrams
+│   └── locales/<lang>.md                  # 10 Localized Guides
 │
-└── references/                                           # 📦 Flattened Open-Source & Hugging Face Reference Mirrors
-    ├── 01_github_arsenal/                                # 28+ Flattened GitHub Repositories (Zero nested .git)
-    ├── 02_huggingface_ai/                                # Hugging Face Model/Dataset Cards & SigmaForge Rules
-    ├── catalog.json                                      # Structured Metadata Catalog
-    └── references_index.json                             # Full Repository & Technique Index
+└── references/                            # 📦 48+ Flattened Open-Source & AI Mirrors
 ```
 
 ---
