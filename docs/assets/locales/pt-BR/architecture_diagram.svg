@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 380" width="100%" height="100%">
+  <defs>
+    <linearGradient id="diaBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070a14"/>
+      <stop offset="50%" stop-color="#0c1328"/>
+      <stop offset="100%" stop-color="#080c18"/>
+    </linearGradient>
+    <filter id="diagGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="920" height="380" rx="12" fill="url(#diaBg)"/>
+  <rect x="1" y="1" width="918" height="378" rx="11" fill="none" stroke="#1e293b" stroke-width="1.3"/>
+
+  <!-- Title Header -->
+  <text x="460" y="32" fill="#38bdf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="800" text-anchor="middle" filter="url(#diagGlow)">
+    Engenharia Reversa PE com Ghidra MCP e Pipeline Desofuscador Multipasso
+  </text>
+
+  <!-- 4 Architecture Cards -->
+  <!-- Box 1 -->
+  <g transform="translate(24, 55)">
+    <rect width="200" height="280" rx="9" fill="#0b1324" stroke="#0284c7" stroke-width="1.5"/>
+    <rect x="0" y="0" width="200" height="36" rx="9" fill="#0e2238"/>
+    <rect x="0" y="24" width="200" height="12" fill="#0e2238"/>
+    <text x="14" y="23" fill="#7dd3fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="700">1. SCRIPT OFUSCADO E PE COMPACTADO</text>
+    <text x="14" y="65" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Scripts Batch (.bat / .cmd) com Caret/BOM/César</text>
+    <text x="14" y="115" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Executáveis compilados (UPX, LZMA, Overlay XOR)</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <path d="M 228 175 L 244 175" stroke="#38bdf8" stroke-width="2.5" marker-end="url(#arrow)" filter="url(#diagGlow)"/>
+
+  <!-- Box 2 -->
+  <g transform="translate(248, 55)">
+    <rect width="200" height="280" rx="9" fill="#0b1524" stroke="#059669" stroke-width="1.5"/>
+    <rect x="0" y="0" width="200" height="36" rx="9" fill="#0b2921"/>
+    <rect x="0" y="24" width="200" height="12" fill="#0b2921"/>
+    <text x="14" y="23" fill="#6ee7b7" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="700">2. FORENSE GHIDRA MCP (pe_packer_forensics.py)</text>
+    <text x="14" y="65" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• bat2exe_12.exe: Loop UPX NRV2B RVA 0x20ea0</text>
+    <text x="14" y="125" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• example.exe: Bytepress LZMA RangeCoder offset 0x9f78</text>
+    <text x="14" y="185" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• xorStub.exe: Overlay PE '***' + chave 'randomkey'</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <path d="M 452 175 L 468 175" stroke="#34d399" stroke-width="2.5" filter="url(#diagGlow)"/>
+
+  <!-- Box 3 -->
+  <g transform="translate(472, 55)">
+    <rect width="200" height="280" rx="9" fill="#140f26" stroke="#7e22ce" stroke-width="1.5"/>
+    <rect x="0" y="0" width="200" height="36" rx="9" fill="#25123d"/>
+    <rect x="0" y="24" width="200" height="12" fill="#25123d"/>
+    <text x="14" y="23" fill="#e9d5ff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="700">3. MOTOR AST PONTO FIXO (deobfuscator_engine.py)</text>
+    <text x="14" y="65" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Pass 1: Remoção BOM UTF-16LE e aspas</text>
+    <text x="14" y="115" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Pass 2: Escape de Caret (^) e delimitadores</text>
+    <text x="14" y="165" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Pass 3: Mapeamento de variáveis e tabela SET</text>
+    <text x="14" y="225" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Pass 4: Loop de convergência (fp_prev == fp_curr)</text>
+  </g>
+
+  <!-- Arrow 3 -> 4 -->
+  <path d="M 676 175 L 692 175" stroke="#c084fc" stroke-width="2.5" filter="url(#diagGlow)"/>
+
+  <!-- Box 4 -->
+  <g transform="translate(696, 55)">
+    <rect width="200" height="280" rx="9" fill="#18131d" stroke="#d97706" stroke-width="1.5"/>
+    <rect x="0" y="0" width="200" height="36" rx="9" fill="#361b0c"/>
+    <rect x="0" y="24" width="200" height="12" fill="#361b0c"/>
+    <text x="14" y="23" fill="#fde68a" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5" font-weight="700">4. DEFESA EDR E REGRAS SIEM</text>
+    <text x="14" y="65" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Hook Detour cmd.exe!FindFixAndRun (0x116B0)</text>
+    <text x="14" y="125" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Regras Sigma (sigma_batch_obfuscation.yml)</text>
+    <text x="14" y="185" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10.5">• Regras YARA (yara_batch_obfuscation.yar)</text>
+  </g>
+</svg>

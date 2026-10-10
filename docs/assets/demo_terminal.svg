@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="termBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050811"/>
+      <stop offset="100%" stop-color="#0a1020"/>
+    </linearGradient>
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <style>
+    @keyframes typing {
+      0% { opacity: 0; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .cursor { animation: blink 0.9s infinite; }
+    .step1 { animation: typing 8s infinite 0s; }
+    .step2 { animation: typing 8s infinite 1.8s; }
+    .step3 { animation: typing 8s infinite 3.5s; }
+    .step4 { animation: typing 8s infinite 5.2s; }
+  </style>
+
+  <!-- Window Frame -->
+  <rect width="920" height="400" rx="12" fill="url(#termBg)"/>
+  <rect x="1" y="1" width="918" height="398" rx="11" fill="none" stroke="#1e293b" stroke-width="1.4"/>
+
+  <!-- Titlebar -->
+  <rect width="920" height="38" rx="12" fill="#0c1427"/>
+  <rect y="26" width="920" height="12" fill="#0c1427"/>
+  <line x1="0" y1="38" x2="920" y2="38" stroke="#1e293b" stroke-width="1"/>
+
+  <!-- Window Buttons -->
+  <circle cx="24" cy="19" r="6" fill="#ef4444"/>
+  <circle cx="44" cy="19" r="6" fill="#f59e0b"/>
+  <circle cx="64" cy="19" r="6" fill="#10b981"/>
+
+  <!-- Window Title -->
+  <text x="460" y="24" fill="#94a3b8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="600" text-anchor="middle">
+    batch-deobfuscator-re · Static Forensics &amp; Fixed-Point AST Execution
+  </text>
+
+  <!-- Terminal Content -->
+  <g transform="translate(28, 65)" font-family="Consolas, 'Courier New', monospace" font-size="13">
+    <!-- Command Prompt -->
+    <text x="0" y="0" fill="#38bdf8" font-weight="700">$ python src/deobfuscator_engine.py samples/03_dynamic_substitution_table_sample.bat</text>
+
+    <!-- Pass 1 -->
+    <g class="step1">
+      <text x="0" y="26" fill="#64748b">[Pass 1/15] Stripping UTF-16LE BOM (0xFF 0xFE) and carets outside quotes...</text>
+      <text x="0" y="46" fill="#10b981">  ↳ Caret chain flattened: w^h^o^a^m^i /a""l""l ➔ whoami /all</text>
+    </g>
+
+    <!-- Pass 2 -->
+    <g class="step2">
+      <text x="0" y="76" fill="#64748b">[Pass 2/15] Tracking dynamic SET substitution tables &amp; %VAR:~offset,len% slicing...</text>
+      <text x="0" y="96" fill="#a855f7">  ↳ Resolved %ComSpec:~-7,3% ➔ 'cmd' (ComSpec="C:\Windows\system32\cmd.exe")</text>
+      <text x="0" y="116" fill="#a855f7">  ↳ Symbol Table: _a="po", _b="wershell" ➔ %_a%%_b% ➔ 'powershell'</text>
+    </g>
+
+    <!-- Pass 3 -->
+    <g class="step3">
+      <text x="0" y="146" fill="#64748b">[Pass 3/15] Fixed-point convergence reached (fp_prev == fp_curr at pass 3).</text>
+      <text x="0" y="166" fill="#38bdf8" font-weight="700">[+] Deobfuscated Output:</text>
+      <text x="20" y="186" fill="#e2e8f0">powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Write-Output READY"</text>
+    </g>
+
+    <!-- Ghidra PE Forensics Command -->
+    <g class="step4">
+      <text x="0" y="222" fill="#38bdf8" font-weight="700">$ python src/pe_packer_forensics.py bat2exe_12.exe</text>
+      <text x="0" y="246" fill="#10b981">[+] Family: UPX NRV2B Packed Native Binary (bat2exe_12 / 7zS2.sfx Wrapper)</text>
+      <text x="0" y="266" fill="#f59e0b">  ↳ RVA 0x20ea0: pushal bitloop decompressor targeting UPX0 (0x1000..0x14000)</text>
+      <text x="0" y="286" fill="#f59e0b">  ↳ Embedded 7-Zip SFX header (7z¼¯') at offset 0xd2a0 verified.</text>
+      <text x="0" y="306" fill="#38bdf8" font-weight="700">✓ All 4 invariant tests PASSED in 0.008s.</text>
+      <rect x="360" y="295" width="8" height="15" fill="#38bdf8" class="cursor"/>
+    </g>
+  </g>
+</svg>

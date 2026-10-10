@@ -17,6 +17,7 @@
 [![Deobfuscator Engine](https://img.shields.io/badge/Engine-Multi--Pass_Fixed--Point_AST-10b981.svg)](../../src/deobfuscator_engine.py)
 [![PE Unpacker](https://img.shields.io/badge/Forensics-UPX_%7C_LZMA_%7C_XOR_Overlay-a855f7.svg)](../../src/pe_packer_forensics.py)
 [![Detection Rules](https://img.shields.io/badge/SIEM_%2F_EDR-Sigma_%26_YARA_Rules-f59e0b.svg)](../../rules/)
+[![Release](https://img.shields.io/github/v/release/maya-thorne/batch-deobfuscator-re?color=10b981&label=Release&logo=github)](https://github.com/maya-thorne/batch-deobfuscator-re/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](../../LICENSE)
 
 <sub>Engineered &amp; Audited by **[Maya Thorne](https://github.com/maya-thorne)** · Low-Level Systems &amp; Reverse Engineering Research</sub>
@@ -28,6 +29,11 @@
 ## 🏛️ 1. Architecture & Reverse Engineering Pipeline
 
 `batch-deobfuscator-re` combines **Ghidra MCP (`ghidra-re-operator`) binary reverse engineering** of Windows Batch-to-EXE compilers/packers, **line-by-line source code dissection of 7 flagship obfuscation/deobfuscation engines**, a **custom Python Multi-Pass Fixed-Point Static Deobfuscator (`src/deobfuscator_engine.py`)**, a **Static PE Packer Forensic Unpacker (`src/pe_packer_forensics.py`)**, and **48+ flattened open-source & Hugging Face AI references**.
+
+
+<p align="center">
+  <a href="https://github.com/maya-thorne/batch-deobfuscator-re"><img src="../assets/locales/ko/architecture_diagram.svg" alt="Architecture Pipeline Diagram" width="100%" /></a>
+</p>
 
 ```mermaid
 flowchart TD
@@ -91,7 +97,12 @@ flowchart TD
 
 ---
 
-## 🛠️ 4. Quickstart: Running the Deobfuscator & PE Forensics Suite
+## 🛠️ 4. Quickstart
+
+<p align="center">
+  <a href="https://github.com/maya-thorne/batch-deobfuscator-re"><img src="../assets/demo_terminal.svg" alt="Terminal Demo" width="100%" /></a>
+</p>
+: Running the Deobfuscator & PE Forensics Suite
 
 ### 4.1 Multi-Pass Fixed-Point Batch Deobfuscator (`src/deobfuscator_engine.py`)
 ```bash
