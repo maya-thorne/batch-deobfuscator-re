@@ -26,7 +26,11 @@
 
 ---
 
-## 🏛️ 1. Architecture & Reverse Engineering Pipeline
+
+<details open>
+<summary><h2 style="display:inline-block; margin:0;">🏛️ 1. Architecture & Reverse Engineering Pipeline</h2></summary>
+
+<br />
 
 `batch-deobfuscator-re` combines **Ghidra MCP (`ghidra-re-operator`) binary reverse engineering** of Windows Batch-to-EXE compilers/packers, **line-by-line source code dissection of 7 flagship obfuscation/deobfuscation engines**, a **custom Python Multi-Pass Fixed-Point Static Deobfuscator (`src/deobfuscator_engine.py`)**, a **Static PE Packer Forensic Unpacker (`src/pe_packer_forensics.py`)**, and **48+ flattened open-source & Hugging Face AI references**.
 
@@ -67,9 +71,14 @@ flowchart TD
     A2 --> B1 & B2 & B3 & B4 --> C1
 ```
 
+</details>
+
 ---
 
-## 📚 2. Master Whitepapers & Core Documentation Index
+<details open>
+<summary><h2 style="display:inline-block; margin:0;">📚 2. Master Whitepapers & Core Documentation Index</h2></summary>
+
+<br />
 
 | Document | Scope & Technical Highlights | Size |
 | :--- | :--- | :---: |
@@ -81,9 +90,14 @@ flowchart TD
 | 🕵️ **[`docs/RESEARCH_WHITEPAPERS_AND_REPORTS.md`](../whitepapers/RESEARCH_WHITEPAPERS_AND_REPORTS.md)** | **Global Threat Intelligence Breakdown**: Mandiant (Daniel Bohannon `DOSfuscation` / `FIN7`) & Palo Alto Unit 42 (`BatCloak` / `ScrubCrypt`) | **Full Report** |
 | 📜 **[`docs/CLASSIC_TO_MODERN_EVOLUTION.md`](../whitepapers/CLASSIC_TO_MODERN_EVOLUTION.md)** | **Historical Evolution & PoC Analysis**: Generation 1–5 batch obfuscation paradigms & `BatCloak`/`ScrubCrypt` 3-stage loader forensics | **Full Report** |
 
+</details>
+
 ---
 
-## 🔍 3. Ghidra MCP Binary Reverse Engineering Summary (7 PE Binaries)
+<details open>
+<summary><h2 style="display:inline-block; margin:0;">🔍 3. Ghidra MCP Binary Reverse Engineering Summary (7 PE Binaries)</h2></summary>
+
+<br />
 
 | Target Binary | Compiler / Packer | Entry RVA / Key Offset | Disassembled Mechanism & Forensic Finding |
 | :--- | :--- | :---: | :--- |
@@ -95,9 +109,14 @@ flowchart TD
 | **`xorStub.exe`** (`xorPacker-master`) | **MSVC Native C++** (`PE Overlay`) | `RVA 0x2dcc` (File `0xfcc`) | Hardcodes 9-byte master key `"randomkey"` at `0xfcc`. Splits EOF overlay by `"***"` (`0x2A 0x2A 0x2A`), decrypts dynamic key via `XOR(part[2], "randomkey")`, then decrypts payload via `XOR(part[1], dyn_key)` into `%TEMP%\temp.exe`. |
 | **`choice.exe`** (`bat2exe-islamadel`) | **MSVC Native C** (`MSVCRT.dll`) | `RVA 0x1491` (CRT Startup) | Sets up x86 SEH frame (`mov eax, fs:[0]`, `push 0x4015c0 __except_handler3`), parses single-keystroke timeout for legacy batch menus. |
 
+</details>
+
 ---
 
-## 🛠️ 4. 빠른 시작: CLI 도구체인 및 탈난독화 엔진 (Quickstart)
+<details open>
+<summary><h2 style="display:inline-block; margin:0;">🛠️ 4. 빠른 시작: CLI 도구체인 및 탈난독화 엔진 (Quickstart)</h2></summary>
+
+<br />
 
 <p align="center">
   <a href="https://github.com/maya-thorne/batch-deobfuscator-re"><img src="../assets/demo_terminal.svg" alt="Terminal Demo" width="100%" /></a>
@@ -144,10 +163,14 @@ python tests/test_cli.py     # CLI 6개 단위/통합 테스트 (Diff, JSON, 인
 python tests/test_suite.py   # 코어 AST 엔진 & PE 오버레이 4개 검증
 ```
 
+</details>
+
 ---
 
+<details open>
+<summary><h2 style="display:inline-block; margin:0;">📂 5. Repository Directory Structure</h2></summary>
 
-## 📂 5. Repository Directory Structure
+<br />
 
 ```text
 batch-deobfuscator-re/
@@ -184,8 +207,15 @@ batch-deobfuscator-re/
 └── references/                            # 📦 48+ Flattened Open-Source & AI Mirrors
 ```
 
+</details>
+
 ---
 
-## 📜 License
+<details>
+<summary><h2 style="display:inline-block; margin:0;">📜 License</h2></summary>
+
+<br />
 
 Licensed under the [Maya Thorne Systems & Security Research License (MT-SRL)](../../LICENSE). Copyright © 2026 Maya Thorne.
+
+</details>
