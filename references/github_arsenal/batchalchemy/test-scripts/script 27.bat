@@ -1,1 +1,0 @@
-start cmd /k .\node_modules\.bin\tree-sitter generate

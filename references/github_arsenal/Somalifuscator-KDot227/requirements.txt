@@ -1,7 +1,0 @@
-rich
-BatchParse
-requests
-kdot
-primefac
-pytest
-textual

@@ -412,8 +412,8 @@ python benchmarks/eval_corpus_runner.py --corpus BatCloak
 
 ### 4.5 Automated Verification Test Suites
 ```bash
-python -m unittest discover tests  # 19 comprehensive automated tests
-python tests/test_benchmark_runner.py # 9 benchmark suite & metrics tests
+python -m unittest discover tests  # 52 comprehensive automated tests
+python tests/test_benchmark_runner.py # 42 benchmark suite & metrics tests
 python tests/test_cli.py     # 6 CLI flags, diff mode, and JSON telemetry tests
 python tests/test_suite.py   # 4 core AST deobfuscation & PE overlay tests
 ```
@@ -461,8 +461,8 @@ batch-deobfuscator-re/
 │   ├── sigma_batch_obfuscation.yml        # Sigma Rules for Caret Evasion, Env Slicing, Exorcism Detours
 │   └── yara_batch_obfuscation.yar         # YARA Signatures for BOM Traps, Somalifuscator, UPX Wrappers
 │
-├── tests/                                 # ✅ Automated Verification Test Suites (19 Tests Total)
-│   ├── test_benchmark_runner.py           # 9 Benchmark Suite, Metrics Schema & Scoring Tests
+├── tests/                                 # ✅ Automated Verification Test Suites (52 Tests Total)
+│   ├── test_benchmark_runner.py           # 42 Benchmark Suite, Metrics Schema & Scoring Tests
 │   ├── test_cli.py                        # 6 CLI Flags, Output Modes, Diff & JSON Telemetry Tests
 │   └── test_suite.py                      # 4 Core AST Convergence & PE Static Unpacking Tests
 │

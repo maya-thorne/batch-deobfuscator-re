@@ -14,7 +14,14 @@ from .normalizers import (
     resolve_slicing,
     resolve_substitution,
     normalize_bom,
+    collapse_spaces_outside_quotes,
     DYNAMIC_SYSTEM_VARS,
+)
+from .batcloak import (
+    normalize_batcloak_headers,
+    strip_batcloak_random_vars,
+    eliminate_dead_stores,
+    detect_batcloak_signatures,
 )
 
 class BatchDeobfuscator:
@@ -41,32 +48,101 @@ class BatchDeobfuscator:
         "username": "Administrator",
         "os": "Windows_NT",
         "systemdrive": "C:",
+        "__appdir__": "C:\\Windows\\system32\\",
+        "__cd__": "C:\\Windows\\system32\\",
+        "computername": "DESKTOP-ENV",
+        "processor_architecture": "AMD64",
+        "homedrive": "C:",
+        "homepath": r"\Users\Administrator",
     }
 
     def __init__(self, max_passes: int = 15, custom_env: Dict[str, str] = None, 
-                 strip_undefined: bool = True, split_chains: bool = True):
+                 strip_undefined: bool = True, split_chains: bool = True,
+                 enable_batcloak: bool = True, eliminate_dead_code: bool = True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
         self.split_chains = split_chains
+        self.enable_batcloak = enable_batcloak
+        self.eliminate_dead_code = eliminate_dead_code
         self.env_vars: Dict[str, str] = dict(self.DEFAULT_ENV)
         if custom_env:
             self.env_vars.update({k.lower(): v for k, v in custom_env.items()})
         self.pass_history: List[Dict[str, Any]] = []
 
     def extract_and_set_vars(self, line: str):
-        """Identify 'set VAR=VAL' or 'set \"VAR=VAL\"' anywhere in line and register in symbol table."""
-        pattern = re.compile(
-            r'(?:^|[;&@\(\)\s])set\s+(?:/[ap]\s+)?(?:\"([a-zA-Z0-9_\-\.\:\$]+)=([^\"\r\n]*)\"|([a-zA-Z0-9_\-\.\:\$]+)=([^\"&)\r\n]*))',
-            re.IGNORECASE
-        )
-        for m in pattern.finditer(line):
-            if m.group(1):
-                var_name = m.group(1).lower()
-                var_val = m.group(2)
-            else:
-                var_name = m.group(3).lower()
-                var_val = m.group(4).strip()
-            # Evaluate immediate slicing or substitution in value
+        """
+        Identify 'set VAR=VAL' or 'set \"VAR=VAL\"' anywhere in line and register in symbol table.
+        Robustly parses quoted syntax, value-quoted syntax (set v=\"val\"), caret-escaped ampersands,
+        compound blocks, and switches (/a, /p).
+        """
+        keyword_pat = re.compile(r'(?:^|[;&@\(\)\s])set(?:\s+(?:/[ap]\s+)?|/[ap]\s*)', re.IGNORECASE)
+
+        for m in keyword_pat.finditer(line):
+            idx = m.end()
+            if idx >= len(line):
+                continue
+
+            # Branch 1: Quoted assignment starting with double quote: set "VAR=VAL"
+            if line[idx] == '"':
+                q_m = re.match(r'\"([a-zA-Z0-9_\-\.\:\$%]+)=([^\"\r\n]*)\"?', line[idx:])
+                if q_m:
+                    var_name = q_m.group(1).lower()
+                    var_val = q_m.group(2)
+                    var_val = strip_carets(var_val)
+                    var_val = self.resolve_variables(var_val, strip_undefined=False)
+                    self.env_vars[var_name] = var_val
+                    continue
+
+            # Branch 2: Unquoted or value-quoted assignment: set VAR=VAL or set VAR="VAL"
+            eq_idx = line.find('=', idx)
+            if eq_idx == -1:
+                continue
+            var_name = line[idx:eq_idx].strip().lower()
+            if not re.match(r'^[a-zA-Z0-9_\-\.\:\$%]+$', var_name):
+                continue
+
+            val_chars = []
+            in_quotes = False
+            local_parens = 0
+            i = eq_idx + 1
+            n = len(line)
+            while i < n:
+                ch = line[i]
+                if ch == '"':
+                    in_quotes = not in_quotes
+                    val_chars.append(ch)
+                    i += 1
+                elif not in_quotes and ch == '^':
+                    val_chars.append(ch)
+                    if i + 1 < n:
+                        val_chars.append(line[i + 1])
+                        i += 2
+                    else:
+                        i += 1
+                elif not in_quotes and ch == '(':
+                    local_parens += 1
+                    val_chars.append(ch)
+                    i += 1
+                elif not in_quotes and ch == ')':
+                    if local_parens > 0:
+                        local_parens -= 1
+                        val_chars.append(ch)
+                        i += 1
+                    else:
+                        break
+                elif not in_quotes and ch == '&':
+                    rest = line[i:]
+                    if re.match(r'^&(?:\s|@|$|(?:set|echo|dir|copy|move|del|cls|call|start|cmd|powershell|whoami|curl|certutil|rem|if|goto)\b)', rest, re.IGNORECASE) or local_parens > 0:
+                        break
+                    else:
+                        val_chars.append(ch)
+                        i += 1
+                else:
+                    val_chars.append(ch)
+                    i += 1
+
+            var_val = "".join(val_chars).strip()
+            var_val = strip_carets(var_val)
             var_val = self.resolve_variables(var_val, strip_undefined=False)
             self.env_vars[var_name] = var_val
 
@@ -99,7 +175,7 @@ class BatchDeobfuscator:
 
             curr = re.sub(r'%([a-zA-Z0-9_\-\.\:\$]+)%', var_repl, curr)
         if strip_undefined:
-            curr = re.sub(r' +', ' ', curr)
+            curr = collapse_spaces_outside_quotes(curr)
         return curr
 
     def deobfuscate(self, script_text: str) -> Tuple[str, Dict[str, Any]]:
@@ -134,7 +210,7 @@ class BatchDeobfuscator:
                 l = self.resolve_variables(l)
                 # 4. Harvest dynamic SET commands on resolved line
                 self.extract_and_set_vars(l)
-                processed_lines.append(l)
+                processed_lines.append(l.strip())
 
             curr_text = "\n".join(processed_lines)
 

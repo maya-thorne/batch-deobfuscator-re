@@ -13,6 +13,7 @@ from .normalizers import (
     resolve_substitution,
     normalize_bom,
     normalize_delimiters,
+    collapse_spaces_outside_quotes,
     DYNAMIC_SYSTEM_VARS,
 )
 
@@ -29,5 +30,6 @@ __all__ = [
     "resolve_substitution",
     "normalize_bom",
     "normalize_delimiters",
+    "collapse_spaces_outside_quotes",
     "DYNAMIC_SYSTEM_VARS",
 ]

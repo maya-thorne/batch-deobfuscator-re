@@ -1,1 +1,0 @@
-sc start "Razer Game Manager Service"

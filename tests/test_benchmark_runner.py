@@ -439,6 +439,138 @@ class TestNormalizerRefinements(unittest.TestCase):
         self.assertEqual(meta['symbol_table'].get('y'), '2')
         self.assertEqual(meta['symbol_table'].get('z'), '3')
 
+    def test_cli_json_alias_flag(self):
+        """Verify --json CLI flag executes successfully as documented in README/CHANGELOG."""
+        import io
+        import contextlib
+        import benchmarks.eval_corpus_runner as runner
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            ret = runner.main(['--json', '--corpus', '1'])
+        self.assertEqual(ret, 0)
+        self.assertIn('"verdict_passed": true', buf.getvalue())
+
+    def test_split_chained_commands_preserves_comments_and_labels(self):
+        """Verify cmd.exe comment lines (rem, ::) and labels are preserved and not split at ampersands."""
+        # In cmd.exe, REM/:: comments treat the rest of the line as comment text; ampersands must not be split
+        self.assertEqual(split_chained_commands('rem this is a test & whoami'), 'rem this is a test & whoami')
+        self.assertEqual(split_chained_commands('@rem comment line & echo payload'), '@rem comment line & echo payload')
+        self.assertEqual(split_chained_commands(':: label comment & calc.exe'), ':: label comment & calc.exe')
+        self.assertEqual(split_chained_commands(':my_label & dir'), ':my_label & dir')
+
+    def test_value_quoted_and_caret_ampersand_set_extraction(self):
+        """Verify variable extraction handles value-quoted strings, caret-escaped ampersands, and switches."""
+        # 1. Value-quoted syntax: set var="hello"
+        script1 = 'set var="hello"\necho %var%'
+        engine1 = BatchDeobfuscator()
+        clean1, meta1 = engine1.deobfuscate(script1)
+        self.assertEqual(meta1['symbol_table'].get('var'), '"hello"')
+        self.assertIn('echo "hello"', clean1)
+
+        # 2. Caret-escaped ampersand in set value: set x=foo^&bar & set y=1
+        script2 = 'set x=foo^&bar & set y=1\necho %x% %y%'
+        engine2 = BatchDeobfuscator()
+        clean2, meta2 = engine2.deobfuscate(script2)
+        self.assertIn('echo foo&bar 1', clean2)
+        self.assertEqual(meta2['symbol_table'].get('y'), '1')
+
+        # 3. Compact set switch: set/a count=10
+        script3 = '@set/a count=10 & echo %count%'
+        engine3 = BatchDeobfuscator()
+        clean3, meta3 = engine3.deobfuscate(script3)
+        self.assertEqual(meta3['symbol_table'].get('count'), '10')
+
+    def test_quote_aware_space_collapsing(self):
+        """Verify whitespace inside double quotes is strictly preserved while undefined noise spaces are collapsed."""
+        script = 'echo "hello    world" & %UNDEFINED% %DUMMY% calc.exe'
+        engine = BatchDeobfuscator(strip_undefined=True)
+        clean, _ = engine.deobfuscate(script)
+        lines = clean.splitlines()
+        self.assertEqual(lines[0], 'echo "hello    world"')
+        self.assertEqual(lines[1], 'calc.exe')
+
+    def test_internal_dynamic_variables_appdir_and_cd(self):
+        """Verify Windows internal dynamic pseudo-variables __appdir__ and __cd__ are preserved and resolved."""
+        # 1. Expanded via DEFAULT_ENV
+        script = 'set mydir=%__appdir__% & echo %__cd__%'
+        engine = BatchDeobfuscator(strip_undefined=True)
+        clean, meta = engine.deobfuscate(script)
+        self.assertIn('C:\\Windows\\system32\\', clean)
+
+        # 2. Preserved against undefined stripping when env does not define them
+        res = strip_undefined_vars('echo %__cd__% %NOT_A_VAR% %__appdir__%', {})
+        self.assertEqual(res, 'echo %__cd__% %__appdir__%')
+
+    def test_src_standalone_engine_parity(self):
+        """Verify src/deobfuscator_engine.py is fully synchronized with deobfuscator core."""
+        from src.deobfuscator_engine import BatchDeobfuscator as StandaloneEngine
+        se = StandaloneEngine()
+
+        # Substitution resolution
+        sub_res = se.deobfuscate('set v=powershell\n%v:powershell=cmd% /c whoami')
+        self.assertIn('cmd /c whoami', sub_res)
+
+        # Value-quoted set
+        vq_res = se.deobfuscate('set var="hello"\necho %var%')
+        self.assertIn('echo "hello"', vq_res)
+
+        # Comment preservation
+        rem_res = se.deobfuscate('rem test comment & calc.exe')
+        self.assertEqual(rem_res, 'rem test comment & calc.exe')
+
+    def test_chained_rem_and_label_comment_preservation(self):
+        """Verify comments and labels following ampersands (&) consume the rest of the line without splitting further."""
+        # In cmd.exe, once REM, ::, or :label is reached, all subsequent ampersands are part of the comment/label
+        s1 = '@echo off & rem comment with & whoami & calc.exe'
+        res1 = split_chained_commands(s1)
+        self.assertEqual(res1.splitlines(), ['@echo off', 'rem comment with & whoami & calc.exe'])
+
+        s2 = 'echo 1 & :: my note & calc.exe'
+        res2 = split_chained_commands(s2)
+        self.assertEqual(res2.splitlines(), ['echo 1', ':: my note & calc.exe'])
+
+        s3 = 'dir & :my_label & whoami'
+        res3 = split_chained_commands(s3)
+        self.assertEqual(res3.splitlines(), ['dir', ':my_label & whoami'])
+
+    def test_unquoted_ampersand_set_extraction_terminates_at_ampersand(self):
+        """Verify unquoted unescaped ampersand terminates variable value assignment rather than capturing commands."""
+        # 1. set x=1 & echo %x% must set x to 1, not '1 & echo %x%'
+        b = BatchDeobfuscator(split_chains=False)
+        b.extract_and_set_vars('set x=1 & echo %x%')
+        self.assertEqual(b.env_vars.get('x'), '1')
+
+        # 2. Caret-escaped ampersand still preserves escaped ampersand
+        b2 = BatchDeobfuscator(split_chains=False)
+        b2.extract_and_set_vars('set x=foo^&bar & dir')
+        self.assertEqual(b2.env_vars.get('x'), 'foo&bar')
+
+    def test_substitution_with_windows_path_backslashes(self):
+        """Verify variable substitution handles replacement strings containing Windows paths with backslashes."""
+        from src.deobfuscator_engine import BatchDeobfuscator as StandaloneEngine
+        env = {"v": "replace_me"}
+        # Both normalizers and standalone engine must safely handle backslashes without re.PatternError
+        r1 = resolve_substitution(r"%v:replace_me=C:\Windows\system32%", env)
+        self.assertEqual(r1, r"C:\Windows\system32")
+
+        se = StandaloneEngine()
+        se.env_vars["v"] = "replace_me"
+        r2 = se.resolve_substitution(r"%v:replace_me=C:\Windows\system32%")
+        self.assertEqual(r2, r"C:\Windows\system32")
+
+    def test_wildcard_substitution_parity(self):
+        """Verify wildcard string replacement %VAR:*old=new% functions identically in core and standalone engine."""
+        from src.deobfuscator_engine import BatchDeobfuscator as StandaloneEngine
+        env = {"mypath": r"C:\Windows\system32;C:\Users\test"}
+        # Replaces everything up to and including 'system32' with 'D:\bin'
+        r1 = resolve_substitution(r"%mypath:*system32=D:\bin%", env)
+        self.assertEqual(r1, r"D:\bin;C:\Users\test")
+
+        se = StandaloneEngine()
+        se.env_vars["mypath"] = r"C:\Windows\system32;C:\Users\test"
+        r2 = se.resolve_substitution(r"%mypath:*system32=D:\bin%")
+        self.assertEqual(r2, r"D:\bin;C:\Users\test")
+
 
 if __name__ == "__main__":
     unittest.main()

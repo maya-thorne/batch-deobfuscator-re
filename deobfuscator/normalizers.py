@@ -5,20 +5,12 @@ Handles Caret, Quotes, Delimiters, UTF-16LE BOM, Env Slicing, and Substitution.
 
 import re
 
+from .batcloak import normalize_batcloak_headers
+
 def normalize_bom(data: bytes) -> str:
-    """Normalize UTF-16LE, UTF-16BE, UTF-8 BOM or raw Latin1/ASCII bytes to string."""
-    if data.startswith(b"\xff\xfe"):
-        return data[2:].decode("utf-16le", errors="replace")
-    elif data.startswith(b"\xfe\xff"):
-        return data[2:].decode("utf-16be", errors="replace")
-    elif data.startswith(b"\xef\xbb\xbf"):
-        return data[3:].decode("utf-8", errors="replace")
-    
-    # Try utf-8 first, fallback to cp1252 / latin1
-    try:
-        return data.decode("utf-8")
-    except UnicodeDecodeError:
-        return data.decode("cp1252", errors="replace")
+    """Normalize UTF-16LE, UTF-16BE, UTF-8 BOM or raw Latin1/ASCII bytes, neutralizing BatCloak header decoys."""
+    clean_text, _ = normalize_batcloak_headers(data)
+    return clean_text
 
 def strip_carets(text: str) -> str:
     """Strip carets outside double quotes. Preserve carets inside double quotes."""
@@ -57,7 +49,31 @@ DYNAMIC_SYSTEM_VARS = {
     "cmdextversion",
     "cmdcmdline",
     "highestnumanodenumber",
+    "__cd__",
+    "__appdir__",
 }
+
+def collapse_spaces_outside_quotes(text: str) -> str:
+    """Collapse consecutive spaces outside double quotes while preserving whitespace within strings."""
+    result = []
+    in_quotes = False
+    space_pending = False
+    for ch in text:
+        if ch == '"':
+            in_quotes = not in_quotes
+            space_pending = False
+            result.append(ch)
+        elif not in_quotes:
+            if ch == ' ':
+                if not space_pending:
+                    result.append(' ')
+                    space_pending = True
+            else:
+                space_pending = False
+                result.append(ch)
+        else:
+            result.append(ch)
+    return "".join(result)
 
 def strip_empty_quotes(text: str) -> str:
     """
@@ -88,10 +104,18 @@ def split_chained_commands(text: str) -> str:
     """
     Split single-line chained commands (& outside quotes/redirection) into multiple lines.
     Preserves redirection operators (e.g. 2>&1, >&, <&), caret-escaped ampersands (^&),
-    ampersands inside quotes ("... & ..."), and nested parenthesized blocks ((a & b)).
+    ampersands inside quotes ("... & ..."), nested parenthesized blocks ((a & b)),
+    and comment/label lines (rem, ::, :label) where cmd.exe treats the entire line as a comment.
     """
     result_lines = []
     for line in text.splitlines():
+        stripped = line.strip()
+        # In cmd.exe, REM, ::, and label lines (:label) treat the entire line as comment/label;
+        # ampersands on these lines are ignored by the shell and must not be split into active commands.
+        if re.match(r'^@?\s*(?:rem\b|:)', stripped, re.IGNORECASE):
+            result_lines.append(line)
+            continue
+
         parts = []
         curr_part = []
         in_quotes = False
@@ -121,6 +145,13 @@ def split_chained_commands(text: str) -> str:
                 curr_part.append(ch)
                 i += 1
             elif not in_quotes and paren_depth == 0 and ch == '&':
+                current_prefix = "".join(curr_part).lstrip()
+                if re.match(r'^@?\s*(?:rem\b|:)', current_prefix, re.IGNORECASE):
+                    # In cmd.exe, REM, ::, and labels consume the entire remainder of the line;
+                    # ampersands do not execute further commands.
+                    curr_part.append(line[i:])
+                    break
+
                 prev_str = "".join(curr_part).rstrip()
                 # Check for redirection: 2>&1, 1>&2, >&, <&
                 if (prev_str.endswith(">") or prev_str.endswith("<") or 
@@ -165,7 +196,7 @@ def strip_undefined_vars(text: str, env_vars: dict) -> str:
 
     pattern = re.compile(r'%([a-zA-Z0-9_\-\.\:\$]+)%')
     result = pattern.sub(repl, text)
-    return re.sub(r' +', ' ', result)
+    return collapse_spaces_outside_quotes(result)
 
 def normalize_delimiters(text: str) -> str:
     """Normalize non-standard batch parameter separators like semicolons or commas outside quotes."""
@@ -214,18 +245,26 @@ def resolve_slicing(text: str, env_vars: dict) -> str:
     return pattern.sub(slice_repl, text)
 
 def resolve_substitution(text: str, env_vars: dict) -> str:
-    """Resolve %VAR:old=new% substitutions."""
+    """Resolve %VAR:old=new% and %VAR:*old=new% substitutions."""
     def sub_repl(match):
         var_name = match.group(1).lower()
-        old_val = match.group(2)
-        new_val = match.group(3)
         if var_name not in env_vars:
             return match.group(0)
 
         val = env_vars[var_name]
-        # Case-insensitive string replacement in cmd.exe
-        pattern = re.compile(re.escape(old_val), re.IGNORECASE)
-        return pattern.sub(new_val, val)
+        star = match.group(2)
+        old_val = match.group(3)
+        new_val = match.group(4)
 
-    pattern = re.compile(r'%([a-zA-Z0-9_\-\.\:\$]+):([^=%\r\n]+)=([^%\r\n]*)%', re.IGNORECASE)
+        if star:
+            idx = val.lower().find(old_val.lower())
+            if idx != -1:
+                return new_val + val[idx + len(old_val):]
+            return val
+        else:
+            # Case-insensitive string replacement in cmd.exe (lambda prevents regex replacement template escape errors)
+            pattern = re.compile(re.escape(old_val), re.IGNORECASE)
+            return pattern.sub(lambda m: new_val, val)
+
+    pattern = re.compile(r'%([a-zA-Z0-9_\-\.\:\$]+):(\*?)([^=%\r\n]+)=([^%\r\n]*)%', re.IGNORECASE)
     return pattern.sub(sub_repl, text)

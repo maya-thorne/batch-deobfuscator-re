@@ -360,6 +360,11 @@ def main(args: Optional[List[str]] = None) -> int:
         help="Output report format (default: text)",
     )
     parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Export evaluation results as JSON (alias for --format json)",
+    )
+    parser.add_argument(
         "--output",
         type=str,
         default=None,
@@ -398,9 +403,10 @@ def main(args: Optional[List[str]] = None) -> int:
         min_score=opts.min_score,
     )
 
-    if opts.format == "json":
+    fmt = "json" if opts.json else opts.format
+    if fmt == "json":
         output_str = json.dumps(summary, indent=2, ensure_ascii=False)
-    elif opts.format == "markdown":
+    elif fmt == "markdown":
         output_str = format_markdown_table(summary)
     else:
         output_str = format_text_table(summary)

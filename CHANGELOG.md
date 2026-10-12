@@ -20,13 +20,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Undefined Environment Variable Stripping**:
   - Automatically evaluates and strips uninitialized noise variables (`%UNDEFINED%`) inserted by modern obfuscators, with redundant whitespace collapse.
 - **Automated Verification Suite (`tests/test_benchmark_runner.py`)**:
-  - 9 comprehensive unit tests verifying suite integrity, metrics schema, filtering, entropy computation, and CLI JSON export.
+  - Expanded unit test coverage from 19 to 52 comprehensive tests across 6 dedicated test modules.
 
 ### Changed
-- Expanded `DEFAULT_ENV` variable table with common Windows OS environment paths (`temp`, `tmp`, `appdata`, `localappdata`, `userprofile`, `username`, `os`, `systemdrive`).
-- Synchronized engine pipeline across both `deobfuscator/core.py` and `src/deobfuscator_engine.py`.
+- Expanded `DEFAULT_ENV` variable table with common Windows OS environment paths (`temp`, `tmp`, `appdata`, `localappdata`, `userprofile`, `username`, `os`, `systemdrive`, `__appdir__`, `__cd__`, `computername`, `processor_architecture`, `homedrive`, `homepath`).
+- Synchronized engine pipeline across both `deobfuscator/core.py` and `src/deobfuscator_engine.py` (including `%VAR:old=new%` substitution, wildcard `%VAR:*old=new%` replacement, safe regex replacement templates, and quote-aware space collapsing).
 
 ### Fixed
+- **Chained Comment and Label Demarcation in `split_chained_commands`**:
+  - Resolved severe semantic defect where chained comments (`cmd1 & rem comment & cmd2`, `echo 1 & :: note & calc.exe`, `dir & :label & whoami`) had ampersands split after `rem` / `::` / `:label`, inappropriately converting comment text and dormant commands into live executable lines.
+  - Commands starting with `rem\b`, `::`, or `:label` on chained lines now consume the entire remaining line as comment text.
+- **Unquoted Ampersand Value Capture in `extract_and_set_vars`**:
+  - Fixed bug where `set x=1 & echo %x%` inappropriately captured `& echo %x%` into the value of `x` when the subsequent command was not `set`.
+  - Replaced flawed `set`-only lookahead with robust command delimiter matching (`\s`, `@`, end of line, or batch command keyword).
+- **Crash on Variable Substitution with Windows Paths**:
+  - Fixed `re.PatternError: bad escape \W / \s` in `resolve_substitution` across both `deobfuscator/normalizers.py` and `src/deobfuscator_engine.py` when replacement values contained Windows file paths with backslashes by passing replacement values via safe callable (`lambda m: new_val`).
+- **Wildcard String Replacement (`%VAR:*old=new%`) Parity**:
+  - Implemented missing cmd.exe wildcard substitution prefix (`*`) in `deobfuscator/normalizers.py` to match `src/deobfuscator_engine.py`.
+- **Benchmark Runner CLI `--json` Flag**:
+  - Added dedicated `--json` CLI argument alias in `benchmarks/eval_corpus_runner.py` matching user guide documentation.
+- **Comment and Label Preservation During Chained Command Splitting**:
+  - Fixed `split_chained_commands` incorrectly splitting lines starting with `rem`, `::`, or `:label` at ampersands, preventing comments containing `&` from being converted into live executable statements.
+- **Value-Quoted and Caret-Escaped SET Assignment Parsing**:
+  - Fixed `extract_and_set_vars` terminating early on `"` in `set var="hello"` assignments (previously yielding empty string) and truncating values containing caret-escaped ampersands (`set x=foo^&bar`).
+- **Quote-Aware Whitespace Collapsing**:
+  - Implemented `collapse_spaces_outside_quotes` to prevent collapsing consecutive spaces inside double-quoted string literals while still cleaning up noise from stripped undefined variables.
+- **Windows Dynamic Pseudo-Variables Expansion**:
+  - Added `%__CD__%` and `%__APPDIR__%` to dynamic system variables and default environment maps, preserving internal Windows evasion references.
 - **Multi-Line Chaining Inside Parentheses Blocks**:
   - Resolved issue where compound `if (...) else (...)` conditionals and `for /f ... in ('...')` expressions had ampersands split across invalid line boundaries, breaking batch script syntax.
   - Implemented top-level parenthesis depth tracking (`paren_depth == 0`) to preserve compound block structure while splitting top-level chained statements.

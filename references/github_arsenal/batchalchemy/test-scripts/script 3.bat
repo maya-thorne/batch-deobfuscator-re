@@ -1,1 +1,0 @@
-echo afdjlkg rem asd

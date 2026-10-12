@@ -7,10 +7,21 @@
 @ai-invariant: Deterministic offset reporting aligned with Ghidra MCP (ghidra-re-operator) findings
 """
 
+import json
 import struct
 import sys
 from pathlib import Path
 from typing import Dict, Any, List, Optional
+
+
+def zeroize_bytes(buf: bytearray) -> None:
+    """
+    Cryptographic buffer sanitization: overwrites sensitive byte buffer
+    with zeros to prevent memory retention of extracted keys or payloads.
+    """
+    for i in range(len(buf)):
+        buf[i] = 0
+
 
 
 class PEBatchPackerForensics:
