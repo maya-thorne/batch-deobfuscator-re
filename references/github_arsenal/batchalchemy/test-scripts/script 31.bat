@@ -1,4 +1,4 @@
 rem test batch script with errors
-adfknjdaöfg
-asdnö
+adfknjdaï¿½fg
+asdnï¿½
 start

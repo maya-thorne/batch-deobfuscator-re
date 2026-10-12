@@ -1,5 +1,5 @@
-ÿþ&cls
-ÿþ
+ï¿½ï¿½&cls
+ï¿½ï¿½
 @echo off
 echo Hello world !
 timeout /t 5 /NOBREAK

@@ -1,4 +1,4 @@
-﻿# Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -34,5 +34,10 @@ desktop.ini
 temp_*
 scratch/
 
-# Local Agent Internal Memory (Zero-Remote Upload)
+# Local Agent Internal Memory & Antigravity Context (Zero-Remote Upload)
 memory/
+.gemini/
+.agents/
+
+# Autonomous Dev Logs
+dev_logs/

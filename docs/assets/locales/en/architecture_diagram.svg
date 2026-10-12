@@ -24,7 +24,7 @@
 
   <!-- Title Header Bar -->
   <text x="500" y="34" fill="#38bdf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="800" text-anchor="middle" filter="url(#glow)">
-    Ghidra MCP PE Binary Reverse Engineering & Multi-Pass Deobfuscator Pipeline
+    Ghidra MCP PE Binary Reverse Engineering &amp; Multi-Pass Deobfuscator Pipeline
   </text>
 
   <!-- 4 Cards -->
@@ -35,11 +35,11 @@
       <rect width="226" height="38" rx="10" fill="#0e2238"/>
       <rect y="26" width="226" height="12" fill="#0e2238"/>
       <circle cx="16" cy="19" r="4.5" fill="#7dd3fc" filter="url(#glow)"/>
-      <text x="28" y="23" fill="#7dd3fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="800" letter-spacing="0.3">1. OBFUSCATED & PACKED INPUT</text>
+      <text x="28" y="23" fill="#7dd3fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="800" letter-spacing="0.3">1. OBFUSCATED &amp; PACKED INPUT</text>
       <line x1="0" y1="38" x2="226" y2="38" stroke="#0284c7" stroke-width="1" stroke-opacity="0.4"/>
       
       <text x="12" y="56" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" text-rendering="geometricPrecision">• Raw Batch Payload (.bat/.cmd)</text>
-      <text x="22" y="72" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="9.5" text-rendering="geometricPrecision">Caret, BOM & Caesar Cipher traps</text>
+      <text x="22" y="72" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="9.5" text-rendering="geometricPrecision">Caret, BOM &amp; Caesar Cipher traps</text>
       
       <text x="12" y="102" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" text-rendering="geometricPrecision">• Compiled PE Executables</text>
       <text x="22" y="118" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="9.5" text-rendering="geometricPrecision">UPX, LZMA RangeCoder, XOR stubs</text>
@@ -78,7 +78,7 @@
       <text x="12" y="56" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" text-rendering="geometricPrecision">• Pass 1: UTF-16LE BOM Strip</text>
       <text x="22" y="72" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="9.5" text-rendering="geometricPrecision">BOM / X.509 certutil decoding</text>
       
-      <text x="12" y="102" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" text-rendering="geometricPrecision">• Pass 2: Caret & Quote Fold</text>
+      <text x="12" y="102" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" text-rendering="geometricPrecision">• Pass 2: Caret &amp; Quote Fold</text>
       <text x="22" y="118" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="9.5" text-rendering="geometricPrecision">Unescaping ^ and collapsing ""</text>
       
       <text x="12" y="148" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" text-rendering="geometricPrecision">• Pass 3: Env Symbol Table</text>
@@ -95,7 +95,7 @@
       <rect width="226" height="38" rx="10" fill="#361b0c"/>
       <rect y="26" width="226" height="12" fill="#361b0c"/>
       <circle cx="16" cy="19" r="4.5" fill="#fde68a" filter="url(#glow)"/>
-      <text x="28" y="23" fill="#fde68a" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="800" letter-spacing="0.3">4. EDR DEFENSE & SIEM RULES</text>
+      <text x="28" y="23" fill="#fde68a" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="800" letter-spacing="0.3">4. EDR DEFENSE &amp; SIEM RULES</text>
       <line x1="0" y1="38" x2="226" y2="38" stroke="#d97706" stroke-width="1" stroke-opacity="0.4"/>
       
       <text x="12" y="56" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" text-rendering="geometricPrecision">• cmd.exe!FindFixAndRun Detour</text>

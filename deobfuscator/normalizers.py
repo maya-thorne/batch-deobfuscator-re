@@ -48,45 +48,169 @@ def strip_carets(text: str) -> str:
             i += 1
     return "".join(result)
 
+DYNAMIC_SYSTEM_VARS = {
+    "errorlevel",
+    "cd",
+    "random",
+    "date",
+    "time",
+    "cmdextversion",
+    "cmdcmdline",
+    "highestnumanodenumber",
+}
+
 def strip_empty_quotes(text: str) -> str:
-    """Flatten fragmented double quotes inserted between identifiers (e.g. w""h""o""a""m""i -> whoami)."""
-    return re.sub(r'([a-zA-Z0-9_\-\/\\])""([a-zA-Z0-9_\-\/\\])', r'\1\2', text)
+    """
+    Flatten fragmented double quotes used to disguise identifiers and commands.
+    Handles:
+      - Within identifiers: w""h""o""a""m""i -> whoami, c""m""d"".e""x""e -> cmd.exe
+      - Repeated quote pairs: c""""m""""d -> cmd
+      - Leading empty quotes: ""whoami -> whoami
+      - Trailing empty quotes: whoami"" -> whoami
+      - Variable identifiers: ""%var%"" -> %var%
+    Preserves standalone empty string comparisons/arguments like 'if "%1"==""'.
+    """
+    prev = ""
+    curr = text
+    while prev != curr:
+        prev = curr
+        # Collapse multiple adjacent empty quotes
+        curr = re.sub(r'""+', '""', curr)
+        # Quotes between word/path/dot/var characters
+        curr = re.sub(r'([a-zA-Z0-9_\-\/\\\.\:%])""(?=[a-zA-Z0-9_\-\/\\\.\:%])', r'\1', curr)
+        # Quotes at token prefix (after whitespace, delimiter, @, =)
+        curr = re.sub(r'(^|[\s,;=@])""(?=[a-zA-Z0-9_\-\/\\\.\:%])', r'\1', curr)
+        # Quotes at token suffix (before whitespace, delimiter, end of line, parens)
+        curr = re.sub(r'([a-zA-Z0-9_\-\/\\\.\:%])""(?=$|[\s,;=@\(\)&\|])', r'\1', curr)
+    return curr
+
+def split_chained_commands(text: str) -> str:
+    """
+    Split single-line chained commands (& outside quotes/redirection) into multiple lines.
+    Preserves redirection operators (e.g. 2>&1, >&, <&), caret-escaped ampersands (^&),
+    ampersands inside quotes ("... & ..."), and nested parenthesized blocks ((a & b)).
+    """
+    result_lines = []
+    for line in text.splitlines():
+        parts = []
+        curr_part = []
+        in_quotes = False
+        paren_depth = 0
+        i = 0
+        n = len(line)
+        while i < n:
+            ch = line[i]
+            if ch == '"':
+                in_quotes = not in_quotes
+                curr_part.append(ch)
+                i += 1
+            elif not in_quotes and ch == '^':
+                curr_part.append(ch)
+                if i + 1 < n:
+                    curr_part.append(line[i + 1])
+                    i += 2
+                else:
+                    i += 1
+            elif not in_quotes and ch == '(':
+                paren_depth += 1
+                curr_part.append(ch)
+                i += 1
+            elif not in_quotes and ch == ')':
+                if paren_depth > 0:
+                    paren_depth -= 1
+                curr_part.append(ch)
+                i += 1
+            elif not in_quotes and paren_depth == 0 and ch == '&':
+                prev_str = "".join(curr_part).rstrip()
+                # Check for redirection: 2>&1, 1>&2, >&, <&
+                if (prev_str.endswith(">") or prev_str.endswith("<") or 
+                    re.search(r'[0-9]?>\s*$', prev_str) or re.search(r'[0-9]?<\s*$', prev_str)):
+                    curr_part.append(ch)
+                    i += 1
+                elif i + 1 < n and line[i + 1] == '&':
+                    # && conditional operator
+                    part_str = "".join(curr_part).strip()
+                    if part_str:
+                        parts.append(part_str)
+                    curr_part = []
+                    i += 2
+                else:
+                    part_str = "".join(curr_part).strip()
+                    if part_str:
+                        parts.append(part_str)
+                    curr_part = []
+                    i += 1
+            else:
+                curr_part.append(ch)
+                i += 1
+        part_str = "".join(curr_part).strip()
+        if part_str:
+            parts.append(part_str)
+        if parts:
+            result_lines.extend(parts)
+        else:
+            result_lines.append(line)
+    return "\n".join(result_lines)
+
+def strip_undefined_vars(text: str, env_vars: dict) -> str:
+    """
+    Strip undefined %VAR% references outside quotes or wherever used for obfuscation noise.
+    Preserves variables defined in env_vars, dynamic system pseudo-variables, and special variables.
+    """
+    def repl(m):
+        name = m.group(1).lower()
+        if name in env_vars or name in DYNAMIC_SYSTEM_VARS:
+            return m.group(0)
+        return ""
+
+    pattern = re.compile(r'%([a-zA-Z0-9_\-\.\:\$]+)%')
+    result = pattern.sub(repl, text)
+    return re.sub(r' +', ' ', result)
 
 def normalize_delimiters(text: str) -> str:
     """Normalize non-standard batch parameter separators like semicolons or commas outside quotes."""
-    # cmd.exe treats comma, semicolon, equal sign as whitespace between tokens outside quotes
     lines = []
     for line in text.splitlines():
-        # Clean leading @ signs
-        stripped = line.strip()
         lines.append(line)
     return "\n".join(lines)
 
 def resolve_slicing(text: str, env_vars: dict) -> str:
-    """Resolve %VAR:~start,length% and %VAR:~start%."""
+    """
+    Resolve %VAR:~start,length% and %VAR:~start% with exact cmd.exe semantics,
+    including negative start indices and negative lengths.
+    """
     def slice_repl(match):
         var_name = match.group(1).lower()
-        args = match.group(2)
         if var_name not in env_vars:
             return match.group(0)
 
         val = env_vars[var_name]
+        val_len = len(val)
+        start_str = match.group(2)
+        len_str = match.group(3)
+
         try:
-            if "," in args:
-                start_s, len_s = args.split(",", 1)
-                start = int(start_s)
-                length = int(len_s)
-                if length >= 0:
-                    return val[start:start + length]
-                else:
-                    return val[start:length]
+            start = int(start_str)
+            # Map start to positive index
+            if start < 0:
+                start_idx = max(0, val_len + start)
             else:
-                start = int(args)
-                return val[start:]
+                start_idx = min(val_len, start)
+
+            if len_str is not None:
+                length = int(len_str)
+                if length < 0:
+                    end_idx = max(start_idx, val_len + length)
+                else:
+                    end_idx = min(val_len, start_idx + length)
+            else:
+                end_idx = val_len
+
+            return val[start_idx:end_idx]
         except (ValueError, IndexError):
             return match.group(0)
 
-    pattern = re.compile(r'%([a-zA-Z0-9_\-\.\:\$]+):~([0-9\-]+(?:,[0-9\-]+)?)%', re.IGNORECASE)
+    pattern = re.compile(r'%([a-zA-Z0-9_\-\.\:\$]+):~\s*(-?\d+)\s*(?:,\s*(-?\d+)\s*)?%', re.IGNORECASE)
     return pattern.sub(slice_repl, text)
 
 def resolve_substitution(text: str, env_vars: dict) -> str:

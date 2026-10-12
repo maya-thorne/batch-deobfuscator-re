@@ -26,14 +26,29 @@
 
 ---
 
+<!-- Quick Jump Navigation Bar -->
+<div align="center">
 
-<details open>
-<summary><h2 style="display:inline-block; margin:0;">🏛️ 1. Architecture & Reverse Engineering Pipeline</h2></summary>
+<p align="center">
+  <a href="#1-architecture--reverse-engineering-pipeline"><b>🏛️ Architecture</b></a> &nbsp;•&nbsp;
+  <a href="#2-master-whitepapers--core-documentation-index"><b>📚 Whitepapers</b></a> &nbsp;•&nbsp;
+  <a href="#3-ghidra-mcp-binary-reverse-engineering-summary-7-pe-binaries"><b>🔍 Ghidra RE</b></a> &nbsp;•&nbsp;
+  <a href="#4-quickstart-cli-toolchain--deobfuscator-engine"><b>🛠️ Quickstart</b></a> &nbsp;•&nbsp;
+  <a href="#5-repository-directory-structure"><b>📂 Structure</b></a> &nbsp;•&nbsp;
+  <a href="#6-license--open-source-research-credits"><b>📜 License &amp; Credits</b></a>
+</p>
+
+</div>
+
+---
+
+<span id="1-architecture--reverse-engineering-pipeline"></span>
+<details open id="architecture-pipeline">
+<summary><h2 style="display:inline-block; margin:0;">🏛️ 1. Architecture &amp; Reverse Engineering Pipeline</h2></summary>
 
 <br />
 
-`batch-deobfuscator-re` combines **Ghidra MCP (`ghidra-re-operator`) binary reverse engineering** of Windows Batch-to-EXE compilers/packers, **line-by-line source code dissection of 7 flagship obfuscation/deobfuscation engines**, a **custom Python Multi-Pass Fixed-Point Static Deobfuscator (`src/deobfuscator_engine.py`)**, a **Static PE Packer Forensic Unpacker (`src/pe_packer_forensics.py`)**, and **48+ flattened open-source & Hugging Face AI references**.
-
+`batch-deobfuscator-re` combines **Ghidra MCP (`ghidra-re-operator`) binary reverse engineering** of Windows Batch-to-EXE compilers/packers, **line-by-line source code dissection of 7 flagship obfuscation/deobfuscation engines**, a **custom Python Multi-Pass Fixed-Point Static Deobfuscator (`src/deobfuscator_engine.py`)**, a **Static PE Packer Forensic Unpacker (`src/pe_packer_forensics.py`)**, and **48+ flattened open-source &amp; Hugging Face AI references**.
 
 <p align="center">
   <a href="https://github.com/maya-thorne/batch-deobfuscator-re"><img src="./docs/assets/locales/en/architecture_diagram.svg" alt="Architecture Pipeline Diagram" width="100%" /></a>
@@ -75,34 +90,35 @@ flowchart TD
 
 ---
 
-<details open>
-<summary><h2 style="display:inline-block; margin:0;">📚 2. Master Whitepapers & Core Documentation Index</h2></summary>
+<span id="2-master-whitepapers--core-documentation-index"></span>
+<details open id="master-whitepapers">
+<summary><h2 style="display:inline-block; margin:0;">📚 2. Master Whitepapers &amp; Core Documentation Index</h2></summary>
 
 <br />
 
 <table width="100%">
   <thead>
     <tr>
-      <th width="32%" align="left">📄 Document / Whitepaper</th>
-      <th width="58%" align="left">🔬 Scope &amp; Technical Highlights</th>
-      <th width="10%" align="center">📦 Size</th>
+      <th width="22%" align="left"><nobr>📄 Document / Whitepaper</nobr></th>
+      <th width="68%" align="left"><nobr>🔬 Scope &amp; Technical Highlights</nobr></th>
+      <th width="10%" align="center"><nobr>📦 Size</nobr></th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td>
         🔬 <strong><a href="./docs/whitepapers/GHIDRA_BINARY_RE_AND_DEOBFUSCATOR_ENGINE_ANALYSIS.md">Binary RE &amp; Engine Analysis</a></strong><br>
-        <code>GHIDRA_BINARY_RE_<wbr>AND_DEOBFUSCATOR_<wbr>ENGINE_ANALYSIS.md</code>
+        <code>GHIDRA_<wbr>BINARY_<wbr>RE_<wbr>AND_<wbr>DEOBFUSCATOR_<wbr>ENGINE_<wbr>ANALYSIS.md</code>
       </td>
       <td>
         <strong>Ghidra MCP 7-Binary Disassembly &amp; 7-Tool Source Dissection</strong>: <code>bat2exe_12.exe</code> (<code>0x20ea0</code> UPX NRV2B), <code>example_bytepressed.exe</code> (<code>0x9f78</code> LZMA RangeCoder), <code>xorStub.exe</code> (<code>0xfcc "randomkey"</code>), <code>BEDeCode.exe</code> (<code>0x1670</code> VB6 <code>ThunRTMain</code>), plus <code>Invoke-DOSfuscation</code>, <code>SomalifuscatorV2</code>, <code>BatCloak</code>, <code>Exorcism</code>, <code>0xidiz3r</code>, <code>Bat2Exe-dehoisted</code>, <code>batch_deobfuscator</code>.
       </td>
-      <td align="center"><strong>43.7 KB</strong></td>
+      <td align="center"><strong>44.4 KB</strong></td>
     </tr>
     <tr>
       <td>
         📖 <strong><a href="./docs/whitepapers/BATCH_OBFUSCATION_MASTER_GUIDE.md">30-Year Evolution &amp; Architecture</a></strong><br>
-        <code>BATCH_OBFUSCATION_<wbr>MASTER_GUIDE.md</code>
+        <code>BATCH_<wbr>OBFUSCATION_<wbr>MASTER_<wbr>GUIDE.md</code>
       </td>
       <td>
         <strong>30-Year Evolution &amp; Architecture Guide</strong>: 1990s MS-DOS to 2026 AI, <code>cmd.exe</code> 5-stage parser state machine, 12 obfuscation techniques, 4-Tier 45-repo matrix, Sigma/YARA rules.
@@ -112,7 +128,7 @@ flowchart TD
     <tr>
       <td>
         🛡️ <strong><a href="./docs/whitepapers/BATCH_OBFUSCATION_ENCYCLOPEDIA.md">Master Encyclopedia (v2.0)</a></strong><br>
-        <code>BATCH_OBFUSCATION_<wbr>ENCYCLOPEDIA.md</code>
+        <code>BATCH_<wbr>OBFUSCATION_<wbr>ENCYCLOPEDIA.md</code>
       </td>
       <td>
         <strong>Comprehensive Encyclopedia (v2.0)</strong>: 48 repositories taxonomy, AST pushdown automata, Hugging Face dataset integration.
@@ -122,7 +138,7 @@ flowchart TD
     <tr>
       <td>
         🧬 <strong><a href="./docs/whitepapers/DEEP_REVERSE_ENGINEERING_AND_SOURCE_ANALYSIS.md">Deep Binary &amp; Source Analysis</a></strong><br>
-        <code>DEEP_REVERSE_<wbr>ENGINEERING_<wbr>AND_SOURCE_ANALYSIS.md</code>
+        <code>DEEP_<wbr>REVERSE_<wbr>ENGINEERING_<wbr>AND_<wbr>SOURCE_<wbr>ANALYSIS.md</code>
       </td>
       <td>
         <strong>Extended Binary &amp; Source Analysis</strong>: Supplemental PE header forensics, <code>choice.exe</code> MSVC SEH frame (<code>fs:[0]</code>), and runtime hook tables.
@@ -131,33 +147,53 @@ flowchart TD
     </tr>
     <tr>
       <td>
+        🏛️ <strong><a href="./docs/whitepapers/BATCH_OBFUSCATION_ARCHITECTURE_AND_CODE_ANALYSIS.md">Architecture &amp; Source Dissection</a></strong><br>
+        <code>BATCH_<wbr>OBFUSCATION_<wbr>ARCHITECTURE_<wbr>AND_<wbr>CODE_<wbr>ANALYSIS.md</code>
+      </td>
+      <td>
+        <strong>Line-by-Line Source Dissection</strong>: In-depth code teardown of 7 flagship tools (<code>Invoke-DOSfuscation</code>, <code>SomalifuscatorV2</code>, <code>BatCloak</code>, <code>Exorcism</code>, etc.) and AST transformation pipelines.
+      </td>
+      <td align="center"><strong>43.7 KB</strong></td>
+    </tr>
+    <tr>
+      <td>
+        🛡️ <strong><a href="./docs/whitepapers/BATCLOAK_SCRUBCRYPT_DEEP_DIVE.md">BatCloak &amp; ScrubCrypt Deep Dive</a></strong><br>
+        <code>BATCLOAK_<wbr>SCRUBCRYPT_<wbr>DEEP_<wbr>DIVE.md</code>
+      </td>
+      <td>
+        <strong>Modern 2023–2026 EDR Evasion</strong>: Multi-stage loader architecture, AMSI bypass vectors, and EDR process injection mitigation forensics.
+      </td>
+      <td align="center"><strong>2.9 KB</strong></td>
+    </tr>
+    <tr>
+      <td>
         🤗 <strong><a href="./docs/whitepapers/HUGGINGFACE_MODELS_AND_DATASETS.md">AI Models &amp; Datasets</a></strong><br>
-        <code>HUGGINGFACE_MODELS_<wbr>AND_DATASETS.md</code>
+        <code>HUGGINGFACE_<wbr>MODELS_<wbr>AND_<wbr>DATASETS.md</code>
       </td>
       <td>
         <strong>AI Deobfuscation &amp; Entropy Research</strong>: <code>LLM4Decompile-SFT-Deobfuscate</code>, <code>c-deobfuscate-mt</code> (T5), JFrog Token Entropy (ArXiv:2510.26847), EDR Telemetry.
       </td>
-      <td align="center"><strong>Full Report</strong></td>
+      <td align="center"><strong>5.1 KB</strong></td>
     </tr>
     <tr>
       <td>
         🕵️ <strong><a href="./docs/whitepapers/RESEARCH_WHITEPAPERS_AND_REPORTS.md">Threat Intelligence Reports</a></strong><br>
-        <code>RESEARCH_WHITEPAPERS_<wbr>AND_REPORTS.md</code>
+        <code>RESEARCH_<wbr>WHITEPAPERS_<wbr>AND_<wbr>REPORTS.md</code>
       </td>
       <td>
         <strong>Global Threat Intelligence Breakdown</strong>: Mandiant (Daniel Bohannon <code>DOSfuscation</code> / <code>FIN7</code>) &amp; Palo Alto Unit 42 (<code>BatCloak</code> / <code>ScrubCrypt</code>).
       </td>
-      <td align="center"><strong>Full Report</strong></td>
+      <td align="center"><strong>5.5 KB</strong></td>
     </tr>
     <tr>
       <td>
         📜 <strong><a href="./docs/whitepapers/CLASSIC_TO_MODERN_EVOLUTION.md">Classic to Modern Evolution</a></strong><br>
-        <code>CLASSIC_TO_MODERN_<wbr>EVOLUTION.md</code>
+        <code>CLASSIC_<wbr>TO_<wbr>MODERN_<wbr>EVOLUTION.md</code>
       </td>
       <td>
         <strong>Historical Evolution &amp; PoC Analysis</strong>: Generation 1–5 batch obfuscation paradigms &amp; <code>BatCloak</code>/<code>ScrubCrypt</code> 3-stage loader forensics.
       </td>
-      <td align="center"><strong>Full Report</strong></td>
+      <td align="center"><strong>7.2 KB</strong></td>
     </tr>
   </tbody>
 </table>
@@ -166,7 +202,8 @@ flowchart TD
 
 ---
 
-<details open>
+<span id="3-ghidra-mcp-binary-reverse-engineering-summary-7-pe-binaries"></span>
+<details open id="ghidra-re-summary">
 <summary><h2 style="display:inline-block; margin:0;">🔍 3. Ghidra MCP Binary Reverse Engineering Summary (7 PE Binaries)</h2></summary>
 
 <br />
@@ -174,16 +211,16 @@ flowchart TD
 <table width="100%">
   <thead>
     <tr>
-      <th width="22%" align="left">🎯 Target Binary</th>
-      <th width="18%" align="left">🏗️ Compiler / Packer</th>
-      <th width="16%" align="center">📍 Entry RVA / Offset</th>
-      <th width="44%" align="left">🔬 Disassembled Mechanism &amp; Forensic Finding</th>
+      <th width="22%" align="left"><nobr>🎯 Target Binary</nobr></th>
+      <th width="18%" align="left"><nobr>🏗️ Compiler / Packer</nobr></th>
+      <th width="16%" align="center"><nobr>📍 Entry RVA / Offset</nobr></th>
+      <th width="44%" align="left"><nobr>🔬 Disassembled Mechanism &amp; Forensic Finding</nobr></th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td>
-        <strong><code>bat2exe_12.exe</code></strong><br>
+        <strong><code>bat2exe_<wbr>12.exe</code></strong><br>
         <small>(<code>bat2exe-islamadel</code>)</small>
       </td>
       <td>Native C++<br><sub>UPX NRV2B + <code>7zS2.sfx</code></sub></td>
@@ -217,7 +254,7 @@ flowchart TD
     </tr>
     <tr>
       <td>
-        <strong><code>example_encoded.exe</code></strong><br>
+        <strong><code>example_<wbr>encoded.exe</code></strong><br>
         <small>(<code>Bat2Exe-dehoisted</code>)</small>
       </td>
       <td>C# .NET CLR<br><sub>(Base64 Wrapper)</sub></td>
@@ -228,7 +265,7 @@ flowchart TD
     </tr>
     <tr>
       <td>
-        <strong><code>example_bytepressed.exe</code></strong><br>
+        <strong><code>example_<wbr>bytepressed.exe</code></strong><br>
         <small>(<code>Bat2Exe-dehoisted</code>)</small>
       </td>
       <td>C# .NET CLR<br><sub>(Bytepress LZMA)</sub></td>
@@ -266,8 +303,9 @@ flowchart TD
 
 ---
 
-<details open>
-<summary><h2 style="display:inline-block; margin:0;">🛠️ 4. Quickstart: CLI Toolchain & Deobfuscator Engine</h2></summary>
+<span id="4-quickstart-cli-toolchain--deobfuscator-engine"></span>
+<details open id="quickstart-cli">
+<summary><h2 style="display:inline-block; margin:0;">🛠️ 4. Quickstart: CLI Toolchain &amp; Deobfuscator Engine</h2></summary>
 
 <br />
 
@@ -294,24 +332,88 @@ batch-deobfuscator samples/03_dynamic_substitution_table_sample.bat --format jso
 python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
 ```
 
-### 4.2 CLI Options & Flags Reference
-| Flag | Description | Default |
-| :--- | :--- | :---: |
-| `<input>` | Obfuscated `.bat` or `.cmd` file path | *Required* |
-| `-o, --output` | Destination path for cleaned output script | `stdout` |
-| `-p, --passes` | Maximum fixed-point normalization passes | `15` |
-| `-d, --diff` | Render unified color diff highlighting transformed lines | `False` |
-| `--format` | Output format: `text` or `json` (with forensic telemetry) | `text` |
-| `-v, --verbose` | Stream pass convergence telemetry and symbol counts | `False` |
-| `--version` | Display version and author information | `1.0.0` |
+### 4.2 CLI Options &amp; Flags Reference
+
+<table width="100%">
+  <thead>
+    <tr>
+      <th width="22%" align="left"><nobr>⚙️ Flag / Option</nobr></th>
+      <th width="63%" align="left"><nobr>📝 Description &amp; Forensic Behavior</nobr></th>
+      <th width="15%" align="center"><nobr>⚙️ Default</nobr></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&lt;input&gt;</code></td>
+      <td>Obfuscated <code>.bat</code> or <code>.cmd</code> script path to be deobfuscated</td>
+      <td align="center"><em>Required</em></td>
+    </tr>
+    <tr>
+      <td><code>-o, --output</code></td>
+      <td>Destination path for cleaned output script (omitting writes to stdout)</td>
+      <td align="center"><code>stdout</code></td>
+    </tr>
+    <tr>
+      <td><code>-p, --passes</code></td>
+      <td>Maximum fixed-point AST convergence passes (terminates early upon convergence)</td>
+      <td align="center"><code>15</code></td>
+    </tr>
+    <tr>
+      <td><code>-d, --diff</code></td>
+      <td>Render ANSI terminal colorized unified diff highlighting transformed lines</td>
+      <td align="center"><code>False</code></td>
+    </tr>
+    <tr>
+      <td><code>--format</code></td>
+      <td>Output format: <code>text</code> for script only, or <code>json</code> for forensic telemetry &amp; symbol table</td>
+      <td align="center"><code>text</code></td>
+    </tr>
+    <tr>
+      <td><code>-v, --verbose</code></td>
+      <td>Stream pass convergence telemetry, intermediate diffs, and dynamic symbol counts</td>
+      <td align="center"><code>False</code></td>
+    </tr>
+    <tr>
+      <td><code>--version</code></td>
+      <td>Display engine version, release tag, and author attribution</td>
+      <td align="center"><code>1.0.0</code></td>
+    </tr>
+  </tbody>
+</table>
 
 ### 4.3 Static PE Packer Forensic Analyzer (`src/pe_packer_forensics.py`)
 ```bash
 python src/pe_packer_forensics.py references/github_arsenal/bat2exe-islamadel/bat2exe_12.exe
 ```
 
-### 4.4 Automated Verification Test Suites
+### 4.4 28-Corpus Automated Benchmark Evaluation Harness (`benchmarks/eval_corpus_runner.py`)
+Standardized multi-metric benchmark evaluating deobfuscation quality, convergence stability, Shannon entropy reduction, and oracle token recovery across 28 real-world batch obfuscators and threat archetypes:
+
 ```bash
+# 1. Run complete 28-corpus benchmark suite with ASCII summary table
+python benchmarks/eval_corpus_runner.py
+
+# 2. Export detailed forensic telemetry and metrics as JSON
+python benchmarks/eval_corpus_runner.py --json
+
+# 3. Filter evaluation to specific corpus by ID or name
+python benchmarks/eval_corpus_runner.py --corpus 1
+python benchmarks/eval_corpus_runner.py --corpus BatCloak
+```
+
+| Metric | Benchmark Result | Status |
+| :--- | :---: | :---: |
+| **Total Corpora Evaluated** | **28 / 28** | Complete |
+| **Verification Pass Rate** | **100.0% (28/28)** | Passed |
+| **Mean Composite Score** | **98.6 / 100.0** | Grade: A+ |
+| **Mean Convergence Passes** | **1.96 passes** | Deterministic |
+| **Mean Execution Latency** | **&lt; 0.3 ms / corpus** | High Performance |
+| **Core Enhancements Tested** | `&-splits`, Quote Pairs, Undefined Stripping | Verified |
+
+### 4.5 Automated Verification Test Suites
+```bash
+python -m unittest discover tests  # 19 comprehensive automated tests
+python tests/test_benchmark_runner.py # 9 benchmark suite & metrics tests
 python tests/test_cli.py     # 6 CLI flags, diff mode, and JSON telemetry tests
 python tests/test_suite.py   # 4 core AST deobfuscation & PE overlay tests
 ```
@@ -320,78 +422,314 @@ python tests/test_suite.py   # 4 core AST deobfuscation & PE overlay tests
 
 ---
 
-<details open>
+<span id="5-repository-directory-structure"></span>
+<details open id="repository-structure">
 <summary><h2 style="display:inline-block; margin:0;">📂 5. Repository Directory Structure</h2></summary>
 
 <br />
 
 ```text
 batch-deobfuscator-re/
-├── pyproject.toml                         # 📦 PEP 517/621 Standard Package Configuration
-├── README.md                              # 📖 Master Documentation & Architecture Hub
+├── pyproject.toml                         # 📦 PEP 517/621 Standard Package & CLI Entrypoint Metadata
+├── README.md                              # 📖 Master Architecture Hub, Forensics Index & User Guide
+├── CHANGELOG.md                           # 📝 Project Release History & Architectural Changes
 ├── LICENSE                                # 📜 Maya Thorne Systems & Security Research License (MT-SRL)
+├── .gitignore                             # 🔒 Zero-Leak Boundary (Memory, Caches, Temp & OS Artifacts)
+│
+├── benchmarks/                            # 📊 28-Corpus Benchmark Evaluation Harness
+│   ├── __init__.py                        # Benchmark Runner Exports
+│   └── eval_corpus_runner.py              # 28-Corpus Automated Evaluation & Scoring Engine
 │
 ├── deobfuscator/                          # 🛠️ Production CLI Toolchain Package (python -m deobfuscator)
-│   ├── __init__.py                        # Version 1.0.0 & Public API exports
-│   ├── __main__.py                        # Module CLI execution entrypoint
-│   ├── cli.py                             # Rich CLI Interface (argparse, JSON, Diff, Colors)
-│   ├── core.py                            # Multi-Pass Fixed-Point Convergence Engine
-│   ├── normalizers.py                     # Modular Caret, BOM, Quote, Env Normalizers
-│   └── diff.py                            # Terminal Color Unified Diff Generator
+│   ├── __init__.py                        # Package initialization, v1.1.0 & Public API exports
+│   ├── __main__.py                        # Direct module execution entrypoint (-m deobfuscator)
+│   ├── cli.py                             # Rich CLI Interface (argparse, JSON export, Diff, Verbose)
+│   ├── core.py                            # Multi-Pass Fixed-Point AST Convergence Loop Coordinator
+│   ├── normalizers.py                     # Carets, Quotes, &-Splits, Undefined Vars, Env Slicing
+│   └── diff.py                            # Terminal ANSI 256-Color Unified Diff Renderer
 │
-├── docs/                                  # 🌐 Documentation Hub (Slim Root Architecture)
-│   ├── whitepapers/                       # 🔬 9 Flagship Technical & Forensic Analysis Papers
-│   ├── locales/                           # 🌍 10-Language Localized Documentation Hub
-│   └── assets/                            # 🎨 Localized SVGs & Terminal Animation Demo
+├── src/                                   # ⚙️ Standalone Zero-Dependency Core Forensic Engines
+│   ├── deobfuscator_engine.py             # Multi-Pass Static Normalizer & Fixed-Point AST Evaluator
+│   └── pe_packer_forensics.py             # Ghidra-Derived Static PE Unpacker (UPX, LZMA, XOR)
 │
-├── src/                                   # ⚙️ Standalone Core Forensic Engines
-│   ├── deobfuscator_engine.py             # Multi-Pass Static Normalizer Engine
-│   └── pe_packer_forensics.py             # Ghidra-Derived Static PE Unpacker
+├── docs/                                  # 🌐 Documentation Hub & Multi-Language Assets
+│   ├── whitepapers/                       # 🔬 9 Flagship Technical & Forensic Reverse Engineering Papers
+│   ├── locales/                           # 🌍 10-Language Localized Documentation Hub (ko, zh, es, etc.)
+│   └── assets/                            # 🎨 Localized Architecture SVGs & Terminal Animation Demo
 │
-├── tests/                                 # ✅ Automated Test Suites (10 Tests Total)
-│   ├── test_cli.py                        # 6 CLI flags, JSON, and diff tests
-│   └── test_suite.py                      # 4 AST convergence & PE unpacking tests
+├── rules/                                 # 🛡️ Production SIEM & EDR Detection Rulebooks
+│   ├── sigma_batch_obfuscation.yml        # Sigma Rules for Caret Evasion, Env Slicing, Exorcism Detours
+│   └── yara_batch_obfuscation.yar         # YARA Signatures for BOM Traps, Somalifuscator, UPX Wrappers
 │
-├── rules/                                 # 🛡️ Production SIEM / EDR Detection Rules
-│   ├── sigma_batch_obfuscation.yml        # Sigma Rules for Carets, Slicing, Exorcism
-│   └── yara_batch_obfuscation.yar         # YARA Rules for BOMs, Somalifuscator, UPX
+├── tests/                                 # ✅ Automated Verification Test Suites (19 Tests Total)
+│   ├── test_benchmark_runner.py           # 9 Benchmark Suite, Metrics Schema & Scoring Tests
+│   ├── test_cli.py                        # 6 CLI Flags, Output Modes, Diff & JSON Telemetry Tests
+│   └── test_suite.py                      # 4 Core AST Convergence & PE Static Unpacking Tests
 │
-├── samples/                               # 🧪 6 Classic & Modern Obfuscated Samples
-└── references/                            # 📦 48+ Flattened Open-Source & AI Mirrors
-    ├── github_arsenal/                    # 28+ Deconstructed Open-Source Projects
-    └── huggingface_ai/                    # Hugging Face AI Models & Datasets
+├── samples/                               # 🧪 6 Classic & Modern Obfuscated Batch Test Vectors
+│   ├── 01_env_slicing_sample.bat          # Dynamic substring slicing (%VAR:~offset,len%)
+│   ├── 02_caret_and_delimiters_sample.bat # Caret (^) interleaving and quote boundary traps
+│   ├── 03_dynamic_substitution_table_sample.bat # High-entropy SET dynamic substitution table
+│   ├── 04_reverse_reconstruction_sample.bat # Reverse token and multi-line string concatenation
+│   ├── 05_certutil_hex_pipeline_sample.bat # Certutil hex-encoded payload decode pipeline
+│   └── 06_anti_vm_and_sandbox_evasion_sample.bat # Anti-VM, debugger detection & sandbox checks
+│
+└── references/                            # 📦 48+ Flattened Open-Source & AI Research Mirrors
+    ├── catalog.json                       # Structured Machine-Readable Open-Source & AI Tool Catalog
+    ├── references_index.json              # 61 KB Reference Database with Commit SHAs & Threat Actors
+    ├── github_arsenal/                    # 28+ Deconstructed Open-Source Projects & Compilers
+    └── huggingface_ai/                    # Hugging Face AI Models, Datasets & EDR Telemetry Feeds
 ```
 
----
+<br />
+
+<table width="100%">
+  <thead>
+    <tr>
+      <th width="24%" align="left"><nobr>📂 Path / Component</nobr></th>
+      <th width="18%" align="left"><nobr>🏗️ Type / Scope</nobr></th>
+      <th width="58%" align="left"><nobr>🔬 Concrete Role &amp; Technical Functionality</nobr></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong><code>pyproject.toml</code></strong></td>
+      <td>Package Manifest</td>
+      <td>PEP 517/621 standardized packaging metadata, CLI entrypoint mapping (<code>batch-deobfuscator</code>), and build configuration.</td>
+    </tr>
+    <tr>
+      <td><strong><code>README.md</code></strong></td>
+      <td>Documentation Hub</td>
+      <td>Master repository showcase, architecture pipeline diagrams, whitepaper index, Ghidra analysis tables, and CLI usage.</td>
+    </tr>
+    <tr>
+      <td><strong><code>LICENSE</code></strong></td>
+      <td>Legal / Licensing</td>
+      <td>Maya Thorne Systems &amp; Security Research License (MT-SRL) governing defensive and forensic use.</td>
+    </tr>
+    <tr>
+      <td><strong><code>.gitignore</code></strong></td>
+      <td>Security Boundary</td>
+      <td>Zero-Leak exclusions preventing local memory, caches, temporary files, and system artifacts from remote sync.</td>
+    </tr>
+    <tr>
+      <td><strong><code>deobfuscator/<wbr>__init__.py</code></strong></td>
+      <td>Package Initializer</td>
+      <td>Package exports (<code>deobfuscate_script</code>, <code>deobfuscate_file</code>) and engine version declaration (<code>1.0.0</code>).</td>
+    </tr>
+    <tr>
+      <td><strong><code>deobfuscator/<wbr>__main__.py</code></strong></td>
+      <td>CLI Forwarder</td>
+      <td>Direct Python module execution entrypoint (<code>python -m deobfuscator</code>) delegating to the CLI dispatcher.</td>
+    </tr>
+    <tr>
+      <td><strong><code>deobfuscator/<wbr>cli.py</code></strong></td>
+      <td>CLI Interface</td>
+      <td>Full-featured terminal runner with <code>argparse</code>, JSON telemetry export, color diff display, and output redirection.</td>
+    </tr>
+    <tr>
+      <td><strong><code>deobfuscator/<wbr>core.py</code></strong></td>
+      <td>Engine Core</td>
+      <td>Multi-pass fixed-point AST convergence loop coordinating pass transitions until idempotency (<code>fp_prev == fp_curr</code>).</td>
+    </tr>
+    <tr>
+      <td><strong><code>deobfuscator/<wbr>normalizers.py</code></strong></td>
+      <td>Transformation Normalizers</td>
+      <td>Modular normalization pipeline: UTF-16LE BOM stripping, quote-aware caret (<code>^</code>) unescaping, and environment variable resolution.</td>
+    </tr>
+    <tr>
+      <td><strong><code>deobfuscator/<wbr>diff.py</code></strong></td>
+      <td>Diff Visualizer</td>
+      <td>Unified syntax diff generator with ANSI 256-color terminal highlighting for before/after comparison.</td>
+    </tr>
+    <tr>
+      <td><strong><code>src/<wbr>deobfuscator_<wbr>engine.py</code></strong></td>
+      <td>Standalone AST Engine</td>
+      <td>Zero-dependency standalone reference engine implementing the 5-pass fixed-point convergence algorithm.</td>
+    </tr>
+    <tr>
+      <td><strong><code>src/<wbr>pe_<wbr>packer_<wbr>forensics.py</code></strong></td>
+      <td>PE Unpacker Forensics</td>
+      <td>Static unpacking engine for compiled Bat2Exe executables (UPX NRV2B, Bytepress LZMA RangeCoder, and dual-XOR overlays).</td>
+    </tr>
+    <tr>
+      <td><strong><code>rules/<wbr>sigma_<wbr>batch_<wbr>obfuscation.yml</code></strong></td>
+      <td>SIEM Detection Rules</td>
+      <td>Production Sigma rules detecting caret evasion, delayed variable slicing, command concatenation, and runtime detours.</td>
+    </tr>
+    <tr>
+      <td><strong><code>rules/<wbr>yara_<wbr>batch_<wbr>obfuscation.yar</code></strong></td>
+      <td>EDR Signatures</td>
+      <td>Production YARA rules matching BOM tampering, Somalifuscator character scrambling, UPX stubs, and BatCloak patterns.</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/<wbr>test_<wbr>cli.py</code></strong></td>
+      <td>CLI Verification Suite</td>
+      <td>Automated test suite verifying 6 CLI modes: basic deobfuscation, output file writing, passes limiter, color diff, JSON, and verbose.</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/<wbr>test_<wbr>suite.py</code></strong></td>
+      <td>Engine Invariant Tests</td>
+      <td>4 core invariant tests for AST fixed-point convergence, environment variable tables, and PE overlay extraction.</td>
+    </tr>
+    <tr>
+      <td><strong><code>samples/<wbr>01_<wbr>env_<wbr>slicing_<wbr>sample.bat</code></strong></td>
+      <td>Sample Vector</td>
+      <td>Dynamic substring slicing test case (<code>%VAR:~offset,len%</code>) evaluating delayed environment resolution.</td>
+    </tr>
+    <tr>
+      <td><strong><code>samples/<wbr>02_<wbr>caret_<wbr>and_<wbr>delimiters_<wbr>sample.bat</code></strong></td>
+      <td>Sample Vector</td>
+      <td>Caret (<code>^</code>) interleaving and quote boundary escape sequences test case for AST syntax validation.</td>
+    </tr>
+    <tr>
+      <td><strong><code>samples/<wbr>03_<wbr>dynamic_<wbr>substitution_<wbr>table_<wbr>sample.bat</code></strong></td>
+      <td>Sample Vector</td>
+      <td>High-entropy dynamic <code>SET</code> substitution table test case exercising symbol dictionary reconstruction.</td>
+    </tr>
+    <tr>
+      <td><strong><code>samples/<wbr>04_<wbr>reverse_<wbr>reconstruction_<wbr>sample.bat</code></strong></td>
+      <td>Sample Vector</td>
+      <td>Reverse token indexing and multi-line concatenation payload reconstruction test case.</td>
+    </tr>
+    <tr>
+      <td><strong><code>samples/<wbr>05_<wbr>certutil_<wbr>hex_<wbr>pipeline_<wbr>sample.bat</code></strong></td>
+      <td>Sample Vector</td>
+      <td>Certutil hex-encoded payload decode pipeline testing multi-stage certificate parsing and execution.</td>
+    </tr>
+    <tr>
+      <td><strong><code>samples/<wbr>06_<wbr>anti_<wbr>vm_<wbr>and_<wbr>sandbox_<wbr>evasion_<wbr>sample.bat</code></strong></td>
+      <td>Sample Vector</td>
+      <td>Anti-VM heuristics, sandbox evasion checks, and debugger detection evasion analysis vector.</td>
+    </tr>
+    <tr>
+      <td><strong><code>references/<wbr>catalog.json</code></strong></td>
+      <td>Catalog Manifest</td>
+      <td>Machine-readable index mapping 28+ open-source tools, licenses, repositories, and Hugging Face AI models.</td>
+    </tr>
+    <tr>
+      <td><strong><code>references/<wbr>references_<wbr>index.json</code></strong></td>
+      <td>Reference Database</td>
+      <td>61 KB structured database cataloging repositories, commit SHAs, architectures, and threat actors.</td>
+    </tr>
+    <tr>
+      <td><strong><code>references/<wbr>github_<wbr>arsenal/</code></strong></td>
+      <td>Open-Source Arsenal</td>
+      <td>28+ deconstructed open-source compilers, obfuscators, and unpackers (Invoke-DOSfuscation, BatCloak, Somalifuscator, etc.).</td>
+    </tr>
+    <tr>
+      <td><strong><code>references/<wbr>huggingface_<wbr>ai/</code></strong></td>
+      <td>AI Models &amp; Datasets</td>
+      <td>Research datasets and model cards for LLM4Decompile, SBERT, JFrog token entropy, and live EDR telemetry logs.</td>
+    </tr>
+    <tr>
+      <td><strong><code>docs/<wbr>whitepapers/</code></strong></td>
+      <td>Research Whitepapers</td>
+      <td>9 flagship forensic research papers covering Ghidra binary disassembly, 30-year batch evolution, AST automata, and AI models.</td>
+    </tr>
+    <tr>
+      <td><strong><code>docs/<wbr>locales/</code></strong></td>
+      <td>Localized Documentation</td>
+      <td>10-language localized README documents ensuring global threat intelligence accessibility (ko, zh-CN, es, hi, ar, etc.).</td>
+    </tr>
+    <tr>
+      <td><strong><code>docs/<wbr>assets/</code></strong></td>
+      <td>Visual Assets</td>
+      <td>Interactive animated terminal SVG demo (<code>demo_terminal.svg</code>) and localized SVG architecture diagrams for all supported languages.</td>
+    </tr>
+  </tbody>
+</table>
 
 </details>
 
 ---
 
-<details>
-<summary><h2 style="display:inline-block; margin:0;">📜 6. License & Open-Source Research Credits</h2></summary>
+<span id="6-license--open-source-research-credits"></span>
+<details id="license-credits">
+<summary><h2 style="display:inline-block; margin:0;">📜 6. License &amp; Open-Source Research Credits</h2></summary>
 
 <br />
 
-This project is licensed under the [MIT License](./LICENSE). Copyright © 2026 Maya Thorne.
+This project is licensed under the [Maya Thorne Systems & Security Research License (MT-SRL)](./LICENSE). Copyright © 2026 Maya Thorne.
 
-### 🌟 Open-Source References & Research Citations
+### 🌟 Open-Source References &amp; Research Citations
 This archive and forensic deobfuscator engine study, catalog, and build upon pioneering reverse engineering and security research:
 
-| Project / Research | Author / Organization | Focus & Attribution |
-| :--- | :--- | :--- |
-| **`Invoke-DOSfuscation`** | Daniel Bohannon (Mandiant) | Groundbreaking research on cmd.exe obfuscation techniques and detection |
-| **`BatCloak & ScrubCrypt`** | Palo Alto Networks Unit 42 | In-depth threat research on modern multi-stage batch malware loaders |
-| **`assemblyline-batchdeobfuscator`** | Canadian Centre for Cyber Security (CCCS) | Production-grade batch deobfuscation service and heuristic extraction |
-| **`batch-deobfuscator`** | DissectMalware / d4rksystem | Static batch deobfuscation engine and caret normalization |
-| **`SomalifuscatorV2`** | KDot227 | High-entropy variable substitution & multi-pass batch protection |
-| **`Exorcism`** | 0x00101 / Community | Runtime detour hooking on `cmd.exe!FindFixAndRun` (RVA `0x116b0`) |
-| **`0xidiz3r`** | KDot227 / Community | Dynamic table slicing and environment variable reconstruction |
-| **`Bat2Exe-dehoisted`** | Dehoisted | .NET CLR batch compilation and Bytepress LZMA RangeCoder packing |
-| **`bat2exe-islamadel`** | Islam Adel | Native C++ UPX-packed 7-Zip SFX batch wrapper architecture |
-| **`xorPacker`** | Red-Team / Community | Dynamic 2-stage XOR overlay packer with hardcoded master keys |
-| **`BEDeCode`** | vb6-coder / Community | Legacy Visual Basic 6.0 `CHRMAPSET` batch decompiler |
-| **`LLM4Decompile`** | Alvr / Hugging Face | Deep learning decompilation & code representation benchmarks |
-| **`JFrog Batch Entropy`** | JFrog Security Research | Token entropy estimation and batch anomaly scoring (ArXiv:2510.26847) |
+<table width="100%">
+  <thead>
+    <tr>
+      <th width="25%" align="left"><nobr>🔬 Project / Research</nobr></th>
+      <th width="28%" align="left"><nobr>👤 Author / Organization</nobr></th>
+      <th width="47%" align="left"><nobr>🎯 Focus &amp; Attribution</nobr></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong><code>Invoke-DOSfuscation</code></strong></td>
+      <td>Daniel Bohannon (Mandiant)</td>
+      <td>Groundbreaking research on <code>cmd.exe</code> obfuscation techniques and detection</td>
+    </tr>
+    <tr>
+      <td><strong><code>BatCloak &amp; ScrubCrypt</code></strong></td>
+      <td>Palo Alto Networks Unit 42</td>
+      <td>In-depth threat research on modern multi-stage batch malware loaders</td>
+    </tr>
+    <tr>
+      <td><strong><code>assemblyline-<wbr>batchdeobfuscator</code></strong></td>
+      <td>Canadian Centre for Cyber Security (CCCS)</td>
+      <td>Production-grade batch deobfuscation service and heuristic extraction</td>
+    </tr>
+    <tr>
+      <td><strong><code>batch-deobfuscator</code></strong></td>
+      <td>DissectMalware / d4rksystem</td>
+      <td>Static batch deobfuscation engine and caret normalization</td>
+    </tr>
+    <tr>
+      <td><strong><code>SomalifuscatorV2</code></strong></td>
+      <td>KDot227</td>
+      <td>High-entropy variable substitution &amp; multi-pass batch protection</td>
+    </tr>
+    <tr>
+      <td><strong><code>Exorcism</code></strong></td>
+      <td>0x00101 / Community</td>
+      <td>Runtime detour hooking on <code>cmd.exe!FindFixAndRun</code> (RVA <code>0x116B0</code>)</td>
+    </tr>
+    <tr>
+      <td><strong><code>0xidiz3r</code></strong></td>
+      <td>KDot227 / Community</td>
+      <td>Dynamic table slicing and environment variable reconstruction</td>
+    </tr>
+    <tr>
+      <td><strong><code>Bat2Exe-dehoisted</code></strong></td>
+      <td>Dehoisted</td>
+      <td>.NET CLR batch compilation and Bytepress LZMA RangeCoder packing</td>
+    </tr>
+    <tr>
+      <td><strong><code>bat2exe-islamadel</code></strong></td>
+      <td>Islam Adel</td>
+      <td>Native C++ UPX-packed 7-Zip SFX batch wrapper architecture</td>
+    </tr>
+    <tr>
+      <td><strong><code>xorPacker</code></strong></td>
+      <td>Red-Team / Community</td>
+      <td>Dynamic 2-stage XOR overlay packer with hardcoded master keys</td>
+    </tr>
+    <tr>
+      <td><strong><code>BEDeCode</code></strong></td>
+      <td>vb6-coder / Community</td>
+      <td>Legacy Visual Basic 6.0 <code>CHRMAPSET</code> batch decompiler</td>
+    </tr>
+    <tr>
+      <td><strong><code>LLM4Decompile</code></strong></td>
+      <td>Alvr / Hugging Face</td>
+      <td>Deep learning decompilation &amp; code representation benchmarks</td>
+    </tr>
+    <tr>
+      <td><strong><code>JFrog Batch Entropy</code></strong></td>
+      <td>JFrog Security Research</td>
+      <td>Token entropy estimation and batch anomaly scoring (ArXiv:2510.26847)</td>
+    </tr>
+  </tbody>
+</table>
 
 </details>

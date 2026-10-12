@@ -10,7 +10,7 @@ readme = "README.md"
 authors = [
   { name = "Maya Thorne", email = "maya-thorne@users.noreply.github.com" }
 ]
-license = { text = "MIT" }
+license = { text = "MT-SRL" }
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: Microsoft :: Windows",

@@ -24,7 +24,7 @@
 
   <!-- Title Header Bar -->
   <text x="500" y="34" fill="#38bdf8" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="800" text-anchor="middle" filter="url(#glow)">
-    Rekayasa Balik Ghidra MCP PE & Jalur Pipa Deobfuskasi AST Multi-Tahap
+    Rekayasa Balik Ghidra MCP PE &amp; Jalur Pipa Deobfuskasi AST Multi-Tahap
   </text>
 
   <!-- 4 Cards -->
@@ -35,14 +35,14 @@
       <rect width="226" height="38" rx="10" fill="#0e2238"/>
       <rect y="26" width="226" height="12" fill="#0e2238"/>
       <circle cx="16" cy="19" r="4.5" fill="#7dd3fc" filter="url(#glow)"/>
-      <text x="28" y="23" fill="#7dd3fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="800" letter-spacing="0.3">1. SKRIP TEROBFUSKASI & PE TERKEMAS</text>
+      <text x="28" y="23" fill="#7dd3fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="800" letter-spacing="0.3">1. SKRIP TEROBFUSKASI &amp; PE TERKEMAS</text>
       <line x1="0" y1="38" x2="226" y2="38" stroke="#0284c7" stroke-width="1" stroke-opacity="0.4"/>
       
       <text x="12" y="56" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" text-rendering="geometricPrecision">• Payload Batch Mentah (.bat/.cmd)</text>
-      <text x="22" y="72" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="9.5" text-rendering="geometricPrecision">Caret (^), BOM & Sandi Caesar</text>
+      <text x="22" y="72" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="9.5" text-rendering="geometricPrecision">Caret (^), BOM &amp; Sandi Caesar</text>
       
       <text x="12" y="102" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" text-rendering="geometricPrecision">• Berkas PE Terkompilasi</text>
-      <text x="22" y="118" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="9.5" text-rendering="geometricPrecision">Pengemas UPX, LZMA & stub XOR</text>
+      <text x="22" y="118" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="9.5" text-rendering="geometricPrecision">Pengemas UPX, LZMA &amp; stub XOR</text>
       
     </g>
   
@@ -76,10 +76,10 @@
       <line x1="0" y1="38" x2="226" y2="38" stroke="#7e22ce" stroke-width="1" stroke-opacity="0.4"/>
       
       <text x="12" y="56" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" text-rendering="geometricPrecision">• Tahap 1: Pembersihan BOM UTF-16LE</text>
-      <text x="22" y="72" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="9.5" text-rendering="geometricPrecision">Deteksi BOM & sertifikat</text>
+      <text x="22" y="72" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="9.5" text-rendering="geometricPrecision">Deteksi BOM &amp; sertifikat</text>
       
       <text x="12" y="102" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" text-rendering="geometricPrecision">• Tahap 2: Normalisasi Caret (^)</text>
-      <text x="22" y="118" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="9.5" text-rendering="geometricPrecision">Pembersihan ^ & pelipatan ""</text>
+      <text x="22" y="118" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="9.5" text-rendering="geometricPrecision">Pembersihan ^ &amp; pelipatan ""</text>
       
       <text x="12" y="148" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" text-rendering="geometricPrecision">• Tahap 3: Tabel Simbol SET</text>
       <text x="22" y="164" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="9.5" text-rendering="geometricPrecision">Resolusi dinamis variabel</text>
@@ -95,7 +95,7 @@
       <rect width="226" height="38" rx="10" fill="#361b0c"/>
       <rect y="26" width="226" height="12" fill="#361b0c"/>
       <circle cx="16" cy="19" r="4.5" fill="#fde68a" filter="url(#glow)"/>
-      <text x="28" y="23" fill="#fde68a" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="800" letter-spacing="0.3">4. PERTAHANAN EDR & ATURAN SIEM</text>
+      <text x="28" y="23" fill="#fde68a" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="800" letter-spacing="0.3">4. PERTAHANAN EDR &amp; ATURAN SIEM</text>
       <line x1="0" y1="38" x2="226" y2="38" stroke="#d97706" stroke-width="1" stroke-opacity="0.4"/>
       
       <text x="12" y="56" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" text-rendering="geometricPrecision">• Hook cmd.exe!FindFixAndRun</text>

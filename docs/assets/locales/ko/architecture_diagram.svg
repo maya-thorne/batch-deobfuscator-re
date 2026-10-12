@@ -35,7 +35,7 @@
       <rect width="226" height="38" rx="10" fill="#0e2238"/>
       <rect y="26" width="226" height="12" fill="#0e2238"/>
       <circle cx="16" cy="19" r="4.5" fill="#7dd3fc" filter="url(#glow)"/>
-      <text x="28" y="23" fill="#7dd3fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="800" letter-spacing="0.3">1. 원시 난독화 스크립트 & 패킹 PE</text>
+      <text x="28" y="23" fill="#7dd3fc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="800" letter-spacing="0.3">1. 원시 난독화 스크립트 &amp; 패킹 PE</text>
       <line x1="0" y1="38" x2="226" y2="38" stroke="#0284c7" stroke-width="1" stroke-opacity="0.4"/>
       
       <text x="12" y="56" fill="#e2e8f0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" text-rendering="geometricPrecision">• 원시 배치 페이로드 (.bat/.cmd)</text>
