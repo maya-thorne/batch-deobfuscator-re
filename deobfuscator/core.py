@@ -23,6 +23,10 @@ from .batcloak import (
     eliminate_dead_stores,
     detect_batcloak_signatures,
 )
+from .somalifuscator import (
+    normalize_somalifuscator,
+    detect_somalifuscator_signatures,
+)
 
 class BatchDeobfuscator:
     """Multi-Pass Fixed-Point Batch Script Deobfuscator."""
@@ -36,8 +40,10 @@ class BatchDeobfuscator:
         "allusersprofile": r"C:\ProgramData",
         "commonprogramfiles": r"C:\Program Files\Common Files",
         "commonprogramfiles(x86)": r"C:\Program Files (x86)\Common Files",
+        "commonprogramw6432": r"C:\Program Files\Common Files",
         "programfiles": r"C:\Program Files",
         "programfiles(x86)": r"C:\Program Files (x86)",
+        "driverdata": r"C:\Windows\System32\Drivers\DriverData",
         "path": r"C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem",
         "pathext": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC",
         "temp": r"C:\Users\Administrator\AppData\Local\Temp",
@@ -58,11 +64,13 @@ class BatchDeobfuscator:
 
     def __init__(self, max_passes: int = 15, custom_env: Dict[str, str] = None, 
                  strip_undefined: bool = True, split_chains: bool = True,
-                 enable_batcloak: bool = True, eliminate_dead_code: bool = True):
+                 enable_batcloak: bool = True, enable_somalifuscator: bool = True,
+                 eliminate_dead_code: bool = True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
         self.split_chains = split_chains
         self.enable_batcloak = enable_batcloak
+        self.enable_somalifuscator = enable_somalifuscator
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars: Dict[str, str] = dict(self.DEFAULT_ENV)
         if custom_env:
@@ -188,8 +196,10 @@ class BatchDeobfuscator:
         curr_text = script_text
         self.pass_history = []
         batcloak_sig = detect_batcloak_signatures(None, script_text)
+        somalifuscator_sig = detect_somalifuscator_signatures(script_text)
         removed_random_vars: List[str] = []
         eliminated_dead_vars: List[str] = []
+        somalifuscator_meta: Dict[str, Any] = {}
 
         # Step 0: Split multi-line chained statements (&-splits outside quotes)
         if self.split_chains:
@@ -198,6 +208,10 @@ class BatchDeobfuscator:
         # Step 0.5: BatCloak random variable pre-filtering
         if self.enable_batcloak:
             curr_text, removed_random_vars = strip_batcloak_random_vars(curr_text)
+
+        # Step 0.6: Somalifuscator Caesar cipher inversion and array normalization
+        if self.enable_somalifuscator:
+            curr_text, somalifuscator_meta = normalize_somalifuscator(curr_text, custom_env=self.env_vars)
 
         # Step 0.8: Pre-scan symbol table for set declarations across script
         for line in curr_text.splitlines():
@@ -253,6 +267,14 @@ class BatchDeobfuscator:
                 "indicators": batcloak_sig["indicators"],
                 "removed_random_vars": removed_random_vars,
                 "eliminated_dead_stores": eliminated_dead_vars,
+            },
+            "somalifuscator_telemetry": somalifuscator_meta or {
+                "signatures": somalifuscator_sig,
+                "rotation_value": None,
+                "unwrapped_loops_count": 0,
+                "kdot_detected": False,
+                "caesar_symbols_count": 0,
+                "eliminated_chaff_count": 0,
             }
         }
 
@@ -260,6 +282,7 @@ class BatchDeobfuscator:
 
 def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: bool = True,
                        split_chains: bool = True, enable_batcloak: bool = True,
+                       enable_somalifuscator: bool = True,
                        eliminate_dead_code: bool = True) -> str:
     """Convenience helper to deobfuscate a script and return clean string."""
     engine = BatchDeobfuscator(
@@ -267,6 +290,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
         strip_undefined=strip_undefined,
         split_chains=split_chains,
         enable_batcloak=enable_batcloak,
+        enable_somalifuscator=enable_somalifuscator,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, _ = engine.deobfuscate(script_text)
@@ -274,6 +298,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
 
 def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool = True,
                       split_chains: bool = True, enable_batcloak: bool = True,
+                      enable_somalifuscator: bool = True,
                       eliminate_dead_code: bool = True) -> Tuple[str, Dict[str, Any]]:
     """
     Deobfuscate raw batch file bytes, neutralizing fake UTF-16LE BOM headers and decoys.
@@ -286,6 +311,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
         strip_undefined=strip_undefined,
         split_chains=split_chains,
         enable_batcloak=enable_batcloak,
+        enable_somalifuscator=enable_somalifuscator,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, meta = engine.deobfuscate(text)

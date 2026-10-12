@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-10-13
+
+### Added
+- **Somalifuscator Caesar Inversion & Array Normalization Engine (`deobfuscator/somalifuscator.py`)**:
+  - Statistical consensus solver (`solve_caesar_rotation`) determining the Caesar rotation value $k \in [0, 25]$ across candidate variable/character pairs with noise rejection.
+  - Full bidirectional alphabet reconstruction (`infer_and_complete_caesar_table`) capable of synthesizing all 52 lowercase and uppercase (`var1=CHAR`) letter mappings from sparse partial definitions.
+  - Automated single-pass `for /l` wrapper loop decomposition (`unwrap_somalifuscator_loops`) that extracts inner assignments and purges loop overhead from active execution lines.
+  - Shuffled character array resolution (`extract_kdot_shuffled_array`, `resolve_kdot_slicing`) handling variable whitespace and arbitrary negative/positive slice bounds.
+  - Targeted chaff and decoy pruning (`strip_somalifuscator_chaff`) neutralizing anti-triage headers (`>nul 2>&1 && exit ...`), `%TO_SCRAMBLE_PLZ%` markers, and dead dictionary definitions.
+  - Memory zeroization (`zeroize_dict`) cryptographically overwriting substitution tables and temporary forensic buffers prior to release.
+- **Dedicated Somalifuscator Verification Suite (`tests/test_somalifuscator.py`)**:
+  - Added 12 comprehensive unit tests covering rotation solving, table synthesis, loop unrolling, array indexing, and end-to-end deobfuscation (expanding test suite to 75 tests).
+- **GitHub Actions CI Workflow (`.github/workflows/ci.yml`)**:
+  - Multi-version Python CI pipeline (3.10, 3.11, 3.12) running unit tests and benchmark suite on every push and pull request.
+
+### Changed
+- Expanded default Windows environment variable table with `DRIVERDATA` (`C:\Windows\System32\Drivers\DriverData`) and `COMMONPROGRAMW6432` (`C:\Program Files\Common Files`).
+- Synchronized standalone deobfuscator engine (`src/deobfuscator_engine.py`) with Somalifuscator normalization passes and extended environment variables.
+- CLI toolchain updated with `--no-somalifuscator` flag and structured Somalifuscator forensic telemetry output in verbose mode.
+
 ## [1.2.0] - 2026-10-13
 
 ### Added

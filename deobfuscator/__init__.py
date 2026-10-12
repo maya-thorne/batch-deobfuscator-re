@@ -24,8 +24,20 @@ from .batcloak import (
     detect_batcloak_signatures,
     zeroize_bytes,
 )
+from .somalifuscator import (
+    solve_caesar_rotation,
+    build_caesar_table,
+    infer_and_complete_caesar_table,
+    unwrap_somalifuscator_loops,
+    extract_kdot_shuffled_array,
+    resolve_kdot_slicing,
+    strip_somalifuscator_chaff,
+    detect_somalifuscator_signatures,
+    normalize_somalifuscator,
+    zeroize_dict,
+)
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __author__ = "Maya Thorne"
 __all__ = [
     "BatchDeobfuscator",
@@ -47,4 +59,14 @@ __all__ = [
     "eliminate_dead_stores",
     "detect_batcloak_signatures",
     "zeroize_bytes",
+    "solve_caesar_rotation",
+    "build_caesar_table",
+    "infer_and_complete_caesar_table",
+    "unwrap_somalifuscator_loops",
+    "extract_kdot_shuffled_array",
+    "resolve_kdot_slicing",
+    "strip_somalifuscator_chaff",
+    "detect_somalifuscator_signatures",
+    "normalize_somalifuscator",
+    "zeroize_dict",
 ]

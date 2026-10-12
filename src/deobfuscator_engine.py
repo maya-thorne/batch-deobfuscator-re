@@ -10,25 +10,28 @@ import sys
 import os
 from pathlib import Path
 
-# Try importing BatCloak module from project root
+# Try importing BatCloak & Somalifuscator modules from project root
 try:
     from deobfuscator.batcloak import strip_batcloak_random_vars, eliminate_dead_stores
-    HAS_BATCLOAK_MODULE = True
+    from deobfuscator.somalifuscator import normalize_somalifuscator
+    HAS_SECURITY_MODULES = True
 except ImportError:
     try:
         sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
         from deobfuscator.batcloak import strip_batcloak_random_vars, eliminate_dead_stores
-        HAS_BATCLOAK_MODULE = True
+        from deobfuscator.somalifuscator import normalize_somalifuscator
+        HAS_SECURITY_MODULES = True
     except ImportError:
-        HAS_BATCLOAK_MODULE = False
+        HAS_SECURITY_MODULES = False
 
 class BatchDeobfuscator:
     def __init__(self, max_passes=15, strip_undefined=True, split_chains=True,
-                 enable_batcloak=True, eliminate_dead_code=True):
+                 enable_batcloak=True, enable_somalifuscator=True, eliminate_dead_code=True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
         self.split_chains = split_chains
         self.enable_batcloak = enable_batcloak
+        self.enable_somalifuscator = enable_somalifuscator
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars = {}
         # Prepopulate default Windows environment variables commonly used for slicing
@@ -41,8 +44,10 @@ class BatchDeobfuscator:
             "allusersprofile": r"C:\ProgramData",
             "commonprogramfiles": r"C:\Program Files\Common Files",
             "commonprogramfiles(x86)": r"C:\Program Files (x86)\Common Files",
+            "commonprogramw6432": r"C:\Program Files\Common Files",
             "programfiles": r"C:\Program Files",
             "programfiles(x86)": r"C:\Program Files (x86)",
+            "driverdata": r"C:\Windows\System32\Drivers\DriverData",
             "path": r"C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem",
             "pathext": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC",
             "temp": r"C:\Users\Administrator\AppData\Local\Temp",
@@ -381,8 +386,12 @@ class BatchDeobfuscator:
             current = self.split_chained_commands(current)
 
         # Step 0.5: BatCloak random variable pre-filtering
-        if self.enable_batcloak and HAS_BATCLOAK_MODULE:
+        if self.enable_batcloak and HAS_SECURITY_MODULES:
             current, _ = strip_batcloak_random_vars(current)
+
+        # Step 0.6: Somalifuscator Caesar cipher inversion and array normalization
+        if self.enable_somalifuscator and HAS_SECURITY_MODULES:
+            current, _ = normalize_somalifuscator(current, custom_env=self.env_vars)
 
         # Pre-scan symbol table across script
         for line in current.splitlines():
@@ -413,7 +422,7 @@ class BatchDeobfuscator:
                 break
 
         # Step 5: Dead Store Elimination for unreferenced variables and ephemeral aliases
-        if self.eliminate_dead_code and HAS_BATCLOAK_MODULE:
+        if self.eliminate_dead_code and HAS_SECURITY_MODULES:
             current, _ = eliminate_dead_stores(current)
 
         return current

@@ -83,6 +83,12 @@ Engineered by Maya Thorne.
     )
 
     parser.add_argument(
+        "--no-somalifuscator",
+        action="store_true",
+        help="Disable Somalifuscator Caesar cipher inversion and KDOT array resolution"
+    )
+
+    parser.add_argument(
         "--no-dse",
         action="store_true",
         help="Disable Dead Store Elimination (DSE) for unreferenced variables"
@@ -129,6 +135,7 @@ def main(args=None) -> int:
     engine = BatchDeobfuscator(
         max_passes=opts.passes,
         enable_batcloak=not opts.no_batcloak,
+        enable_somalifuscator=not opts.no_somalifuscator,
         eliminate_dead_code=not opts.no_dse
     )
     clean_text, meta = engine.deobfuscate(script_text)
@@ -147,6 +154,20 @@ def main(args=None) -> int:
                 sys.stderr.write(f"     • Pruned %RANDOM% chaff: {len(bt['removed_random_vars'])} statements\n")
             if bt.get("eliminated_dead_stores"):
                 sys.stderr.write(f"     • Eliminated dead stores: {len(bt['eliminated_dead_stores'])} variables\n")
+        st = meta.get("somalifuscator_telemetry", {})
+        if st.get("signatures", {}).get("is_somalifuscator") or st.get("rotation_value") is not None:
+            sig = st.get("signatures", {})
+            sys.stderr.write(f"  ↳ Somalifuscator Detected: True (Confidence: {sig.get('confidence', 0.0)})\n")
+            if st.get("rotation_value") is not None:
+                sys.stderr.write(f"     • Solved Caesar shift: k = {st['rotation_value']}\n")
+            if st.get("caesar_symbols_count"):
+                sys.stderr.write(f"     • Recovered Caesar alphabet symbols: {st['caesar_symbols_count']}\n")
+            if st.get("kdot_detected"):
+                sys.stderr.write(f"     • Resolved KDOT shuffled array slicing: True\n")
+            if st.get("unwrapped_loops_count"):
+                sys.stderr.write(f"     • Unwrapped 'for /l' wrapper loops: {st['unwrapped_loops_count']}\n")
+            if st.get("eliminated_chaff_count"):
+                sys.stderr.write(f"     • Pruned Somalifuscator chaff/decoys: {st['eliminated_chaff_count']} statements\n")
         if meta["symbol_table"]:
             sys.stderr.write("  ↳ Symbol Table:\n")
             for k, v in list(meta["symbol_table"].items())[:10]:
