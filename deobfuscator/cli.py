@@ -77,6 +77,18 @@ Engineered by Maya Thorne.
     )
 
     parser.add_argument(
+        "--no-batcloak",
+        action="store_true",
+        help="Disable BatCloak %%RANDOM%% and junk variable preprocessing"
+    )
+
+    parser.add_argument(
+        "--no-dse",
+        action="store_true",
+        help="Disable Dead Store Elimination (DSE) for unreferenced variables"
+    )
+
+    parser.add_argument(
         "--no-color",
         action="store_true",
         help="Disable ANSI colors in terminal output"
@@ -114,7 +126,11 @@ def main(args=None) -> int:
         sys.stderr.write(f"[-] Error reading file: {e}\n")
         return 1
 
-    engine = BatchDeobfuscator(max_passes=opts.passes)
+    engine = BatchDeobfuscator(
+        max_passes=opts.passes,
+        enable_batcloak=not opts.no_batcloak,
+        eliminate_dead_code=not opts.no_dse
+    )
     clean_text, meta = engine.deobfuscate(script_text)
 
     if opts.verbose:
@@ -122,6 +138,15 @@ def main(args=None) -> int:
         sys.stderr.write(f"  ↳ Passes executed: {meta['passes_executed']} (Converged: {meta['converged']})\n")
         sys.stderr.write(f"  ↳ Elapsed time: {meta['elapsed_ms']} ms\n")
         sys.stderr.write(f"  ↳ Resolved dynamic symbols: {meta['symbols_resolved_count']}\n")
+        if meta.get("batcloak_telemetry", {}).get("detected"):
+            bt = meta["batcloak_telemetry"]
+            sys.stderr.write(f"  ↳ BatCloak Evasion Detected: True (Confidence: {bt['confidence']})\n")
+            if bt.get("indicators"):
+                sys.stderr.write(f"     • Indicators: {', '.join(bt['indicators'])}\n")
+            if bt.get("removed_random_vars"):
+                sys.stderr.write(f"     • Pruned %RANDOM% chaff: {len(bt['removed_random_vars'])} statements\n")
+            if bt.get("eliminated_dead_stores"):
+                sys.stderr.write(f"     • Eliminated dead stores: {len(bt['eliminated_dead_stores'])} variables\n")
         if meta["symbol_table"]:
             sys.stderr.write("  ↳ Symbol Table:\n")
             for k, v in list(meta["symbol_table"].items())[:10]:

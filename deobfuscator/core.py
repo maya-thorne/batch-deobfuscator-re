@@ -187,12 +187,19 @@ class BatchDeobfuscator:
         start_time = time.perf_counter()
         curr_text = script_text
         self.pass_history = []
+        batcloak_sig = detect_batcloak_signatures(None, script_text)
+        removed_random_vars: List[str] = []
+        eliminated_dead_vars: List[str] = []
 
         # Step 0: Split multi-line chained statements (&-splits outside quotes)
         if self.split_chains:
             curr_text = split_chained_commands(curr_text)
 
-        # Step 0.5: Pre-scan symbol table for set declarations across script
+        # Step 0.5: BatCloak random variable pre-filtering
+        if self.enable_batcloak:
+            curr_text, removed_random_vars = strip_batcloak_random_vars(curr_text)
+
+        # Step 0.8: Pre-scan symbol table for set declarations across script
         for line in curr_text.splitlines():
             self.extract_and_set_vars(line)
 
@@ -227,6 +234,10 @@ class BatchDeobfuscator:
             if curr_text == prev_pass_text:
                 break
 
+        # Step 5: Dead Store Elimination (DSE) for ephemeral alias variables & chaff
+        if self.eliminate_dead_code:
+            curr_text, eliminated_dead_vars = eliminate_dead_stores(curr_text)
+
         elapsed_ms = (time.perf_counter() - start_time) * 1000.0
 
         metadata = {
@@ -235,13 +246,48 @@ class BatchDeobfuscator:
             "elapsed_ms": round(elapsed_ms, 3),
             "symbols_resolved_count": len(self.env_vars) - len(self.DEFAULT_ENV),
             "symbol_table": {k: v for k, v in self.env_vars.items() if k not in self.DEFAULT_ENV},
-            "pass_telemetry": self.pass_history
+            "pass_telemetry": self.pass_history,
+            "batcloak_telemetry": {
+                "detected": batcloak_sig["is_batcloak_family"],
+                "confidence": batcloak_sig["confidence"],
+                "indicators": batcloak_sig["indicators"],
+                "removed_random_vars": removed_random_vars,
+                "eliminated_dead_stores": eliminated_dead_vars,
+            }
         }
 
         return curr_text, metadata
 
-def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: bool = True, split_chains: bool = True) -> str:
+def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: bool = True,
+                       split_chains: bool = True, enable_batcloak: bool = True,
+                       eliminate_dead_code: bool = True) -> str:
     """Convenience helper to deobfuscate a script and return clean string."""
-    engine = BatchDeobfuscator(max_passes=max_passes, strip_undefined=strip_undefined, split_chains=split_chains)
+    engine = BatchDeobfuscator(
+        max_passes=max_passes,
+        strip_undefined=strip_undefined,
+        split_chains=split_chains,
+        enable_batcloak=enable_batcloak,
+        eliminate_dead_code=eliminate_dead_code,
+    )
     clean_text, _ = engine.deobfuscate(script_text)
     return clean_text
+
+def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool = True,
+                      split_chains: bool = True, enable_batcloak: bool = True,
+                      eliminate_dead_code: bool = True) -> Tuple[str, Dict[str, Any]]:
+    """
+    Deobfuscate raw batch file bytes, neutralizing fake UTF-16LE BOM headers and decoys.
+    Returns:
+        Tuple[clean_script_text, forensic_metadata]
+    """
+    text, header_meta = normalize_batcloak_headers(data)
+    engine = BatchDeobfuscator(
+        max_passes=max_passes,
+        strip_undefined=strip_undefined,
+        split_chains=split_chains,
+        enable_batcloak=enable_batcloak,
+        eliminate_dead_code=eliminate_dead_code,
+    )
+    clean_text, meta = engine.deobfuscate(text)
+    meta["header_metadata"] = header_meta
+    return clean_text, meta

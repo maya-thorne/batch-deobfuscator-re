@@ -8,12 +8,28 @@ Synthesizes state-machine techniques from DissectMalware, KingKDot, 0xTas, and C
 import re
 import sys
 import os
+from pathlib import Path
+
+# Try importing BatCloak module from project root
+try:
+    from deobfuscator.batcloak import strip_batcloak_random_vars, eliminate_dead_stores
+    HAS_BATCLOAK_MODULE = True
+except ImportError:
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+        from deobfuscator.batcloak import strip_batcloak_random_vars, eliminate_dead_stores
+        HAS_BATCLOAK_MODULE = True
+    except ImportError:
+        HAS_BATCLOAK_MODULE = False
 
 class BatchDeobfuscator:
-    def __init__(self, max_passes=15, strip_undefined=True, split_chains=True):
+    def __init__(self, max_passes=15, strip_undefined=True, split_chains=True,
+                 enable_batcloak=True, eliminate_dead_code=True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
         self.split_chains = split_chains
+        self.enable_batcloak = enable_batcloak
+        self.eliminate_dead_code = eliminate_dead_code
         self.env_vars = {}
         # Prepopulate default Windows environment variables commonly used for slicing
         self.env_vars.update({
@@ -364,6 +380,10 @@ class BatchDeobfuscator:
         if self.split_chains:
             current = self.split_chained_commands(current)
 
+        # Step 0.5: BatCloak random variable pre-filtering
+        if self.enable_batcloak and HAS_BATCLOAK_MODULE:
+            current, _ = strip_batcloak_random_vars(current)
+
         # Pre-scan symbol table across script
         for line in current.splitlines():
             self.extract_and_set_vars(line)
@@ -391,6 +411,10 @@ class BatchDeobfuscator:
             # Convergence check
             if current == prev:
                 break
+
+        # Step 5: Dead Store Elimination for unreferenced variables and ephemeral aliases
+        if self.eliminate_dead_code and HAS_BATCLOAK_MODULE:
+            current, _ = eliminate_dead_stores(current)
 
         return current
 

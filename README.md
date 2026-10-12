@@ -369,6 +369,16 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
       <td align="center"><code>text</code></td>
     </tr>
     <tr>
+      <td><code>--no-batcloak</code></td>
+      <td>Disable BatCloak <code>%RANDOM%</code> and junk variable preprocessing</td>
+      <td align="center"><code>False</code></td>
+    </tr>
+    <tr>
+      <td><code>--no-dse</code></td>
+      <td>Disable Dead Store Elimination (DSE) for unreferenced temporary variables</td>
+      <td align="center"><code>False</code></td>
+    </tr>
+    <tr>
       <td><code>-v, --verbose</code></td>
       <td>Stream pass convergence telemetry, intermediate diffs, and dynamic symbol counts</td>
       <td align="center"><code>False</code></td>
@@ -376,7 +386,7 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
     <tr>
       <td><code>--version</code></td>
       <td>Display engine version, release tag, and author attribution</td>
-      <td align="center"><code>1.0.0</code></td>
+      <td align="center"><code>1.2.0</code></td>
     </tr>
   </tbody>
 </table>
@@ -405,17 +415,18 @@ python benchmarks/eval_corpus_runner.py --corpus BatCloak
 | :--- | :---: | :---: |
 | **Total Corpora Evaluated** | **28 / 28** | Complete |
 | **Verification Pass Rate** | **100.0% (28/28)** | Passed |
-| **Mean Composite Score** | **98.6 / 100.0** | Grade: A+ |
-| **Mean Convergence Passes** | **1.96 passes** | Deterministic |
-| **Mean Execution Latency** | **&lt; 0.3 ms / corpus** | High Performance |
-| **Core Enhancements Tested** | `&-splits`, Quote Pairs, Undefined Stripping | Verified |
+| **Mean Composite Score** | **96.2 / 100.0** | Grade: A+ |
+| **Mean Convergence Passes** | **2.0 passes** | Deterministic |
+| **Mean Execution Latency** | **&lt; 0.7 ms / corpus** | High Performance |
+| **Core Enhancements Tested** | `&-splits`, BatCloak Fake BOM, `%RANDOM%` Pruning, DSE | Verified |
 
 ### 4.5 Automated Verification Test Suites
 ```bash
-python -m unittest discover tests  # 52 comprehensive automated tests
-python tests/test_benchmark_runner.py # 42 benchmark suite & metrics tests
-python tests/test_cli.py     # 6 CLI flags, diff mode, and JSON telemetry tests
-python tests/test_suite.py   # 4 core AST deobfuscation & PE overlay tests
+python -m unittest discover tests       # 63 comprehensive automated tests
+python tests/test_batcloak.py           # 11 BatCloak, fake BOM & DSE tests
+python tests/test_benchmark_runner.py   # 42 benchmark suite & metrics tests
+python tests/test_cli.py                # 6 CLI flags, diff mode, and JSON telemetry tests
+python tests/test_suite.py              # 4 core AST deobfuscation & PE overlay tests
 ```
 
 </details>

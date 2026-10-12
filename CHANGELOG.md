@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-10-13
+
+### Added
+- **BatCloak & Malformed Header Normalization Engine (`deobfuscator/batcloak.py`)**:
+  - Statistical wide-character forensic validation (`is_genuine_utf16le`, `is_genuine_utf16be`) utilizing alternating null-byte density analysis to distinguish genuine UTF-16LE/BE from 8-bit payloads disguised with fake BOMs.
+  - Neutralization of BatCloak header traps (`0xFF 0xFE &cls\r\n`), machine1337 double-BOM sequences (`FF FE 26 63 6C 73 0D 0A FF FE 0A 0D`), and decoy screen-clearing commands.
+  - Binary entry point `deobfuscate_bytes(data: bytes)` for direct file buffer analysis and automatic encoding resolution.
+- **Dynamic `%RANDOM%` Noise & Variable Chaff Pruning (`strip_batcloak_random_vars`)**:
+  - Automatic extraction and neutralization of dynamic pseudo-variable assignments (`set %RANDOM%_junk=`, `set %RANDOM%=...`, `set junk_%RANDOM%=...`).
+  - Elimination of empty variable unsetting statements used as chaff by modern evasion tools.
+- **Dead Store Elimination (DSE) Engine (`eliminate_dead_stores`)**:
+  - Static analysis pass identifying and pruning unreferenced variable assignments across the execution flow.
+  - Side-effect preserving: retains interactive prompt assignments (`set /p`) and arithmetic expressions (`set /a`).
+  - Cleanly inlines and prunes ephemeral single-use aliases (e.g. `set real=powershell -NoProfile -enc & %real%`).
+- **BatCloak Evasion Heuristic Signature Detection (`detect_batcloak_signatures`)**:
+  - Multi-indicator detection reporting architectural confidence scores and evasion tags (`batcloak-bom-cls-header`, `machine1337-double-bom-header`, `random-variable-injection`, `powershell-encoded-stager`).
+  - CLI integration with `--no-batcloak` and `--no-dse` flags and structured verbose stderr reporting.
+- **In-Memory Forensic Buffer Zeroization (`zeroize_bytes`)**:
+  - In-place memory wiping for sensitive byte arrays and temporary decryption buffers to prevent RAM residue leakage.
+- **Automated BatCloak Test Suite (`tests/test_batcloak.py`)**:
+  - Added 11 specialized unit tests validating header de-masking, statistical encoding detection, chaff removal, DSE, and buffer zeroization (bringing test suite to 63 tests).
+
+### Changed
+- Improved 28-corpus benchmark composite score from 94.6 to **96.2 / 100.0 (Grade A+)** with zero regressions.
+- Enhanced `normalize_bom` in `deobfuscator/normalizers.py` to route through BatCloak-aware header forensics.
+- Brought standalone engine (`src/deobfuscator_engine.py`) into parity with BatCloak preprocessing and DSE passes.
+
 ## [1.1.0] - 2026-10-12
 
 ### Added

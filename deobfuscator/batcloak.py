@@ -198,13 +198,22 @@ def strip_batcloak_random_vars(script_text: str) -> Tuple[str, List[str]]:
         Tuple[clean_text, removed_statements]
     """
     removed: List[str] = []
+
+    # If script contains chained commands with ampersands, pre-split for line inspection
+    if "&" in script_text:
+        try:
+            from .normalizers import split_chained_commands
+            script_text = split_chained_commands(script_text)
+        except Exception:
+            pass
+
     lines = script_text.splitlines()
     clean_lines = []
 
     # Regex matching set statements whose variable name contains %RANDOM%
     random_var_decl = re.compile(
         r'^\s*@?\s*set(?:\s+(?:/[ap]\s+)?|/[ap]\s*)[\"\']?'
-        r'([^=]+%random%[^=]*|%random%[^=]*)'
+        r'([^=]*%random%[^=]*)'
         r'(?:=.*)?[\"\']?\s*$',
         re.IGNORECASE
     )
@@ -343,7 +352,7 @@ def detect_batcloak_signatures(raw_bytes: Optional[bytes], script_text: str) -> 
     # Check for %RANDOM% used inside variable declaration
     if re.search(r'set(?:\s+[^=]*%random%|/[ap]\s*[^=]*%random%)', script_text, re.IGNORECASE):
         indicators.append("random-variable-injection")
-        confidence += 0.30
+        confidence += 0.35
 
     # Check for hex-scrambled identifiers (_0x[0-9a-f]{4})
     hex_vars = re.findall(r'_0x[0-9a-fA-F]{4,8}\b', script_text)
@@ -351,14 +360,14 @@ def detect_batcloak_signatures(raw_bytes: Optional[bytes], script_text: str) -> 
         indicators.append(f"hex-scrambled-identifiers({len(hex_vars)})")
         confidence += 0.25
 
-    # Check for stager chaining patterns (& %real% or & powershell)
-    if re.search(r'&\s*powershell(?:\.exe)?\s+(?:-[a-zA-Z]+\s+)*-enc\b', script_text, re.IGNORECASE):
-        indicators.append("chained-powershell-stager")
-        confidence += 0.20
+    # Check for PowerShell encoded loader / stager patterns
+    if re.search(r'powershell(?:\.exe)?\s+(?:-[a-zA-Z]+\s+)*-enc\b', script_text, re.IGNORECASE):
+        indicators.append("powershell-encoded-stager")
+        confidence += 0.25
 
     confidence = min(1.0, round(confidence, 2))
     return {
-        "is_batcloak_family": confidence >= 0.40,
+        "is_batcloak_family": confidence >= 0.35,
         "confidence": confidence,
         "indicators": indicators,
     }

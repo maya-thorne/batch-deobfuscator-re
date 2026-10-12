@@ -42,7 +42,8 @@ class TestBatchDeobfuscatorCLI(unittest.TestCase):
     def test_cli_version(self):
         res = self.run_cli(["--version"])
         self.assertEqual(res.returncode, 0)
-        self.assertIn("batch-deobfuscator 1.0.0", res.stdout)
+        from deobfuscator import __version__
+        self.assertIn(f"batch-deobfuscator {__version__}", res.stdout)
 
     def test_cli_help(self):
         res = self.run_cli(["--help"])
