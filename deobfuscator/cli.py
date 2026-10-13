@@ -120,6 +120,12 @@ Engineered by Maya Thorne.
     )
 
     parser.add_argument(
+        "--no-batchshield",
+        action="store_true",
+        help="Disable BatchShield virtual symbol table and compound env deobfuscation"
+    )
+
+    parser.add_argument(
         "--no-dse",
         action="store_true",
         help="Disable Dead Store Elimination (DSE) for unreferenced variables"
@@ -172,6 +178,7 @@ def main(args=None) -> int:
         enable_dosfuscation=not opts.no_dosfuscation,
         enable_cradlecrafter=not opts.no_cradlecrafter,
         enable_bedecode=not opts.no_bedecode,
+        enable_batchshield=not opts.no_batchshield,
         eliminate_dead_code=not opts.no_dse
     )
     clean_text, meta = engine.deobfuscate(script_text)
@@ -265,6 +272,20 @@ def main(args=None) -> int:
                 sys.stderr.write(f"     • Resolved character slices: {bdt['slices_resolved']}\n")
             if bdt.get("env_bootstraps_resolved"):
                 sys.stderr.write(f"     • Resolved environment bootstrap references: {bdt['env_bootstraps_resolved']}\n")
+        bst = meta.get("batchshield_telemetry", {})
+        if bst.get("is_batchshield") or (bst.get("signatures", {}) and bst["signatures"].get("is_batchshield")):
+            sig = bst.get("signatures", {})
+            sys.stderr.write(f"  ↳ BatchShield Detected: True (Confidence: {sig.get('confidence', bst.get('confidence', 0.0))})\n")
+            if sig.get("indicators"):
+                sys.stderr.write(f"     • Indicators: {', '.join(sig['indicators'])}\n")
+            if bst.get("symbols_resolved_count"):
+                sys.stderr.write(f"     • Resolved virtual symbol definitions: {bst['symbols_resolved_count']}\n")
+            if bst.get("chains_resolved_count"):
+                sys.stderr.write(f"     • Resolved compound environment chains: {bst['chains_resolved_count']}\n")
+            if bst.get("noise_stripped_count"):
+                sys.stderr.write(f"     • Stripped dummy noise tokens: {bst['noise_stripped_count']}\n")
+            if bst.get("chaff_eliminated_count"):
+                sys.stderr.write(f"     • Pruned dead symbol definition lines: {bst['chaff_eliminated_count']}\n")
         if meta["symbol_table"]:
             sys.stderr.write("  ↳ Symbol Table:\n")
             for k, v in list(meta["symbol_table"].items())[:10]:

@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-10-13
+
+### Added
+- **BatchShield Virtual Symbol Table & Compound Environment Deobfuscation Engine (`deobfuscator/batchshield.py`)**:
+  - Heuristic signature detection (`detect_batchshield_signatures`): accurately flags BatchShield obfuscation patterns, static OS variable indexing (`%COMSPEC:~-7,3%`, `%PATH:~0,1%`, `%SYSTEMROOT:~...%`), high-entropy randomized symbol variable declarations, dense multi-token concatenations, and interleaved dummy noise tokens with confidence scoring.
+  - Shannon entropy computation (`calculate_shannon_entropy`): calculates informational entropy per variable identifier to detect algorithmically randomized symbol names ($H \ge 2.3$).
+  - Virtual symbol dictionary harvesting and topological convergence (`harvest_batchshield_symbols`): extracts assignments across line boundaries and parenthesized blocks, evaluating chained definitions, variable slicing, and dynamic replacements with circular dependency protection.
+  - Compound environment variable chain resolution (`resolve_batchshield_env_chains`): recursively evaluates multi-tier environment variable chains and expands virtual symbols into their concrete characters or commands.
+  - Selective dummy noise variable elimination (`strip_batchshield_dummy_noise`): strips uninitialized random dummy noise variables (`%random_chaff%`) interleaved within command names while strictly protecting valid defined variables, dynamic system variables (`%RANDOM%`, `%ERRORLEVEL%`, `%CD%`, `%DATE%`, `%TIME%`), batch parameters (`%0`..`%9`, `%*`, `%~dp0`), and `for` loop parameters (`%%i`).
+  - Dead symbol definition pruning (`eliminate_batchshield_chaff`): automatically removes obfuscation table definitions once all references in payload commands have been inlined, leaving clean cleartext commands.
+  - In-memory cryptographic buffer sanitization (`zeroize_dict`, `zeroize_bytes`): securely overwrites parsed symbol tables and decrypted buffers prior to garbage collection.
+  - `BatchShieldNormalizer` class exposing clean object-oriented normalization API with custom environment support.
+- **Dedicated BatchShield Verification Suite (`tests/test_batchshield.py`)**:
+  - Added 13 comprehensive unit tests covering Shannon entropy calculation, clean vs obfuscated signature triage, positive/negative slice and substitution semantics, compound chain resolution, circular dependency safety, selective noise stripping, dead chaff elimination, memory zeroization, class interface wrapper methods, and benchmark Corpus 08 parity (expanding test suite to 155 tests).
+
+### Changed
+- Integrated BatchShield normalization into the core multi-pass convergence pipeline (`deobfuscator/core.py`, `deobfuscate_script`, `deobfuscate_bytes`) via `enable_batchshield=True` (executing pre-convergence in Step 0.76 and post-convergence in Step 4.7).
+- Updated standalone engine (`src/deobfuscator_engine.py`) with BatchShield normalization passes and parity.
+- Extended CLI toolchain (`deobfuscator/cli.py`) with `--no-batchshield` flag and verbose telemetry reporting for resolved symbol counts, compound chains, stripped noise tokens, and eliminated chaff statements.
+- Synchronized architecture mapping guide (`scripts/ARCHITECTURE_MAP.md`) and bumped package version across `package.json`, `pyproject.toml`, and `deobfuscator/__init__.py` to v1.9.0.
+
 ## [1.8.0] - 2026-10-13
 
 ### Added

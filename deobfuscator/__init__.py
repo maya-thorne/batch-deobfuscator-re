@@ -75,8 +75,18 @@ from .bedecode import (
     inspect_bedecode_pe,
     WINDOWS_BOOTSTRAP_ENV,
 )
+from .batchshield import (
+    BatchShieldNormalizer,
+    normalize_batchshield,
+    detect_batchshield_signatures,
+    harvest_batchshield_symbols,
+    resolve_batchshield_env_chains,
+    strip_batchshield_dummy_noise,
+    eliminate_batchshield_chaff,
+    DEFAULT_OS_ENV,
+)
 
-__version__ = "1.8.0"
+__version__ = "1.9.0"
 __author__ = "Maya Thorne"
 __all__ = [
     "BatchDeobfuscator",
@@ -137,4 +147,12 @@ __all__ = [
     "unwrap_bedecode_inline_stub",
     "inspect_bedecode_pe",
     "WINDOWS_BOOTSTRAP_ENV",
+    "BatchShieldNormalizer",
+    "normalize_batchshield",
+    "detect_batchshield_signatures",
+    "harvest_batchshield_symbols",
+    "resolve_batchshield_env_chains",
+    "strip_batchshield_dummy_noise",
+    "eliminate_batchshield_chaff",
+    "DEFAULT_OS_ENV",
 ]
