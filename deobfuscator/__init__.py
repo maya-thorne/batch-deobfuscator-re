@@ -67,8 +67,16 @@ from .cradlecrafter import (
     decode_base64_payload,
     normalize_powershell_stager,
 )
+from .bedecode import (
+    BEDeCodeNormalizer,
+    normalize_bedecode,
+    detect_bedecode_signatures,
+    unwrap_bedecode_inline_stub,
+    inspect_bedecode_pe,
+    WINDOWS_BOOTSTRAP_ENV,
+)
 
-__version__ = "1.7.0"
+__version__ = "1.8.0"
 __author__ = "Maya Thorne"
 __all__ = [
     "BatchDeobfuscator",
@@ -123,4 +131,10 @@ __all__ = [
     "detect_cradle_signatures",
     "decode_base64_payload",
     "normalize_powershell_stager",
+    "BEDeCodeNormalizer",
+    "normalize_bedecode",
+    "detect_bedecode_signatures",
+    "unwrap_bedecode_inline_stub",
+    "inspect_bedecode_pe",
+    "WINDOWS_BOOTSTRAP_ENV",
 ]

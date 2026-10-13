@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2026-10-13
+
+### Added
+- **Batch-Encryption-DeCoder (BEDeCode) Runtime Stub Unpacker & PE Forensics Engine (`deobfuscator/bedecode.py`)**:
+  - Multi-indicator heuristic signature detection (`detect_bedecode_signatures`): accurately identifies BatchEncryption symbol table definitions (`@set '=<alphabet>`), single-quote / symbol slicing expressions, dynamic substitution ciphers (`%VAR:old=new%`), and pre-seeded environment variable bootstrapping preambles with calculated confidence scoring.
+  - Character mapping table extraction and normalization (`extract_bedecode_tables`): parses variable table assignments and resolves caret escape sequences (`clean_bedecode_escapes`) where `^^` and `^&` are sanitized and unescaped according to VB6 BEDeCode specifications.
+  - Comprehensive slicing and substitution evaluation (`eval_batch_slice`, `eval_batch_subst`, `resolve_bedecode_slices`): natively evaluates both standard (`:~/offset`) and non-standard (`~/offset`) substring syntax, including negative offsets, compound length slices (`start,-end`, `-start,-end`, `-start,length`), and wildcard prefix replacements (`*old=new`).
+  - Pre-seeded Windows environment bootstrapping (`resolve_env_bootstrapping`): dynamically resolves preambles referencing core operating system variables (`%ALLUSERSPROFILE%`, `%ProgramFiles%`, `%COMSPEC%`, `%SYSTEMROOT%`, etc.) to expose hidden password tables.
+  - Multi-layer recursive onion unrolling (`unwrap_bedecode_inline_stub`): peels nested BatchEncryption protection layers iteratively, inlining character slices and eliminating dead preamble headers and table definitions upon complete resolution.
+  - PE static self-extracting runtime stub triage (`inspect_bedecode_pe`): performs static binary analysis on compiled Batch-to-EXE wrappers, detecting VB6 MSVBVM60 ThunRTMain stubs (`BEDeCode.exe` / cnHopeStudio), parsing PE section layouts and overlay streams, and recovering embedded batch script payloads without executing untrusted binaries.
+  - In-memory cryptographic buffer sanitization (`zeroize_dict`, `zeroize_bytes`): securely wipes extracted symbol tables and decrypted payload buffers prior to memory deallocation.
+  - `BEDeCodeNormalizer` production class exposing clean `detect()`, `normalize()`, and `inspect_pe()` interfaces.
+- **Dedicated BEDeCode Verification Suite (`tests/test_bedecode.py`)**:
+  - Added 12 unit tests covering escape normalization, slicing expressions, dynamic substitution, environment bootstrapping, single-layer and multi-layer onion unrolling, PE static stub inspection, memory zeroization, class wrapper methods, and end-to-end engine integration (expanding test suite to 142 tests).
+
+### Changed
+- Integrated BEDeCode normalization into the core multi-pass convergence pipeline (`deobfuscator/core.py`, `deobfuscate_script`, `deobfuscate_bytes`) via `enable_bedecode=True` (executing pre-convergence in Step 0.77 and post-convergence in Step 4.6).
+- Extended `PEBatchPackerForensics` (`src/pe_packer_forensics.py`) with `unpack_bedecode_runtime_stub()` to support static extraction and automatic deobfuscation of embedded batch scripts from PE executables.
+- Synchronized standalone engine (`src/deobfuscator_engine.py`) with BEDeCode normalization passes.
+- Updated CLI toolchain (`deobfuscator/cli.py`) with `--no-bedecode` flag and verbose telemetry reporting for BEDeCode analysis.
+- Synchronized architecture mapping guide (`scripts/ARCHITECTURE_MAP.md`) and bumped package version to v1.8.0.
+
 ## [1.7.0] - 2026-10-13
 
 ### Added
