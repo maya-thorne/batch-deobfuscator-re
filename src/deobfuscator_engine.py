@@ -19,6 +19,7 @@ try:
     from deobfuscator.dosfuscation import normalize_dosfuscation
     from deobfuscator.cradlecrafter import normalize_cradlecrafter
     from deobfuscator.bedecode import normalize_bedecode
+    from deobfuscator.batchshield import normalize_batchshield
     HAS_SECURITY_MODULES = True
 except ImportError:
     try:
@@ -30,6 +31,7 @@ except ImportError:
         from deobfuscator.dosfuscation import normalize_dosfuscation
         from deobfuscator.cradlecrafter import normalize_cradlecrafter
         from deobfuscator.bedecode import normalize_bedecode
+        from deobfuscator.batchshield import normalize_batchshield
         HAS_SECURITY_MODULES = True
     except ImportError:
         HAS_SECURITY_MODULES = False
@@ -38,7 +40,7 @@ class BatchDeobfuscator:
     def __init__(self, max_passes=15, strip_undefined=True, split_chains=True,
                  enable_batcloak=True, enable_somalifuscator=True, enable_oxidizer=True,
                  enable_abobus=True, enable_dosfuscation=True, enable_cradlecrafter=True,
-                 enable_bedecode=True, eliminate_dead_code=True):
+                 enable_bedecode=True, enable_batchshield=True, eliminate_dead_code=True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
         self.split_chains = split_chains
@@ -49,6 +51,7 @@ class BatchDeobfuscator:
         self.enable_dosfuscation = enable_dosfuscation
         self.enable_cradlecrafter = enable_cradlecrafter
         self.enable_bedecode = enable_bedecode
+        self.enable_batchshield = enable_batchshield
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars = {}
         # Prepopulate default Windows environment variables commonly used for slicing
@@ -418,6 +421,10 @@ class BatchDeobfuscator:
         if self.enable_abobus and HAS_SECURITY_MODULES:
             current, _ = normalize_abobus(current, custom_env=self.env_vars)
 
+        # Step 0.76: BatchShield virtual symbol table & compound env chain deobfuscation
+        if self.enable_batchshield and HAS_SECURITY_MODULES:
+            current, _ = normalize_batchshield(current, custom_env=self.env_vars)
+
         # Step 0.77: Batch-Encryption-DeCoder (BEDeCode) runtime stub peeling & slice normalization
         if self.enable_bedecode and HAS_SECURITY_MODULES:
             current, _ = normalize_bedecode(current, custom_env=self.env_vars)
@@ -465,6 +472,10 @@ class BatchDeobfuscator:
         # Step 4.6: Post-convergence BEDeCode check for newly emerged table stubs
         if self.enable_bedecode and HAS_SECURITY_MODULES and ("set '" in current.lower() or "%':~" in current or "%'~" in current):
             current, _ = normalize_bedecode(current, custom_env=self.env_vars)
+
+        # Step 4.7: Post-convergence BatchShield check for newly emerged compound chains
+        if self.enable_batchshield and HAS_SECURITY_MODULES and ("%comspec:~" in current.lower() or "%windir:~" in current.lower() or "%systemroot:~" in current.lower()):
+            current, _ = normalize_batchshield(current, custom_env=self.env_vars)
 
         # Step 5: Dead Store Elimination for unreferenced variables and ephemeral aliases
         if self.eliminate_dead_code and HAS_SECURITY_MODULES:
