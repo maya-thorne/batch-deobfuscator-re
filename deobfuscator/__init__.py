@@ -36,8 +36,24 @@ from .somalifuscator import (
     normalize_somalifuscator,
     zeroize_dict,
 )
+from .oxidizer import (
+    extract_bootstrap_primitives,
+    harvest_oxidizer_alphabet,
+    detect_oxidizer_signatures,
+    normalize_oxidizer,
+)
+from .abobus import (
+    AbobusNormalizer,
+    detect_abobus_signatures,
+    strip_abobus_unicode_noise,
+    strip_abobus_decoy_variables,
+    normalize_abobus_carets_and_delimiters,
+    strip_abobus_traps_and_chaff,
+    resolve_abobus_substring_dictionaries,
+    normalize_abobus,
+)
 
-__version__ = "1.3.0"
+__version__ = "1.5.0"
 __author__ = "Maya Thorne"
 __all__ = [
     "BatchDeobfuscator",
@@ -69,4 +85,16 @@ __all__ = [
     "detect_somalifuscator_signatures",
     "normalize_somalifuscator",
     "zeroize_dict",
+    "extract_bootstrap_primitives",
+    "harvest_oxidizer_alphabet",
+    "detect_oxidizer_signatures",
+    "normalize_oxidizer",
+    "AbobusNormalizer",
+    "detect_abobus_signatures",
+    "strip_abobus_unicode_noise",
+    "strip_abobus_decoy_variables",
+    "normalize_abobus_carets_and_delimiters",
+    "strip_abobus_traps_and_chaff",
+    "resolve_abobus_substring_dictionaries",
+    "normalize_abobus",
 ]

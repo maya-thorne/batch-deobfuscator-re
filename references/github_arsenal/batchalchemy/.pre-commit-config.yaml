@@ -1,0 +1,64 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: check-yaml
+    -   id: check-ast
+    -   id: check-added-large-files
+    -   id: check-merge-conflict
+    -   id: check-shebang-scripts-are-executable
+    -   id: requirements-txt-fixer
+    -   id: check-case-conflict
+    -   id: mixed-line-ending
+        args: [--fix, lf]
+
+-   repo: local
+    hooks:
+    -   id: yapf
+        name: format code with yapf
+        entry: yapf
+        language: python
+        types: [python]
+        require_serial: true
+        args: [-i, --style, .yapf.cfg]
+    -   id: flake8
+        name: check code with flake8
+        entry: flake8
+        language: python
+        types: [python]
+        require_serial: true
+        args: [--max-line-length, "120"]
+    -   id: pylint
+        name: check code with pylint
+        entry: pylint
+        language: python
+        types: [python]
+        require_serial: true
+    -   id: isort
+        name: sort imports with isort
+        entry: isort
+        language: python
+        types: [python]
+        require_serial: true
+    -   id: docformatter
+        name: format docstrings with docformatter
+        entry: docformatter
+        language: python
+        types: [python]
+        require_serial: true
+        args: [-i]
+    -   id: js-beautify
+        name: format javascript with js-beautify
+        entry: js-beautify
+        language: node
+        types: [javascript]
+        require_serial: true
+        args: [-r]
+    -   id: clang-format
+        name: format C with clang-format
+        entry: clang-format
+        language: system
+        types: [c]
+        require_serial: true
+        args: [--style, "{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 120}", -i]

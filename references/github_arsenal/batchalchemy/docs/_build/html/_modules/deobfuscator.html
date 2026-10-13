@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>deobfuscator &mdash; Batchger  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Batchger
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../deobfuscator.html">Deobfuscator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experimental.html">Experimental</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formatting.html">Formatting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizer.html">Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tests.html">Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utils</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Batchger</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">deobfuscator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for deobfuscator</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module contains functions to deobfuscate batch files.&quot;&quot;&quot;</span>
+
+<span class="c1"># pylint: disable=pointless-string-statement</span>
+<span class="c1"># pylint: disable=line-too-long</span>
+<span class="c1"># pylint: disable=logging-not-lazy</span>
+<span class="c1"># pylint: disable=too-many-locals</span>
+<span class="c1"># pylint: disable=too-many-branches</span>
+<span class="c1"># pylint: disable=too-many-statements</span>
+<span class="c1"># flake8: noqa</span>
+
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">import</span> <span class="nn">formatting</span>
+<span class="kn">import</span> <span class="nn">utils</span>
+
+
+<div class="viewcode-block" id="command_name_cleaner">
+<a class="viewcode-back" href="../deobfuscator.html#deobfuscator.command_name_cleaner">[docs]</a>
+<span class="k">def</span> <span class="nf">command_name_cleaner</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Removes caret characters (meant for escaping) from command names as</span>
+<span class="sd">    detected by the AST, given a batch file.</span>
+
+<span class="sd">    :param src: a string representation of the batch source file</span>
+<span class="sd">    :param encoding: string encoding</span>
+<span class="sd">    :return: the processed string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">parser</span><span class="p">,</span> <span class="n">batch_lang</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">create_parser</span><span class="p">()</span>
+
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s1">&#39;=&#39;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">START:</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">tree</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s1">&#39;=&#39;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+
+    <span class="n">cmd_name_cnt</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">batch_lang</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">            (command_name) @cmd</span>
+<span class="s1">        &#39;&#39;&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cmd_name_cnt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="n">cmd_name_cnt</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">captures</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">capture</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">captures</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;optimizing: &quot;</span> <span class="o">+</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s1">&#39;^&#39;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\^&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cmd_name_cnt</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+
+            <span class="n">startb</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start_byte</span>
+            <span class="n">startp</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start_point</span>
+            <span class="n">endb</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_byte</span>
+            <span class="n">endp</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_point</span>
+
+            <span class="n">update_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="n">src</span> <span class="o">=</span> <span class="n">src</span><span class="p">[:</span><span class="n">startb</span><span class="p">]</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="n">src</span><span class="p">[</span><span class="n">endb</span><span class="p">:]</span>
+
+            <span class="n">tree</span><span class="o">.</span><span class="n">edit</span><span class="p">(</span>
+                <span class="n">start_byte</span><span class="o">=</span><span class="n">startb</span><span class="p">,</span>
+                <span class="n">old_end_byte</span><span class="o">=</span><span class="n">endb</span><span class="p">,</span>
+                <span class="n">new_end_byte</span><span class="o">=</span><span class="n">endb</span> <span class="o">+</span> <span class="n">update_len</span><span class="p">,</span>
+                <span class="n">start_point</span><span class="o">=</span><span class="n">startp</span><span class="p">,</span>
+                <span class="n">old_end_point</span><span class="o">=</span><span class="n">endp</span><span class="p">,</span>
+                <span class="n">new_end_point</span><span class="o">=</span><span class="p">(</span><span class="n">endp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">endp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">update_len</span><span class="p">),</span>
+            <span class="p">)</span>
+
+            <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">),</span> <span class="n">tree</span><span class="p">)</span>
+
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+
+            <span class="n">cmd_name_cnt</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">captures</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="p">))</span>
+            <span class="k">break</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">END:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">tree</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">src</span></div>
+
+
+
+<div class="viewcode-block" id="variable_substitution">
+<a class="viewcode-back" href="../deobfuscator.html#deobfuscator.variable_substitution">[docs]</a>
+<span class="k">def</span> <span class="nf">variable_substitution</span><span class="p">(</span><span class="n">src</span><span class="p">,</span>
+                          <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+                          <span class="n">env</span><span class="o">=</span><span class="p">{},</span>
+                          <span class="n">expand_local</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                          <span class="n">expand_env</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                          <span class="n">placeholder</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;#$#&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Given an input batch file, this function removes all unset variables</span>
+<span class="sd">    enclosed in parentheses, given the current environment and gives options to</span>
+<span class="sd">    expand locally set variables or variables which are set in the current</span>
+<span class="sd">    environment. Locally set variables describe variables that have been set in</span>
+<span class="sd">    the input batch file up until the current processing step. Whether to</span>
+<span class="sd">    expand these types of variables with their value or to leave them as is can</span>
+<span class="sd">    be decided by the two flags expand_local and expand_env individually.</span>
+
+<span class="sd">    :param src: a string representation of the batch source file</span>
+<span class="sd">    :param encoding: the encoding string to be used within ``string.decode()`` commands; default is *&quot;utf-8&quot;*</span>
+<span class="sd">    :param env: a dictionary of environment variables to be used for variable substitution. Note that this dictionary</span>
+<span class="sd">        is updated during the processing of the batch file, so that it contains all variables that have been set in the</span>
+<span class="sd">        batch file up until the current processing step.</span>
+<span class="sd">    :param expand_local: bool flag that specifies whether variables that were assigned by a `set` command should be</span>
+<span class="sd">        expanded or not. If set to True, note that only the assigned variable-value pairs that have occurred in</span>
+<span class="sd">        previously processed ASTs will be taken into account. Caution! This means, that in case of non-linear code</span>
+<span class="sd">        execution, this expansion is not guaranteed to work. Defaults to *False*.</span>
+<span class="sd">    :param expand_env: bool flag that specifies whether variables that are set in the current environment should be</span>
+<span class="sd">        expanded or not. If set to True, note that only the assigned variable-value pairs of the current list of</span>
+<span class="sd">        environment variables will be taken into account. Also note that this has lower precedence concerning the</span>
+<span class="sd">        order of substitution than the `expand_local` parameter. Caution! Due to the dynamics of environments, this</span>
+<span class="sd">        expansion is not guaranteed to work. Defaults to *False*.</span>
+<span class="sd">    :param placeholder: an ascii bytes literal that is used to temporarily mark variable positions; after all the</span>
+<span class="sd">        querying is done, every single occurrence of it gets replaced by the original variable substitution. Note</span>
+<span class="sd">        that this parameter is only used in case that any of the `expand_local` or `expand_env` flags are set to</span>
+<span class="sd">        True. Caution! The value of placeholder should not occur in src anywhere. Defaults to *b&#39;#$#&#39;*</span>
+<span class="sd">    :return: the processed string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">out_string</span> <span class="o">=</span> <span class="n">src</span>
+
+    <span class="n">parser</span><span class="p">,</span> <span class="n">batch_lang</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">create_parser</span><span class="p">()</span>
+
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">out_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">START:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">tree</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># The while loop basically does the following steps:</span>
+        <span class="c1">#  1. query for assignments in the source file</span>
+        <span class="c1">#  2. update list of assignments</span>
+        <span class="c1">#  3. query for variables in the batch</span>
+        <span class="c1">#  4. update the batch by processing variable substitutions one by one</span>
+        <span class="c1">#  5. update / reparse the AST</span>
+        <span class="c1">#  6. repeat / go to step 1.</span>
+
+        <span class="c1"># if desired, use the following debugging code line to show the AST after each step</span>
+        <span class="c1"># logging.debug(formatting.format_sexp(tree.root_node.sexp()))</span>
+
+        <span class="c1"># query variables which are set in this batch file to make list of variables which should not be gotten rid of</span>
+        <span class="n">query_new_variables</span> <span class="o">=</span> <span class="n">batch_lang</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">            (assignment</span>
+<span class="s1">                (variable) @varname</span>
+<span class="s1">                (operator)</span>
+<span class="s1">                (value) @val)</span>
+<span class="s1">        &#39;&#39;&#39;</span><span class="p">)</span>
+
+        <span class="c1"># this for loop uses the query above to update the dictionary new_assignment which is used for variable</span>
+        <span class="c1">#  substitution of variables which are set inside the batch</span>
+        <span class="k">for</span> <span class="n">set_query_capture</span> <span class="ow">in</span> <span class="n">query_new_variables</span><span class="o">.</span><span class="n">captures</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="p">):</span>
+            <span class="c1"># if current capture corresponds to a newly set variable name within the set command (/assignment)</span>
+            <span class="k">if</span> <span class="n">set_query_capture</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;varname&quot;</span><span class="p">:</span>
+                <span class="n">new_variable_as_str</span> <span class="o">=</span> <span class="n">set_query_capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+                <span class="c1"># only set up a new key for the dict of new_assignment once per newly set variable_name</span>
+                <span class="k">if</span> <span class="n">new_variable_as_str</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">env</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found set &quot;</span> <span class="o">+</span> <span class="n">new_variable_as_str</span> <span class="o">+</span> <span class="s2">&quot; = ...&quot;</span><span class="p">)</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding this to dictionary env.&quot;</span><span class="p">)</span>
+                    <span class="n">env</span><span class="p">[</span><span class="n">new_variable_as_str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="c1"># if current capture corresponds to a newly set value for a variable within the set command (/assignment)</span>
+            <span class="k">elif</span> <span class="n">set_query_capture</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;val&quot;</span><span class="p">:</span>
+                <span class="n">new_value_as_str</span> <span class="o">=</span> <span class="n">set_query_capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+                <span class="c1"># only update the dict of new_assignment if value is not already up to date</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">env</span><span class="p">[</span><span class="n">new_variable_as_str</span><span class="p">]</span> <span class="o">==</span> <span class="n">new_value_as_str</span><span class="p">:</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found set ... = &quot;</span> <span class="o">+</span> <span class="n">new_value_as_str</span><span class="p">)</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Updating this to dictionary env.&quot;</span><span class="p">)</span>
+                    <span class="c1"># update (meaning to overwrite) current value of the dictionary at key=&lt;last key that was captured&gt;</span>
+                    <span class="n">env</span><span class="p">[</span><span class="n">new_variable_as_str</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_value_as_str</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># This shouldn&#39;t happen at all.</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Found capture with unrecognized query-@tag.&quot;</span><span class="p">)</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Content of env:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">env</span><span class="p">))</span>
+
+        <span class="c1"># now query for the variables which are meant to be expanded / erased</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">batch_lang</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">                (variable_substitution) @var</span>
+<span class="s1">        &#39;&#39;&#39;</span><span class="p">)</span>
+
+        <span class="c1"># finish when nothing was captured anymore, meaning that no %variables% are left in the batch file</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">query</span><span class="o">.</span><span class="n">captures</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="p">):</span>
+            <span class="k">break</span>
+
+        <span class="c1"># note that we process the batch and the tree for just one capture in the for loop since we break after one step</span>
+        <span class="c1">#  thus we can probably change this to ``capture = query.captures(tree.root_node)[0]`` and de-indent by four</span>
+        <span class="n">capture</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">captures</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">variable_as_str</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Now substituting variable:&quot;</span> <span class="o">+</span> <span class="n">variable_as_str</span><span class="p">)</span>
+
+        <span class="c1"># keep in mind that this all starts at (0,0), unlike e.g. the Pycharm IDE, which starts at (1,1)</span>
+        <span class="n">startb</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start_byte</span>
+        <span class="n">startp</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start_point</span>
+        <span class="n">endb</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_byte</span>
+        <span class="n">endp</span> <span class="o">=</span> <span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_point</span>
+
+        <span class="c1"># initialize a python variable, which describes the length of the environment variable which is to be</span>
+        <span class="c1">#  substituted</span>
+        <span class="n">old_var_len</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">endb</span> <span class="o">-</span> <span class="n">startb</span><span class="p">)</span>
+
+        <span class="c1"># initialize a python variable, which describes the length of the value with which the variable will be</span>
+        <span class="c1">#  replaced; in this way, it is usable by all three cases below</span>
+        <span class="n">new_var_len</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># case that the variable has been set in the current batch file before thus replace it with its assigned val</span>
+        <span class="k">if</span> <span class="n">variable_as_str</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">env</span><span class="p">:</span>
+            <span class="c1"># case that we want to actually expand the locally set variable</span>
+            <span class="k">if</span> <span class="n">expand_local</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="n">variable_as_str</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="c1"># use local helper function to replace first occurrence of a variable with its value according to dict</span>
+                <span class="n">out_string</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">replace_first_occurrence</span><span class="p">(</span><span class="n">out_string</span><span class="p">,</span> <span class="n">variable_as_str</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="n">new_var_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+
+            <span class="c1"># case that we do not want to expand the locally set variable; aka just mark it and restore it later</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># mark the variable with the placeholder instead of percent symbols; this way, tree-sitter temporarily</span>
+                <span class="c1">#  ignores it</span>
+                <span class="c1"># since we only get positional information of the byte representation, operate on bytes here</span>
+                <span class="n">out_bytes</span> <span class="o">=</span> <span class="n">out_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+                <span class="c1"># replace % with placeholder (thus marking it)</span>
+                <span class="n">out_string</span> <span class="o">=</span> <span class="p">(</span><span class="n">out_bytes</span><span class="p">[:</span><span class="n">startb</span><span class="p">]</span> <span class="o">+</span> <span class="n">placeholder</span> <span class="o">+</span> <span class="n">out_bytes</span><span class="p">[</span><span class="n">startb</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span><span class="n">endb</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span>
+                              <span class="n">placeholder</span> <span class="o">+</span> <span class="n">out_bytes</span><span class="p">[</span><span class="n">endb</span><span class="p">:])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+                <span class="c1"># note that leading and trailing % characters are replaced by one placeholder byte literal each</span>
+                <span class="n">new_var_len</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">placeholder</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">old_var_len</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># get value of environment variable which is being considered right now</span>
+            <span class="n">exp_variable_as_string</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">variable_as_str</span><span class="p">)</span>
+
+            <span class="c1"># case that variable has neither a value in the current environment (os.path does not replace it in this</span>
+            <span class="c1">#  case) nor in the env dictionary (it was not set in the current batch file before)</span>
+            <span class="k">if</span> <span class="n">exp_variable_as_string</span> <span class="o">==</span> <span class="n">variable_as_str</span><span class="p">:</span>
+                <span class="c1"># simply cut out the variable since it has no value</span>
+                <span class="c1"># since we only get positional information of the byte representation, operate on bytes here</span>
+                <span class="n">out_bytes</span> <span class="o">=</span> <span class="n">out_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+                <span class="n">out_string</span> <span class="o">=</span> <span class="p">(</span><span class="n">out_bytes</span><span class="p">[:</span><span class="n">startb</span><span class="p">]</span> <span class="o">+</span> <span class="n">out_bytes</span><span class="p">[</span><span class="n">endb</span><span class="p">:])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+
+            <span class="c1"># case that the variable has an actual value in the current environment, thus it is replace-able and was</span>
+            <span class="c1">#  not set in the current batch file so far (not part of the env dictionary)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># case that we want to actually expand the variable which has a value in the current environment</span>
+                <span class="k">if</span> <span class="n">expand_env</span><span class="p">:</span>
+                    <span class="c1"># use local helper function to replace first occurrence of the var with its current environment val</span>
+                    <span class="n">out_string</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">replace_first_occurrence</span><span class="p">(</span><span class="n">out_string</span><span class="p">,</span> <span class="n">variable_as_str</span><span class="p">,</span>
+                                                                <span class="n">exp_variable_as_string</span><span class="p">)</span>
+                    <span class="n">new_var_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">exp_variable_as_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+
+                <span class="c1"># case that we do not want to expand the variable; aka just mark it and restore it later</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># mark the variable with the placeholder instead of percent symbols; this way, tree-sitter</span>
+                    <span class="c1">#  temporarily ignores it</span>
+                    <span class="c1"># since we only get positional information of the byte representation, operate on bytes here</span>
+                    <span class="n">out_bytes</span> <span class="o">=</span> <span class="n">out_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+                    <span class="c1"># replace % with placeholder (thus marking it)</span>
+                    <span class="n">out_string</span> <span class="o">=</span> <span class="p">(</span><span class="n">out_bytes</span><span class="p">[:</span><span class="n">startb</span><span class="p">]</span> <span class="o">+</span> <span class="n">placeholder</span> <span class="o">+</span>
+                                  <span class="n">out_bytes</span><span class="p">[</span><span class="n">startb</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span><span class="n">endb</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">placeholder</span> <span class="o">+</span>
+                                  <span class="n">out_bytes</span><span class="p">[</span><span class="n">endb</span><span class="p">:])</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+                    <span class="c1"># note that leading and trailing % characters are replaced by one placeholder byte literal each</span>
+                    <span class="n">new_var_len</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">placeholder</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">old_var_len</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># update the tree</span>
+        <span class="n">tree</span><span class="o">.</span><span class="n">edit</span><span class="p">(</span>
+            <span class="n">start_byte</span><span class="o">=</span><span class="n">startb</span><span class="p">,</span>
+            <span class="n">old_end_byte</span><span class="o">=</span><span class="n">endb</span><span class="p">,</span>
+            <span class="n">new_end_byte</span><span class="o">=</span><span class="n">endb</span> <span class="o">-</span> <span class="n">old_var_len</span> <span class="o">+</span> <span class="n">new_var_len</span><span class="p">,</span>
+            <span class="n">start_point</span><span class="o">=</span><span class="n">startp</span><span class="p">,</span>
+            <span class="n">old_end_point</span><span class="o">=</span><span class="n">endp</span><span class="p">,</span>
+            <span class="n">new_end_point</span><span class="o">=</span><span class="p">(</span><span class="n">endp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">endp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">old_var_len</span> <span class="o">+</span> <span class="n">new_var_len</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="c1"># reparsing using the old tree, just for efficiency</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">out_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">),</span> <span class="n">tree</span><span class="p">)</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">tree</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+
+    <span class="c1"># cleaning step: replace placeholder with a percent character each, thus, restoring it to become a variable</span>
+    <span class="n">out_string</span> <span class="o">=</span> <span class="n">out_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">placeholder</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">),</span> <span class="s2">&quot;%&quot;</span><span class="p">)</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">END:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">tree</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">out_string</span></div>
+
+
+
+<div class="viewcode-block" id="query_variable_assignments">
+<a class="viewcode-back" href="../deobfuscator.html#deobfuscator.query_variable_assignments">[docs]</a>
+<span class="k">def</span> <span class="nf">query_variable_assignments</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="s2">&quot;logging&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Given the current state of a batch file, query the file for any variable</span>
+<span class="sd">    assignments which are detectable in the AST right now. Prints all found</span>
+<span class="sd">    occurrences which follow the S-expression ``(assignment (variable)</span>
+<span class="sd">    (value))``, either to stdout or on the logging DEBUG level, separated by</span>
+<span class="sd">    newlines each.</span>
+
+<span class="sd">    :param src: a string representation of the batch source file</span>
+<span class="sd">    :param encoding: the encoding string to be used within ``string.decode()`` commands; default is *&quot;utf-8&quot;*</span>
+<span class="sd">    :param stream: a string that specifies the stream to which the list of found variables should be printed.</span>
+<span class="sd">        Possible values are *&quot;logging&quot;* to log via root logger or *&quot;stdout&quot;* to print to standard output. Defaults</span>
+<span class="sd">        to *&quot;logging&quot;*. Note that the logger&#39;s level must be set to ``logging.DEBUG`` to actually make the result</span>
+<span class="sd">        visible.</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">parser</span><span class="p">,</span> <span class="n">batch_lang</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">create_parser</span><span class="p">()</span>
+
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+
+    <span class="c1"># query all occurrences of ``set variable = value`` found in batch to log an overview</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">batch_lang</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">                                (assignment</span>
+<span class="s1">                                    (variable)</span>
+<span class="s1">                                    (value)) @ass</span>
+<span class="s1">                            &#39;&#39;&#39;</span><span class="p">)</span>
+
+    <span class="c1"># initialize string to append the output to</span>
+    <span class="n">out_string</span> <span class="o">=</span> <span class="n">out_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="k">for</span> <span class="n">capture</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">captures</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="p">):</span>
+        <span class="n">out_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Found assignment: </span><span class="si">{</span><span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="k">if</span> <span class="n">stream</span> <span class="o">==</span> <span class="s1">&#39;logging&#39;</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">out_string</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">stream</span> <span class="o">==</span> <span class="s1">&#39;stdout&#39;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">out_string</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;Invalid value for stream parameter in query_variable_assignments() specified. Hence,&quot;</span>
+            <span class="s2">&quot;nothing will be printed.&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, BatchAlchemy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

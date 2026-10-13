@@ -1,0 +1,29 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 0,
+    "sections": []
+  },
+  "files": {
+    "extracted": [
+      {
+        "name": "bbfa3403de.ps1",
+        "sha256": "13aa004d79f173e570b1bd694e227812f4577d1eaa7ace6878103c9af6ed9c32"
+      },
+      {
+        "name": "58e0eefe34.ps1",
+        "sha256": "b84fad551f05730569a3bf07e66846cf7b5b689fb0c58a8f301ead5873eb06b1"
+      },
+      {
+        "name": "f1d3ea5d1b_deobfuscated.bat",
+        "sha256": "f1d3ea5d1be863c8156f83cd662ad346c37616d9da421d1742b8010b9ff6a1f3"
+      }
+    ],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [],
+    "tags": {},
+    "temp_submission_data": {}
+  }
+}

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utils &mdash; Batchger  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Batchger
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../deobfuscator.html">Deobfuscator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experimental.html">Experimental</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../formatting.html">Formatting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../optimizer.html">Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tests.html">Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utils</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Batchger</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module contains utility functions used by the other modules.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tree_sitter</span> <span class="k">as</span> <span class="nn">ts</span>
+
+
+<div class="viewcode-block" id="create_parser">
+<a class="viewcode-back" href="../utils.html#utils.create_parser">[docs]</a>
+<span class="k">def</span> <span class="nf">create_parser</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Utility function to build the parser for the batch language and return</span>
+<span class="sd">    it as well as the tree-sitter Language object. This function is meant to be</span>
+<span class="sd">    used before applying any transformations.</span>
+
+<span class="sd">    :param: None</span>
+<span class="sd">    :return parser: the tree-sitter parser for Batch</span>
+<span class="sd">    :return batch_lang: the tree-sitter Language object for the Batch</span>
+<span class="sd">        scripting language, used for syntax querying</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">root_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+    <span class="n">parser_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;tree-sitter-batch&#39;</span><span class="p">)</span>
+    <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="s1">&#39;temp&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
+
+    <span class="n">batch_so</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">,</span> <span class="s1">&#39;batch-ts.so&#39;</span><span class="p">)</span>
+    <span class="n">ts</span><span class="o">.</span><span class="n">Language</span><span class="o">.</span><span class="n">build_library</span><span class="p">(</span><span class="n">batch_so</span><span class="p">,</span> <span class="p">[</span><span class="n">parser_dir</span><span class="p">])</span>
+
+    <span class="n">batch_lang</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">Language</span><span class="p">(</span><span class="n">batch_so</span><span class="p">,</span> <span class="s1">&#39;batch&#39;</span><span class="p">)</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">Parser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">set_language</span><span class="p">(</span><span class="n">batch_lang</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span><span class="p">,</span> <span class="n">batch_lang</span></div>
+
+
+
+<div class="viewcode-block" id="remove_baum1810_overhead">
+<a class="viewcode-back" href="../utils.html#utils.remove_baum1810_overhead">[docs]</a>
+<span class="k">def</span> <span class="nf">remove_baum1810_overhead</span><span class="p">(</span><span class="n">src</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This function removes all lines in a batch file which start with the</span>
+<span class="sd">    characters ``:%`` or the baum1810 obfuscation signature. Note: This</span>
+<span class="sd">    function is not meant as a real deobfuscation tool because it changes the</span>
+<span class="sd">    semantics of the batch. Thus, its purpose is simply for visualization,</span>
+<span class="sd">    since the baum1810 obfuscator malformes the semantics of its input.</span>
+
+<span class="sd">    :param src: The batch file given as input string.</span>
+<span class="sd">    :return: The processed string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">list_</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">src</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s2">&quot;:%&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">line</span> <span class="ow">and</span> <span class="s2">&quot;::obfuscated by https://github.com/baum1810&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+            <span class="n">list_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">list_</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="replace_first_occurrence">
+<a class="viewcode-back" href="../utils.html#utils.replace_first_occurrence">[docs]</a>
+<span class="k">def</span> <span class="nf">replace_first_occurrence</span><span class="p">(</span><span class="n">original_str</span><span class="p">,</span> <span class="n">old_substr</span><span class="p">,</span> <span class="n">new_substr</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Replace the first occurrence of old_substring with new_substring in the</span>
+<span class="sd">    original_string.</span>
+
+<span class="sd">    :param original_str: string of the text which is to be edited</span>
+<span class="sd">    :param old_substr: string which is to be searched and replaced</span>
+<span class="sd">    :param new_substr: string by which old_substring is to be replaced</span>
+<span class="sd">    :return: the processed input as string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">first_occurrence_index</span> <span class="o">=</span> <span class="n">original_str</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">old_substr</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">first_occurrence_index</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># Replace only the first occurrence</span>
+        <span class="n">result_string</span> <span class="o">=</span> <span class="p">(</span><span class="n">original_str</span><span class="p">[:</span><span class="n">first_occurrence_index</span><span class="p">]</span> <span class="o">+</span> <span class="n">new_substr</span> <span class="o">+</span>
+                         <span class="n">original_str</span><span class="p">[</span><span class="n">first_occurrence_index</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">old_substr</span><span class="p">):])</span>
+        <span class="k">return</span> <span class="n">result_string</span>
+
+    <span class="c1"># If old_substring is not found, return the original string</span>
+    <span class="k">return</span> <span class="n">original_str</span></div>
+
+
+
+<div class="viewcode-block" id="query_variable_substitutions">
+<a class="viewcode-back" href="../utils.html#utils.query_variable_substitutions">[docs]</a>
+<span class="k">def</span> <span class="nf">query_variable_substitutions</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="s2">&quot;logging&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Given the current state of a batch file, query the file for any variable</span>
+<span class="sd">    substitutions which are detectable in the AST right now. Prints all found</span>
+<span class="sd">    variables enclosed in ``%`` characters, either to stdout or on the logging</span>
+<span class="sd">    DEBUG level, separated by newlines each.</span>
+
+<span class="sd">    :param src: a string representation of the batch source file</span>
+<span class="sd">    :param encoding: string encoding</span>
+<span class="sd">    :param stream: a string that specifies the stream to which the list of found variables should be printed.</span>
+<span class="sd">        Possible values are *&quot;logging&quot;* to log via root logger or *&quot;stdout&quot;* to print to standard output. Defaults to</span>
+<span class="sd">        *&quot;logging&quot;*. Note that the logger&#39;s level must be set to ``logging.DEBUG`` to actually make the result visible.</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">parser</span><span class="p">,</span> <span class="n">batch_lang</span> <span class="o">=</span> <span class="n">create_parser</span><span class="p">()</span>
+
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+
+    <span class="c1"># query all %variables% found in batch to log an overview</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">batch_lang</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        (variable_substitution) @var</span>
+<span class="s1">    &#39;&#39;&#39;</span><span class="p">)</span>
+
+    <span class="c1"># initialize string to append the output to</span>
+    <span class="n">out_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="k">for</span> <span class="n">capture</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">captures</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">root_node</span><span class="p">):</span>
+        <span class="n">out_string</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;Found variable: </span><span class="si">{</span><span class="n">capture</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="k">if</span> <span class="n">stream</span> <span class="o">==</span> <span class="s1">&#39;logging&#39;</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">out_string</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">stream</span> <span class="o">==</span> <span class="s1">&#39;stdout&#39;</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">out_string</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;Invalid value for stream parameter in query_variable_substitutions() specified. Hence,&quot;</span>
+            <span class="s2">&quot;nothing will be printed.&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, BatchAlchemy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

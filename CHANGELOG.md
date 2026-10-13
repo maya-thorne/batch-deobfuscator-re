@@ -5,6 +5,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-10-13
+
+### Added
+- **Abobus-obfuscator Normalization & Unicode Noise Filtering Engine (`deobfuscator/abobus.py`)**:
+  - Zero-width character and Unicode noise filtering (`strip_abobus_unicode_noise`) eliminating bidirectional control marks (LTR/RTL marks, ZWSP, ZWNJ, ZWJ, and non-breaking spaces).
+  - Anti-detect decoy variable elimination neutralizing Arabic character sets (`ﭲسﺖﮚ...`), Kaomoji face strings (`ヾ(⌐■_■)ノ`, `(◕‿◕)`...), and Chinese anti-copy warning text (`此訊息已被神秘魔法保護...`) embedded in variable references.
+  - Caret separation and delimiter normalization (`normalize_abobus_carets_and_delimiters`) resolving caret-escaped quotes (`^"` -> `"`), keyword splitting (`s^e^t`, `c^m^d`, `e^c^h^o`), variable identifiers, leading delimiter sequences (`;;`, `;@;`, `@@`), and large indentation blocks (>50 spaces).
+  - Multi-stage Chinese substring dictionary harvesting and inlining (`resolve_abobus_substring_dictionaries`) resolving `%public:~idx,1%` system slicing against `C:\Users\Public` and iteratively decomposing chained Chinese alphabet tables (`阿贝色德...`).
+  - Opaque predicate and trap chaff elimination (`strip_abobus_traps_and_chaff`) unwrapping `random_if` prefixes (`if 1 EQU 1`, `if N EQU 0 (@exit) else`, `if N LsS M`, `for /l %%y in (1 1 1) do`) and removing anti-analysis execution loops, echo traps, and exit assertions.
+  - Multi-indicator heuristic signature detection (`detect_abobus_signatures`) evaluating author markers (`:ABOBUS-OBFUSCATOR`, `EscaLag`), decoy glyphs, and structural trap metrics with confidence scoring.
+  - Memory zeroization (`zeroize_dict`) overwriting temporary forensic tables and harvested dictionary buffers.
+- **Dedicated Abobus Verification Suite (`tests/test_abobus.py`)**:
+  - Added 14 comprehensive unit tests covering canonical watermarked scripts, markerless heuristic detection, Unicode noise stripping, caret quote handling, random_if unwrapping, chained dictionary inlining, dummy variable DSE, and multi-pass pipeline integration (expanding test suite to 100 tests).
+
+### Changed
+- Integrated Abobus normalization into the core convergence loop (`deobfuscator/core.py`, `deobfuscate_script`, `deobfuscate_bytes`) via `enable_abobus=True`.
+- Brought standalone engine (`src/deobfuscator_engine.py`) into parity with Abobus normalization passes.
+- CLI toolchain updated with `--no-abobus` flag and structured Abobus forensic telemetry reporting in verbose mode.
+- Synchronized architecture mapping guide (`scripts/ARCHITECTURE_MAP.md`) and package versioning to v1.5.0.
+
+## [1.4.0] - 2026-10-13
+
+### Added
+- **0xidiz3r Zero-Literal Bootstrap & Reversible Alphabet Normalization Engine (`deobfuscator/oxidizer.py`)**:
+  - Three-stage zero-literal primitive seed resolver (`extract_bootstrap_primitives`) automatically reconstructing `set`, `space`, and `equals` variables from obfuscated preambles (`set S=set`, `%S% SP= `, `%S%%SP%EQ===`), with full support for caret escaping (`s^e^t`), quoted syntax, and single-line command chaining (`&`).
+  - Dynamic reversible alphabet table harvesting (`harvest_oxidizer_alphabet`) extracting 52+ character symbol definitions, multi-token payloads, and special literal percent escapes (`%%` -> `%`).
+  - Automated space token resolution (`%space_var%` -> `' '`) and inline payload variable substitution reconstructing cleartext commands in a single pass.
+  - Preamble chaff and watermark elimination: reliably strips base64 attribution comments (`:: VGhpcyBmaWxlIHdhcyBvYmZ1c2NhdGVk...`), seed bootstrap definitions, and dead alphabet store statements to produce clean, legible scripts.
+  - Multi-indicator heuristic signature detection (`detect_oxidizer_signatures`) calculating evasion confidence scores and reporting architectural tags (`base64_watermark`, `zero_literal_bootstrap_seed`, `alphabet_definitions_count`, `high_percent_density`).
+  - Cryptographic in-memory symbol table wiping (`zeroize_dict`) overwriting parsed dictionaries and buffers prior to garbage collection.
+- **Dedicated 0xidiz3r Verification Suite (`tests/test_oxidizer.py`)**:
+  - Added 10 comprehensive unit tests covering canonical watermarked scripts, watermark-stripped malware evasion variants, chained single-line bootstraps, GoodChars variable symbol handling, literal percent escapes, and end-to-end multi-pass pipeline integration (expanding test suite to 85 tests).
+- **Toolchain Package Configuration (`package.json`)**:
+  - Added root package configuration for unified test verification and repository asset tooling.
+
+### Changed
+- Integrated 0xidiz3r zero-literal bootstrap resolution into the core convergence loop (`deobfuscator/core.py`, `deobfuscate_script`, `deobfuscate_bytes`) via `enable_oxidizer=True`.
+- Brought standalone engine (`src/deobfuscator_engine.py`) into parity with 0xidiz3r normalization passes.
+- CLI toolchain updated with `--no-oxidizer` / `--no-0xidiz3r` flags and structured 0xidiz3r forensic telemetry reporting in verbose mode.
+- Synchronized architecture mapping guide (`scripts/ARCHITECTURE_MAP.md`) and package versioning.
+
 ## [1.3.0] - 2026-10-13
 
 ### Added

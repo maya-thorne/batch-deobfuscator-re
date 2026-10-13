@@ -1,0 +1,3 @@
+@echo off
+echo Installing BattlEye...
+..\TslGame_BE.exe 1 0

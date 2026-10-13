@@ -1,0 +1,136 @@
+<svg width="860" height="640" viewBox="0 0 860 640" xmlns="http://www.w3.org/2000/svg" font-family="'Courier New', Courier, monospace">
+  <defs>
+    <style>
+      .bg { fill: #0d1117; }
+      .titlebar { fill: #161b22; }
+      .dot-r { fill: #ff5f56; }
+      .dot-y { fill: #ffbd2e; }
+      .dot-g { fill: #27c93f; }
+      .title-txt { fill: #8b949e; font-size: 13px; }
+      .green { fill: #39d353; }
+      .cyan { fill: #58a6ff; }
+      .yellow { fill: #e3b341; }
+      .gray { fill: #8b949e; }
+      .white { fill: #e6edf3; }
+      .dim { fill: #484f58; }
+      .prompt { fill: #39d353; font-size: 14px; }
+      .cmd { fill: #e6edf3; font-size: 14px; }
+      .out { fill: #8b949e; font-size: 14px; }
+      .out-green { fill: #39d353; font-size: 14px; }
+      .out-cyan { fill: #58a6ff; font-size: 14px; }
+      .out-yellow { fill: #e3b341; font-size: 14px; }
+
+      /* ascii title fade-in lines */
+      .al1 { animation: fadeUp 0.4s 0.1s both; }
+      .al2 { animation: fadeUp 0.4s 0.2s both; }
+      .al3 { animation: fadeUp 0.4s 0.3s both; }
+      .al4 { animation: fadeUp 0.4s 0.4s both; }
+      .al5 { animation: fadeUp 0.4s 0.5s both; }
+      .al6 { animation: fadeUp 0.4s 0.6s both; }
+      .al7 { animation: fadeUp 0.4s 0.8s both; }
+
+      /* log lines */
+      .ll1  { animation: slideIn 0.3s 1.0s both; }
+      .ll2  { animation: slideIn 0.3s 1.5s both; }
+      .ll3  { animation: slideIn 0.3s 2.0s both; }
+      .ll4  { animation: slideIn 0.3s 2.5s both; }
+      .ll5  { animation: slideIn 0.3s 3.1s both; }
+      .ll6  { animation: slideIn 0.3s 3.7s both; }
+      .ll7  { animation: slideIn 0.3s 4.2s both; }
+      .ll8  { animation: slideIn 0.3s 4.5s both; }
+      .ll9  { animation: slideIn 0.3s 5.8s both; }
+      .ll10 { animation: slideIn 0.3s 6.3s both; }
+      .ll11 { animation: slideIn 0.3s 6.8s both; }
+      .ll12 { animation: slideIn 0.3s 7.3s both; }
+
+      /* progress bar */
+      .pb-track { animation: slideIn 0.3s 4.5s both; }
+      .pb-fill   { animation: growBar 1.6s 4.7s both; transform-origin: left center; }
+      .pb-pct    { animation: slideIn 0.3s 6.2s both; }
+
+      /* cursor blink */
+      .cursor { animation: blink 1s 7.5s step-end infinite both; }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes slideIn {
+        from { opacity: 0; transform: translateX(-10px); }
+        to   { opacity: 1; transform: translateX(0); }
+      }
+      @keyframes growBar {
+        from { width: 0; }
+        to   { width: 176px; }
+      }
+      @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0; }
+      }
+    </style>
+  </defs>
+
+  <!-- window -->
+  <rect width="860" height="640" rx="12" class="bg"/>
+  <!-- titlebar -->
+  <rect width="860" height="40" rx="12" class="titlebar"/>
+  <rect y="28" width="860" height="12" class="titlebar"/>
+  <circle cx="20" cy="20" r="7" class="dot-r"/>
+  <circle cx="40" cy="20" r="7" class="dot-y"/>
+  <circle cx="60" cy="20" r="7" class="dot-g"/>
+  <text x="430" y="25" text-anchor="middle" class="title-txt">bat2exe_converter — by Emensta</text>
+
+  <!-- ASCII art title block -->
+  <text x="36" y="84"  font-size="11.5" class="green al1">  ██████╗  █████╗ ████████╗██████╗    ██████╗    ███████╗██╗  ██╗███████╗</text>
+  <text x="36" y="99"  font-size="11.5" class="green al2">  ██╔══██╗██╔══██╗╚══██╔══╝╚════██╗  ██╔════╝    ██╔════╝╚██╗██╔╝██╔════╝</text>
+  <text x="36" y="114" font-size="11.5" class="green al3">  ██████╔╝███████║   ██║    █████╔╝  ██║  ███╗   █████╗   ╚███╔╝ █████╗  </text>
+  <text x="36" y="129" font-size="11.5" class="green al4">  ██╔══██╗██╔══██║   ██║   ██╔═══╝  ██║   ██║   ██╔══╝   ██╔██╗ ██╔══╝  </text>
+  <text x="36" y="144" font-size="11.5" class="green al5">  ██████╔╝██║  ██║   ██║  ███████╗  ╚██████╔╝   ███████╗██╔╝ ██╗███████╗</text>
+  <text x="36" y="159" font-size="11.5" class="dim al6">  ╚═════╝ ╚═╝  ╚═╝   ╚═╝  ╚══════╝   ╚═════╝    ╚══════╝╚═╝  ╚═╝╚══════╝</text>
+  <text x="36" y="180" font-size="13" class="cyan al7">  Batch to EXE Converter — Drag &amp; Drop Edition  |  by Emensta</text>
+
+  <!-- divider -->
+  <line x1="36" y1="195" x2="824" y2="195" stroke="#21262d" stroke-width="0.5"/>
+
+  <!-- command line -->
+  <text x="36" y="225" class="prompt ll1">C:\Tools&gt;</text>
+  <text x="122" y="225" class="cmd ll1"> BAT2EXE_Converter.bat "myscript.bat"</text>
+
+  <!-- output lines -->
+  <text x="56" y="253" class="out ll2">[*] Target detected: </text>
+  <text x="230" y="253" class="out-cyan ll2">myscript.bat</text>
+
+  <text x="56" y="277" class="out ll3">[*] Reading source directory...</text>
+
+  <text x="56" y="301" class="out ll4">[*] Setting output target: </text>
+  <text x="248" y="301" class="out-cyan ll4">myscript.exe</text>
+
+  <text x="56" y="325" class="out-cyan ll5">[*] Generating IExpress SED config → %TEMP%\2exe.sed</text>
+
+  <text x="56" y="349" class="out ll6">[*] Bundling batch file into self-extractor...</text>
+
+  <text x="56" y="373" class="out-yellow ll7">[*] Calling: iexpress /n /q /m %TEMP%\2exe.sed</text>
+
+  <!-- progress bar -->
+  <text x="56" y="403" class="out-green pb-track">[</text>
+  <svg x="68" y="389" width="176" height="20" class="pb-fill">
+    <rect width="176" height="20" fill="none"/>
+    <text y="14" font-size="14" font-family="'Courier New', monospace" fill="#39d353">####################</text>
+  </svg>
+  <text x="248" y="403" class="out-green pb-track">]</text>
+  <text x="264" y="403" class="out-yellow pb-pct"> 100%</text>
+
+  <!-- more output -->
+  <text x="56" y="433" class="out ll9">[*] Cleaning up temp files...</text>
+
+  <text x="56" y="457" class="out-green ll10">[+] Done! </text>
+  <text x="127" y="457" class="out-cyan ll10">myscript.exe</text>
+  <text x="218" y="457" class="out-green ll10"> created successfully.</text>
+
+  <text x="56" y="481" class="out-green ll11">[+] Output: </text>
+  <text x="137" y="481" class="out-cyan ll11">C:\Tools\myscript.exe</text>
+
+  <!-- final prompt + cursor -->
+  <text x="36" y="515" class="prompt ll12">C:\Tools&gt;</text>
+  <rect x="118" y="501" width="9" height="16" fill="#39d353" class="cursor"/>
+</svg>

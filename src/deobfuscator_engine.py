@@ -10,28 +10,35 @@ import sys
 import os
 from pathlib import Path
 
-# Try importing BatCloak & Somalifuscator modules from project root
+# Try importing BatCloak, Somalifuscator, Oxidizer & Abobus modules from project root
 try:
     from deobfuscator.batcloak import strip_batcloak_random_vars, eliminate_dead_stores
     from deobfuscator.somalifuscator import normalize_somalifuscator
+    from deobfuscator.oxidizer import normalize_oxidizer
+    from deobfuscator.abobus import normalize_abobus
     HAS_SECURITY_MODULES = True
 except ImportError:
     try:
         sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
         from deobfuscator.batcloak import strip_batcloak_random_vars, eliminate_dead_stores
         from deobfuscator.somalifuscator import normalize_somalifuscator
+        from deobfuscator.oxidizer import normalize_oxidizer
+        from deobfuscator.abobus import normalize_abobus
         HAS_SECURITY_MODULES = True
     except ImportError:
         HAS_SECURITY_MODULES = False
 
 class BatchDeobfuscator:
     def __init__(self, max_passes=15, strip_undefined=True, split_chains=True,
-                 enable_batcloak=True, enable_somalifuscator=True, eliminate_dead_code=True):
+                 enable_batcloak=True, enable_somalifuscator=True, enable_oxidizer=True,
+                 enable_abobus=True, eliminate_dead_code=True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
         self.split_chains = split_chains
         self.enable_batcloak = enable_batcloak
         self.enable_somalifuscator = enable_somalifuscator
+        self.enable_oxidizer = enable_oxidizer
+        self.enable_abobus = enable_abobus
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars = {}
         # Prepopulate default Windows environment variables commonly used for slicing
@@ -392,6 +399,14 @@ class BatchDeobfuscator:
         # Step 0.6: Somalifuscator Caesar cipher inversion and array normalization
         if self.enable_somalifuscator and HAS_SECURITY_MODULES:
             current, _ = normalize_somalifuscator(current, custom_env=self.env_vars)
+
+        # Step 0.7: 0xidiz3r zero-literal bootstrap resolution and alphabet normalization
+        if self.enable_oxidizer and HAS_SECURITY_MODULES:
+            current, _ = normalize_oxidizer(current, custom_env=self.env_vars)
+
+        # Step 0.75: Abobus Unicode noise filtering, decoy elimination, and trap chaff removal
+        if self.enable_abobus and HAS_SECURITY_MODULES:
+            current, _ = normalize_abobus(current, custom_env=self.env_vars)
 
         # Pre-scan symbol table across script
         for line in current.splitlines():

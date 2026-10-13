@@ -1,0 +1,62 @@
+{
+  "extra": {
+    "drop_file": false,
+    "score": 250,
+    "sections": [
+      {
+        "auto_collapse": false,
+        "body": [
+          {
+            "Command [trunc]": "%WinDir%\\syswow64\\windowspowershell\\v1.0\\powershell.exe -NoP -NonI -W Hidden -Exec Bypass -Command \"",
+            "Normalized [trunc]": "C:\\WINDOWS\\syswow64\\windowspowershell\\v1.0\\powershell.exe -NoP -NonI -W Hidden -Exec Bypass -Command"
+          }
+        ],
+        "body_config": {
+          "column_order": [
+            "Command [trunc]",
+            "Normalized [trunc]"
+          ]
+        },
+        "body_format": "TABLE",
+        "classification": "TLP:C",
+        "depth": 0,
+        "heuristic": {
+          "attack_ids": [],
+          "frequency": 1,
+          "heur_id": 3,
+          "score": 250,
+          "score_map": {},
+          "signatures": {}
+        },
+        "promote_to": null,
+        "tags": {},
+        "title_text": "Execution of variable content",
+        "zeroize_on_tag_safe": false
+      }
+    ]
+  },
+  "files": {
+    "extracted": [
+      {
+        "name": "11586313a1_deobfuscated.bat",
+        "sha256": "11586313a1353ab40c08edf664836c0328ed87458405b3b67866a576ed0db803"
+      },
+      {
+        "name": "1df5fda51f.ps1",
+        "sha256": "4a4c419489c0952bc32673b803346be11d31536f6a4f1b2f765430f2f02fc20d"
+      }
+    ],
+    "supplementary": []
+  },
+  "results": {
+    "heuristics": [
+      {
+        "attack_ids": [],
+        "heur_id": 3,
+        "signatures": []
+      }
+    ],
+    "tags": {},
+    "temp_submission_data": {}
+  }
+}

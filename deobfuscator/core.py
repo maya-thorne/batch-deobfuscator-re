@@ -27,6 +27,14 @@ from .somalifuscator import (
     normalize_somalifuscator,
     detect_somalifuscator_signatures,
 )
+from .oxidizer import (
+    normalize_oxidizer,
+    detect_oxidizer_signatures,
+)
+from .abobus import (
+    normalize_abobus,
+    detect_abobus_signatures,
+)
 
 class BatchDeobfuscator:
     """Multi-Pass Fixed-Point Batch Script Deobfuscator."""
@@ -65,12 +73,15 @@ class BatchDeobfuscator:
     def __init__(self, max_passes: int = 15, custom_env: Dict[str, str] = None, 
                  strip_undefined: bool = True, split_chains: bool = True,
                  enable_batcloak: bool = True, enable_somalifuscator: bool = True,
+                 enable_oxidizer: bool = True, enable_abobus: bool = True,
                  eliminate_dead_code: bool = True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
         self.split_chains = split_chains
         self.enable_batcloak = enable_batcloak
         self.enable_somalifuscator = enable_somalifuscator
+        self.enable_oxidizer = enable_oxidizer
+        self.enable_abobus = enable_abobus
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars: Dict[str, str] = dict(self.DEFAULT_ENV)
         if custom_env:
@@ -197,9 +208,13 @@ class BatchDeobfuscator:
         self.pass_history = []
         batcloak_sig = detect_batcloak_signatures(None, script_text)
         somalifuscator_sig = detect_somalifuscator_signatures(script_text)
+        oxidizer_sig = detect_oxidizer_signatures(script_text)
+        abobus_sig = detect_abobus_signatures(script_text)
         removed_random_vars: List[str] = []
         eliminated_dead_vars: List[str] = []
         somalifuscator_meta: Dict[str, Any] = {}
+        oxidizer_meta: Dict[str, Any] = {}
+        abobus_meta: Dict[str, Any] = {}
 
         # Step 0: Split multi-line chained statements (&-splits outside quotes)
         if self.split_chains:
@@ -212,6 +227,14 @@ class BatchDeobfuscator:
         # Step 0.6: Somalifuscator Caesar cipher inversion and array normalization
         if self.enable_somalifuscator:
             curr_text, somalifuscator_meta = normalize_somalifuscator(curr_text, custom_env=self.env_vars)
+
+        # Step 0.7: 0xidiz3r zero-literal bootstrap resolution and alphabet normalization
+        if self.enable_oxidizer:
+            curr_text, oxidizer_meta = normalize_oxidizer(curr_text, custom_env=self.env_vars)
+
+        # Step 0.75: Abobus Unicode noise filtering, decoy elimination, and trap chaff removal
+        if self.enable_abobus:
+            curr_text, abobus_meta = normalize_abobus(curr_text, custom_env=self.env_vars)
 
         # Step 0.8: Pre-scan symbol table for set declarations across script
         for line in curr_text.splitlines():
@@ -275,6 +298,24 @@ class BatchDeobfuscator:
                 "kdot_detected": False,
                 "caesar_symbols_count": 0,
                 "eliminated_chaff_count": 0,
+            },
+            "oxidizer_telemetry": oxidizer_meta or {
+                "signatures": oxidizer_sig,
+                "is_oxidizer": oxidizer_sig["is_oxidizer"],
+                "confidence": oxidizer_sig["confidence"],
+                "bootstrap_vars": oxidizer_sig["bootstrap_vars"],
+                "alphabet_size": 0,
+                "eliminated_preamble_count": 0,
+            },
+            "abobus_telemetry": abobus_meta or {
+                "signatures": abobus_sig,
+                "is_abobus": abobus_sig["is_abobus"] if self.enable_abobus else False,
+                "confidence": abobus_sig["confidence"] if self.enable_abobus else 0.0,
+                "indicators": abobus_sig["indicators"] if self.enable_abobus else [],
+                "eliminated_traps_count": 0,
+                "stripped_noise_count": 0,
+                "dictionaries_resolved_count": 0,
+                "dictionary_variables": [],
             }
         }
 
@@ -283,6 +324,8 @@ class BatchDeobfuscator:
 def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: bool = True,
                        split_chains: bool = True, enable_batcloak: bool = True,
                        enable_somalifuscator: bool = True,
+                       enable_oxidizer: bool = True,
+                       enable_abobus: bool = True,
                        eliminate_dead_code: bool = True) -> str:
     """Convenience helper to deobfuscate a script and return clean string."""
     engine = BatchDeobfuscator(
@@ -291,6 +334,8 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
         split_chains=split_chains,
         enable_batcloak=enable_batcloak,
         enable_somalifuscator=enable_somalifuscator,
+        enable_oxidizer=enable_oxidizer,
+        enable_abobus=enable_abobus,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, _ = engine.deobfuscate(script_text)
@@ -299,6 +344,8 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
 def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool = True,
                       split_chains: bool = True, enable_batcloak: bool = True,
                       enable_somalifuscator: bool = True,
+                      enable_oxidizer: bool = True,
+                      enable_abobus: bool = True,
                       eliminate_dead_code: bool = True) -> Tuple[str, Dict[str, Any]]:
     """
     Deobfuscate raw batch file bytes, neutralizing fake UTF-16LE BOM headers and decoys.
@@ -312,6 +359,8 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
         split_chains=split_chains,
         enable_batcloak=enable_batcloak,
         enable_somalifuscator=enable_somalifuscator,
+        enable_oxidizer=enable_oxidizer,
+        enable_abobus=enable_abobus,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, meta = engine.deobfuscate(text)

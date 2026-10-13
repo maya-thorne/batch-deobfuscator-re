@@ -83,5 +83,10 @@ class TestBatchDeobfuscatorCLI(unittest.TestCase):
         self.assertGreaterEqual(data["meta"]["passes_executed"], 1)
         self.assertIn("cmd /c whomai", data["deobfuscated_script"])
 
+    def test_cli_no_abobus_flag(self):
+        res = self.run_cli(["--help"])
+        self.assertEqual(res.returncode, 0)
+        self.assertIn("--no-abobus", res.stdout)
+
 if __name__ == "__main__":
     unittest.main()

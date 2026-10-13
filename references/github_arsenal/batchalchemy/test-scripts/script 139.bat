@@ -1,0 +1,2 @@
+sc create "Razer Game Manager Service" displayname="Razer Game Manager" start=auto binpath="C:\Program Files (x86)\Razer\Razer Services\GMS\GameManagerService.exe"
+sc description "Razer Game Manager Service" "This service allows for Razer software applications and services to manage the games installed on the system." 

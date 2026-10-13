@@ -1,0 +1,1 @@
+@SplinterCell3.exe 01_lighthouse -playtimedemo=01_lighthouse.dem

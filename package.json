@@ -1,0 +1,23 @@
+{
+  "name": "batch-deobfuscator-re",
+  "version": "1.5.0",
+  "description": "Windows Batch Multi-Pass Deobfuscator Engine, Ghidra PE Unpacker Forensics & 48+ Reference Archive",
+  "scripts": {
+    "verify-assets": "node scripts/verify_assets.mjs",
+    "benchmarks": "python benchmarks/eval_corpus_runner.py",
+    "github-ops": "node scripts/github_ops.mjs",
+    "push": "node scripts/push_to_github.mjs"
+  },
+  "keywords": [
+    "batch-deobfuscator",
+    "reverse-engineering",
+    "malware-analysis",
+    "forensics",
+    "batcloak",
+    "somalifuscator",
+    "0xidiz3r",
+    "abobus"
+  ],
+  "author": "Maya Thorne",
+  "license": "Apache-2.0"
+}

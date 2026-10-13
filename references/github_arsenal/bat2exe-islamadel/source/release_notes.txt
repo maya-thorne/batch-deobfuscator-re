@@ -1,0 +1,12 @@
+BAT2EXE 2.1
+
+Convert any Batch File easily to an Executable
+
+This Tool will help you to convert Batch Files [.bat] or [.cmd]
+including any other Files in a certain Folder
+to an executable [.exe] file package.
+
+Change Log:
+
+7-Zip V. 24.07 + 7-zip 9.20 Extras (SFX)
+rcedit-x64 V. 2.0.0

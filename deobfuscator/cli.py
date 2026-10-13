@@ -89,6 +89,19 @@ Engineered by Maya Thorne.
     )
 
     parser.add_argument(
+        "--no-oxidizer", "--no-0xidiz3r",
+        action="store_true",
+        dest="no_oxidizer",
+        help="Disable 0xidiz3r zero-literal bootstrap resolution and alphabet normalization"
+    )
+
+    parser.add_argument(
+        "--no-abobus",
+        action="store_true",
+        help="Disable Abobus Unicode noise filtering, decoy elimination, and trap chaff removal"
+    )
+
+    parser.add_argument(
         "--no-dse",
         action="store_true",
         help="Disable Dead Store Elimination (DSE) for unreferenced variables"
@@ -136,6 +149,8 @@ def main(args=None) -> int:
         max_passes=opts.passes,
         enable_batcloak=not opts.no_batcloak,
         enable_somalifuscator=not opts.no_somalifuscator,
+        enable_oxidizer=not opts.no_oxidizer,
+        enable_abobus=not opts.no_abobus,
         eliminate_dead_code=not opts.no_dse
     )
     clean_text, meta = engine.deobfuscate(script_text)
@@ -168,6 +183,29 @@ def main(args=None) -> int:
                 sys.stderr.write(f"     • Unwrapped 'for /l' wrapper loops: {st['unwrapped_loops_count']}\n")
             if st.get("eliminated_chaff_count"):
                 sys.stderr.write(f"     • Pruned Somalifuscator chaff/decoys: {st['eliminated_chaff_count']} statements\n")
+        ot = meta.get("oxidizer_telemetry", {})
+        if ot.get("is_oxidizer") or (ot.get("signatures", {}) and ot["signatures"].get("is_oxidizer")):
+            sig = ot.get("signatures", {})
+            sys.stderr.write(f"  ↳ 0xidiz3r Detected: True (Confidence: {sig.get('confidence', ot.get('confidence', 0.0))})\n")
+            b_vars = ot.get("bootstrap_vars") or {}
+            if b_vars.get("set_var"):
+                sys.stderr.write(f"     • Bootstrap primitives: set={b_vars.get('set_var')}, space={b_vars.get('space_var')}, eq={b_vars.get('eq_var')}\n")
+            if ot.get("alphabet_size"):
+                sys.stderr.write(f"     • Harvested alphabet symbols: {ot['alphabet_size']}\n")
+            if ot.get("eliminated_preamble_count"):
+                sys.stderr.write(f"     • Pruned 0xidiz3r preamble chaff: {ot['eliminated_preamble_count']} statements\n")
+        at = meta.get("abobus_telemetry", {})
+        if at.get("is_abobus") or (at.get("signatures", {}) and at["signatures"].get("is_abobus")):
+            sig = at.get("signatures", {})
+            sys.stderr.write(f"  ↳ Abobus Detected: True (Confidence: {sig.get('confidence', at.get('confidence', 0.0))})\n")
+            if sig.get("indicators"):
+                sys.stderr.write(f"     • Indicators: {', '.join(sig['indicators'])}\n")
+            if at.get("eliminated_traps_count"):
+                sys.stderr.write(f"     • Pruned Abobus traps/chaff: {at['eliminated_traps_count']} statements\n")
+            if at.get("stripped_noise_count"):
+                sys.stderr.write(f"     • Stripped Unicode/Kaomoji noise: {at['stripped_noise_count']} tokens\n")
+            if at.get("dictionaries_resolved_count"):
+                sys.stderr.write(f"     • Resolved substring dictionaries: {at['dictionaries_resolved_count']} tables\n")
         if meta["symbol_table"]:
             sys.stderr.write("  ↳ Symbol Table:\n")
             for k, v in list(meta["symbol_table"].items())[:10]:

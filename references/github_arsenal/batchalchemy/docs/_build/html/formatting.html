@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Formatting &mdash; Batchger  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Optimizer" href="optimizer.html" />
+    <link rel="prev" title="Experimental" href="experimental.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Batchger
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="deobfuscator.html">Deobfuscator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experimental.html">Experimental</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Formatting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#formatting.format_sexp"><code class="docutils literal notranslate"><span class="pre">format_sexp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#formatting.query_separators"><code class="docutils literal notranslate"><span class="pre">query_separators()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#formatting.remove_separators"><code class="docutils literal notranslate"><span class="pre">remove_separators()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#formatting.to_lower_case"><code class="docutils literal notranslate"><span class="pre">to_lower_case()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Batchger</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Formatting</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/formatting.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-formatting">
+<span id="formatting"></span><h1>Formatting<a class="headerlink" href="#module-formatting" title="Link to this heading"></a></h1>
+<p>This module contains functions to format batch files.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="formatting.format_sexp">
+<span class="sig-prename descclassname"><span class="pre">formatting.</span></span><span class="sig-name descname"><span class="pre">format_sexp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/formatting.html#format_sexp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#formatting.format_sexp" title="Link to this definition"></a></dt>
+<dd><p>Given a string as input which is a valid S-expression which again is
+formatted in one line only, this function processes this string and returns
+the semantically same S-expression but with added newlines and indentations
+to make it a visually appealing tree structure. This helps in visualizing
+S-expressions returned by tree-sitter’s <code class="docutils literal notranslate"><span class="pre">tree-sitter.Node.sexp()</span></code> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_str</strong> – a valid S-expression one-liner</p></li>
+<li><p><strong>indent_size</strong> – an integer stating the size of individual
+indentations, defaults to <em>4</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the formatted input_string with indentations and newline
+suited for output</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="formatting.query_separators">
+<span class="sig-prename descclassname"><span class="pre">formatting.</span></span><span class="sig-name descname"><span class="pre">query_separators</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'logging'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/formatting.html#query_separators"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#formatting.query_separators" title="Link to this definition"></a></dt>
+<dd><p>Given the current state of a batch file, query the file for any
+separators which are detectable in the AST right now. Prints all found
+separators either to stdout or on the logging DEBUG level, separated by
+newlines each.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> – a string representation of the batch source file</p></li>
+<li><p><strong>encoding</strong> – the encoding string to be used within <code class="docutils literal notranslate"><span class="pre">string.decode()</span></code> commands; default is “utf-8”</p></li>
+<li><p><strong>stream</strong> – a string that specifies the stream to which the list of found variables should be printed.
+Possible values are <em>“logging”</em> to log via root logger or <em>“stdout”</em> to print to standard output. Defaults
+to <em>“logging”</em>. Note that the logger’s level must be set to <code class="docutils literal notranslate"><span class="pre">logging.DEBUG</span></code> to actually make the result
+visible.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="formatting.remove_separators">
+<span class="sig-prename descclassname"><span class="pre">formatting.</span></span><span class="sig-name descname"><span class="pre">remove_separators</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">placeholder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">b'#'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/formatting.html#remove_separators"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#formatting.remove_separators" title="Link to this definition"></a></dt>
+<dd><p>Removes all separators which are to be identified by the separator-node
+of the AST. Processes the given input in just one run and returns the
+processed string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> – a string representing the current state of the batch file</p></li>
+<li><p><strong>encoding</strong> – the encoding string to be used within <code class="docutils literal notranslate"><span class="pre">string.decode()</span></code> commands; default is <em>“utf-8”</em></p></li>
+<li><p><strong>placeholder</strong> – an ascii bytes literal of length 1 that is used to temporarily mark separator positions;
+after all the marking is done, every grouped occurrence of it gets replaced by a single whitespace
+character. Caution! To guarantee correctness, this parameter should not occur in src anywhere. Defaults to
+<em>b’#’</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the processed string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="formatting.to_lower_case">
+<span class="sig-prename descclassname"><span class="pre">formatting.</span></span><span class="sig-name descname"><span class="pre">to_lower_case</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keywords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('for',</span> <span class="pre">'set',</span> <span class="pre">'if',</span> <span class="pre">'errorlevel',</span> <span class="pre">'cmdextversion',</span> <span class="pre">'defined',</span> <span class="pre">'exist',</span> <span class="pre">'else')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('(command</span> <span class="pre">(command_name)</span> <span class="pre">&#64;cmdname)',</span> <span class="pre">'(comment)</span> <span class="pre">&#64;comment',</span> <span class="pre">'(label_definition)</span> <span class="pre">&#64;label')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/formatting.html#to_lower_case"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#formatting.to_lower_case" title="Link to this definition"></a></dt>
+<dd><p>Given an input batch file, this function transforms its content to lower
+case. For that, three different modes are available. The first is to simply
+force lower case across the entire input. In case of enabling the first
+mode (force), the other two are being skipped automatically. The second and
+the third can be used separately or in tandem. One of which is to state a
+number of rules (formatted as tree-sitter S-expressions). This processes
+the batch file in a way that every matched character within any match of
+this set of rules gets lower cased. The last mode is meant to just lower
+case a set of keywords which can be processed by the batch parser. This
+aims at preventing the loss of information concerning semantically relevant
+case-sensitiveness. Caution! In its current state of implementation, not
+every keyword can be lower cased fully correctly. Thus, the function’s
+default values are set to yield stable solutions only.</p>
+<p>TODOs:</p>
+<ul class="simple">
+<li><p>TODO currently assumes a certain degree of previous deobfuscation (no escaping carets, detectable rules, thus
+after resolved variable expansions)</p></li>
+<li><p>TODO hence, either implement carets in the RegExes of re.sub() or implement the deobfuscating function itself
+and beware the changes in the ranges! aka update tree!</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> – a string representation of the batch source file</p></li>
+<li><p><strong>encoding</strong> – the encoding string to be used within <code class="docutils literal notranslate"><span class="pre">string.decode()</span></code> commands; default is <em>“utf-8”</em></p></li>
+<li><p><strong>force</strong> – boolean specifying whether to force the entire batch file to lower case or not. Defaults to
+<em>False</em>.</p></li>
+<li><p><strong>keywords</strong> – iterable of strings representing keywords which can be processed by the batch parser. Valid
+strings are <em>‘for’, ‘in’, ‘do’, ‘set’, ‘if’, ‘not’, ‘else’, ‘errorlevel’, ‘cmdextversion’, ‘defined’,
+‘exist’, ‘equ’, ‘neq’, ‘lss’, ‘lew’, ‘gtr’</em> and <em>‘geq’</em>. For each listed keyword, the function lower cases
+every match of that keyword in src. This parameter is only taken into account if the force parameter is set
+to False. Defaults to <em>(‘for’, ‘set’, ‘if’, ‘errorlevel’, ‘cmdextversion’, ‘defined’, ‘exist’, ‘else’)</em>,
+because these are the currently stable ones for processing correctly to lower case. Use remaining keywords
+with caution.</p></li>
+<li><p><strong>rules</strong> – <p>iterable of strings representing rules which can be processed by the batch parser. Each rule must
+have the format of a typical tree-sitter S-expression, including an identifier (which consists out of an
+<code class="docutils literal notranslate"><span class="pre">&#64;</span></code> character and an alphabetical string immediately thereafter). The S-expression is used to check the
+AST of the input batch file for any occurrence of that parsing structure, whereas the identifier marks the
+position / the part of the S-expression which should be lower cased. To mark a specific part of the
+S-expression, the identifier must be placed after the corresponding closing parenthesis, including a
+whitespace. The actual name of the identifier is not relevant, as it is only used as a marker. Note that
+variables stay case sensitive. This parameter is only taken into account if the force parameter is set to
+False.</p>
+<p>Defaults to the following iterable, which includes three rules, that is to process command names, comments
+and label definitions:</p>
+<p><em>(‘(command (command_name) &#64;cmdname)’,</em></p>
+<p><em>’(comment) &#64;comment’,</em></p>
+<p><em>’(label_definition) &#64;label’)</em></p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the processed string</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="experimental.html" class="btn btn-neutral float-left" title="Experimental" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="optimizer.html" class="btn btn-neutral float-right" title="Optimizer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, BatchAlchemy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
