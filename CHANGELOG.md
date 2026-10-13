@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-10-13
+
+### Added
+- **Invoke-DOSfuscation Static Deobfuscation Engine (`deobfuscator/dosfuscation.py`)**:
+  - `Out-DosReversedCommand` reverse reconstruction loop unrolling (`unwrap_dosfuscation_for_loops`): statically analyzes cmd.exe `for /L %A in (start, step, end) do ...` loops, supporting arbitrary negative strides (-1, -2, -3) and character padding noise.
+  - `Out-DosFORcodedCommand` indexed variable assembly (`unwrap_dosfuscation_for_loops`): reconstructs cleartext payloads built from source character sets via `for %A in (...)` arrays, properly parsing mixed comma/semicolon/space delimiters, careted numbers (`1^3` -> `13`), explicit positive signs (`+1337`), and sentinel termination branches.
+  - `Out-EnvVarEncodedCommand` advanced environment variable slicing (`resolve_dosfuscation_slicing`): fully resolves `%VAR:~start,length%` and delayed expansion `!VAR:~start,length!` expressions with embedded whitespace and tabs (`%COMSPEC:~   -7,   +3%`), negative lengths, and clamped start indices against system environment tables.
+  - Bohannon delimiter cluster normalization (`normalize_dosfuscation_delimiters`): cleans non-standard parameter separators (`,;,`, `;,;`, `,,;`, `;;`, and token-adjacent `,` or `;`) outside quotes without altering literal string values or redirection syntax.
+  - Multi-indicator heuristic signature detection (`detect_dosfuscation_signatures`): accurately identifies `for /L` reverse loops, high-density index arrays, delayed expansion accumulators, and delimiter noise clusters with calculated confidence scores.
+  - Cryptographic in-memory buffer zeroization (`zeroize_dict`) to overwrite temporary forensic tables and symbol buffers before deallocation.
+  - `DOSfuscationNormalizer` production class exposing clean `normalize()` and `detect()` interfaces.
+- **Dedicated Invoke-DOSfuscation Verification Suite (`tests/test_dosfuscation.py`)**:
+  - Added 14 unit tests covering reverse reconstruction, stride padding, careted loop syntax, index array extraction with sentinels, wildcard substitution, delimiter cluster normalization, advanced slicing variants with tabs and positive signs, delayed expansion substitution chains, memory zeroization, and end-to-end pipeline integration (expanding test suite to 114 tests).
+
+### Changed
+- Integrated Invoke-DOSfuscation normalization into the core multi-pass convergence pipeline (`deobfuscator/core.py`, `deobfuscate_script`, `deobfuscate_bytes`) via `enable_dosfuscation=True`.
+- Enhanced `resolve_variables` in `BatchDeobfuscator` to natively evaluate delayed expansion substitution (`!VAR:old=new!`) and variable expansion (`!VAR!`) during fixed-point convergence passes.
+- Updated AST slicing normalizer (`deobfuscator/normalizers.py`) to handle explicit plus signs (`+3`) and tab whitespace.
+- Brought standalone engine (`src/deobfuscator_engine.py`) into parity with Invoke-DOSfuscation normalization passes.
+- Updated CLI toolchain (`deobfuscator/cli.py`) with `--no-dosfuscation` flag and structured Invoke-DOSfuscation telemetry reporting in verbose mode.
+- Synchronized architecture mapping guide (`scripts/ARCHITECTURE_MAP.md`) and bumped package version to v1.6.0.
+
 ## [1.5.0] - 2026-10-13
 
 ### Added

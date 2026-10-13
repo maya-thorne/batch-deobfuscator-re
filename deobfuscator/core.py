@@ -35,6 +35,12 @@ from .abobus import (
     normalize_abobus,
     detect_abobus_signatures,
 )
+from .dosfuscation import (
+    normalize_dosfuscation,
+    detect_dosfuscation_signatures,
+    resolve_dosfuscation_slicing,
+    normalize_dosfuscation_delimiters,
+)
 
 class BatchDeobfuscator:
     """Multi-Pass Fixed-Point Batch Script Deobfuscator."""
@@ -74,6 +80,7 @@ class BatchDeobfuscator:
                  strip_undefined: bool = True, split_chains: bool = True,
                  enable_batcloak: bool = True, enable_somalifuscator: bool = True,
                  enable_oxidizer: bool = True, enable_abobus: bool = True,
+                 enable_dosfuscation: bool = True,
                  eliminate_dead_code: bool = True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
@@ -82,6 +89,7 @@ class BatchDeobfuscator:
         self.enable_somalifuscator = enable_somalifuscator
         self.enable_oxidizer = enable_oxidizer
         self.enable_abobus = enable_abobus
+        self.enable_dosfuscation = enable_dosfuscation
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars: Dict[str, str] = dict(self.DEFAULT_ENV)
         if custom_env:
@@ -166,7 +174,7 @@ class BatchDeobfuscator:
             self.env_vars[var_name] = var_val
 
     def resolve_variables(self, text: str, strip_undefined: bool = None) -> str:
-        """Resolve standard %VAR%, slicing %VAR:~0,1%, substitution %VAR:a=b%, and undefined stripping."""
+        """Resolve standard %VAR%, delayed !VAR!, slicing %VAR:~0,1%, substitution %VAR:a=b%, and undefined stripping."""
         if strip_undefined is None:
             strip_undefined = self.strip_undefined
 
@@ -177,10 +185,28 @@ class BatchDeobfuscator:
         while prev != curr and count < loop_limit:
             prev = curr
             count += 1
-            # 1. Slicing
+            # 1. Slicing (%VAR:~...% and !VAR:~...!)
             curr = resolve_slicing(curr, self.env_vars)
-            # 2. Substitution
+            curr = resolve_dosfuscation_slicing(curr, self.env_vars)
+            # 2. Substitution (%VAR:old=new% and !VAR:old=new!)
             curr = resolve_substitution(curr, self.env_vars)
+            def del_sub_repl(m):
+                var_name = m.group(1).lower()
+                if var_name not in self.env_vars:
+                    return m.group(0)
+                val = self.env_vars[var_name]
+                star = m.group(2)
+                old_val = m.group(3)
+                new_val = m.group(4)
+                if star:
+                    idx = val.lower().find(old_val.lower())
+                    if idx != -1:
+                        return new_val + val[idx + len(old_val):]
+                    return val
+                else:
+                    return re.compile(re.escape(old_val), re.IGNORECASE).sub(lambda _: new_val, val)
+            curr = re.sub(r'!([a-zA-Z0-9_\-\.\:\$]+):(\*?)([^=!\r\n]+)=([^!\r\n]*)!', del_sub_repl, curr)
+
             # 3. Simple %VAR% with optional undefined variable stripping
             def var_repl(match):
                 name = match.group(1).lower()
@@ -193,6 +219,15 @@ class BatchDeobfuscator:
                 return match.group(0)
 
             curr = re.sub(r'%([a-zA-Z0-9_\-\.\:\$]+)%', var_repl, curr)
+
+            # 4. Simple delayed expansion !VAR!
+            def del_var_repl(match):
+                name = match.group(1).lower()
+                if name in self.env_vars:
+                    return self.env_vars[name]
+                return match.group(0)
+
+            curr = re.sub(r'!([a-zA-Z0-9_\-\.\:\$]+)!', del_var_repl, curr)
         if strip_undefined:
             curr = collapse_spaces_outside_quotes(curr)
         return curr
@@ -210,11 +245,13 @@ class BatchDeobfuscator:
         somalifuscator_sig = detect_somalifuscator_signatures(script_text)
         oxidizer_sig = detect_oxidizer_signatures(script_text)
         abobus_sig = detect_abobus_signatures(script_text)
+        dosfuscation_sig = detect_dosfuscation_signatures(script_text)
         removed_random_vars: List[str] = []
         eliminated_dead_vars: List[str] = []
         somalifuscator_meta: Dict[str, Any] = {}
         oxidizer_meta: Dict[str, Any] = {}
         abobus_meta: Dict[str, Any] = {}
+        dosfuscation_meta: Dict[str, Any] = {}
 
         # Step 0: Split multi-line chained statements (&-splits outside quotes)
         if self.split_chains:
@@ -235,6 +272,10 @@ class BatchDeobfuscator:
         # Step 0.75: Abobus Unicode noise filtering, decoy elimination, and trap chaff removal
         if self.enable_abobus:
             curr_text, abobus_meta = normalize_abobus(curr_text, custom_env=self.env_vars)
+
+        # Step 0.78: Invoke-DOSfuscation Bohannon loop unwrapping and delimiter normalization
+        if self.enable_dosfuscation:
+            curr_text, dosfuscation_meta = normalize_dosfuscation(curr_text, custom_env=self.env_vars)
 
         # Step 0.8: Pre-scan symbol table for set declarations across script
         for line in curr_text.splitlines():
@@ -316,6 +357,16 @@ class BatchDeobfuscator:
                 "stripped_noise_count": 0,
                 "dictionaries_resolved_count": 0,
                 "dictionary_variables": [],
+            },
+            "dosfuscation_telemetry": dosfuscation_meta or {
+                "signatures": dosfuscation_sig,
+                "is_dosfuscation": dosfuscation_sig["is_dosfuscation"] if self.enable_dosfuscation else False,
+                "confidence": dosfuscation_sig["confidence"] if self.enable_dosfuscation else 0.0,
+                "indicators": dosfuscation_sig["indicators"] if self.enable_dosfuscation else [],
+                "unwrapped_loops_count": 0,
+                "unwrapped_commands": [],
+                "delimiters_normalized": False,
+                "slicing_resolved": False,
             }
         }
 
@@ -326,6 +377,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
                        enable_somalifuscator: bool = True,
                        enable_oxidizer: bool = True,
                        enable_abobus: bool = True,
+                       enable_dosfuscation: bool = True,
                        eliminate_dead_code: bool = True) -> str:
     """Convenience helper to deobfuscate a script and return clean string."""
     engine = BatchDeobfuscator(
@@ -336,6 +388,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
         enable_somalifuscator=enable_somalifuscator,
         enable_oxidizer=enable_oxidizer,
         enable_abobus=enable_abobus,
+        enable_dosfuscation=enable_dosfuscation,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, _ = engine.deobfuscate(script_text)
@@ -346,6 +399,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
                       enable_somalifuscator: bool = True,
                       enable_oxidizer: bool = True,
                       enable_abobus: bool = True,
+                      enable_dosfuscation: bool = True,
                       eliminate_dead_code: bool = True) -> Tuple[str, Dict[str, Any]]:
     """
     Deobfuscate raw batch file bytes, neutralizing fake UTF-16LE BOM headers and decoys.
@@ -361,6 +415,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
         enable_somalifuscator=enable_somalifuscator,
         enable_oxidizer=enable_oxidizer,
         enable_abobus=enable_abobus,
+        enable_dosfuscation=enable_dosfuscation,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, meta = engine.deobfuscate(text)

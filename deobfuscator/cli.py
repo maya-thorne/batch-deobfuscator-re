@@ -102,6 +102,12 @@ Engineered by Maya Thorne.
     )
 
     parser.add_argument(
+        "--no-dosfuscation",
+        action="store_true",
+        help="Disable Invoke-DOSfuscation Bohannon loop unwrapping and advanced slicing"
+    )
+
+    parser.add_argument(
         "--no-dse",
         action="store_true",
         help="Disable Dead Store Elimination (DSE) for unreferenced variables"
@@ -151,6 +157,7 @@ def main(args=None) -> int:
         enable_somalifuscator=not opts.no_somalifuscator,
         enable_oxidizer=not opts.no_oxidizer,
         enable_abobus=not opts.no_abobus,
+        enable_dosfuscation=not opts.no_dosfuscation,
         eliminate_dead_code=not opts.no_dse
     )
     clean_text, meta = engine.deobfuscate(script_text)
@@ -206,6 +213,18 @@ def main(args=None) -> int:
                 sys.stderr.write(f"     • Stripped Unicode/Kaomoji noise: {at['stripped_noise_count']} tokens\n")
             if at.get("dictionaries_resolved_count"):
                 sys.stderr.write(f"     • Resolved substring dictionaries: {at['dictionaries_resolved_count']} tables\n")
+        dt = meta.get("dosfuscation_telemetry", {})
+        if dt.get("is_dosfuscation") or (dt.get("signatures", {}) and dt["signatures"].get("is_dosfuscation")):
+            sig = dt.get("signatures", {})
+            sys.stderr.write(f"  ↳ Invoke-DOSfuscation Detected: True (Confidence: {sig.get('confidence', dt.get('confidence', 0.0))})\n")
+            if sig.get("indicators"):
+                sys.stderr.write(f"     • Indicators: {', '.join(sig['indicators'])}\n")
+            if dt.get("unwrapped_loops_count"):
+                sys.stderr.write(f"     • Unwrapped Bohannon loops: {dt['unwrapped_loops_count']} statements\n")
+            if dt.get("delimiters_normalized"):
+                sys.stderr.write(f"     • Normalized delimiter noise clusters: True\n")
+            if dt.get("slicing_resolved"):
+                sys.stderr.write(f"     • Resolved advanced environment slicing: True\n")
         if meta["symbol_table"]:
             sys.stderr.write("  ↳ Symbol Table:\n")
             for k, v in list(meta["symbol_table"].items())[:10]:

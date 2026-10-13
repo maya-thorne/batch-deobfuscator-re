@@ -52,8 +52,16 @@ from .abobus import (
     resolve_abobus_substring_dictionaries,
     normalize_abobus,
 )
+from .dosfuscation import (
+    DOSfuscationNormalizer,
+    detect_dosfuscation_signatures,
+    unwrap_dosfuscation_for_loops,
+    resolve_dosfuscation_slicing,
+    normalize_dosfuscation_delimiters,
+    normalize_dosfuscation,
+)
 
-__version__ = "1.5.0"
+__version__ = "1.6.0"
 __author__ = "Maya Thorne"
 __all__ = [
     "BatchDeobfuscator",
@@ -97,4 +105,10 @@ __all__ = [
     "strip_abobus_traps_and_chaff",
     "resolve_abobus_substring_dictionaries",
     "normalize_abobus",
+    "DOSfuscationNormalizer",
+    "detect_dosfuscation_signatures",
+    "unwrap_dosfuscation_for_loops",
+    "resolve_dosfuscation_slicing",
+    "normalize_dosfuscation_delimiters",
+    "normalize_dosfuscation",
 ]

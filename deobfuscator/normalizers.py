@@ -221,7 +221,7 @@ def resolve_slicing(text: str, env_vars: dict) -> str:
         len_str = match.group(3)
 
         try:
-            start = int(start_str)
+            start = int(start_str.strip())
             # Map start to positive index
             if start < 0:
                 start_idx = max(0, val_len + start)
@@ -229,7 +229,7 @@ def resolve_slicing(text: str, env_vars: dict) -> str:
                 start_idx = min(val_len, start)
 
             if len_str is not None:
-                length = int(len_str)
+                length = int(len_str.strip())
                 if length < 0:
                     end_idx = max(start_idx, val_len + length)
                 else:
@@ -241,7 +241,7 @@ def resolve_slicing(text: str, env_vars: dict) -> str:
         except (ValueError, IndexError):
             return match.group(0)
 
-    pattern = re.compile(r'%([a-zA-Z0-9_\-\.\:\$]+):~\s*(-?\d+)\s*(?:,\s*(-?\d+)\s*)?%', re.IGNORECASE)
+    pattern = re.compile(r'%([a-zA-Z0-9_\-\.\:\$]+):~\s*([+-]?\d+)\s*(?:,\s*([+-]?\d+)\s*)?%', re.IGNORECASE)
     return pattern.sub(slice_repl, text)
 
 def resolve_substitution(text: str, env_vars: dict) -> str:
