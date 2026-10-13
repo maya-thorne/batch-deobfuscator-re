@@ -88,5 +88,10 @@ class TestBatchDeobfuscatorCLI(unittest.TestCase):
         self.assertEqual(res.returncode, 0)
         self.assertIn("--no-abobus", res.stdout)
 
+    def test_cli_no_cradlecrafter_flag(self):
+        res = self.run_cli(["--help"])
+        self.assertEqual(res.returncode, 0)
+        self.assertIn("--no-cradlecrafter", res.stdout)
+
 if __name__ == "__main__":
     unittest.main()

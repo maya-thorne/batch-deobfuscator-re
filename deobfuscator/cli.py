@@ -108,6 +108,12 @@ Engineered by Maya Thorne.
     )
 
     parser.add_argument(
+        "--no-cradlecrafter",
+        action="store_true",
+        help="Disable Invoke-CradleCrafter and PowerShell download stager deobfuscation"
+    )
+
+    parser.add_argument(
         "--no-dse",
         action="store_true",
         help="Disable Dead Store Elimination (DSE) for unreferenced variables"
@@ -158,6 +164,7 @@ def main(args=None) -> int:
         enable_oxidizer=not opts.no_oxidizer,
         enable_abobus=not opts.no_abobus,
         enable_dosfuscation=not opts.no_dosfuscation,
+        enable_cradlecrafter=not opts.no_cradlecrafter,
         eliminate_dead_code=not opts.no_dse
     )
     clean_text, meta = engine.deobfuscate(script_text)
@@ -225,6 +232,20 @@ def main(args=None) -> int:
                 sys.stderr.write(f"     • Normalized delimiter noise clusters: True\n")
             if dt.get("slicing_resolved"):
                 sys.stderr.write(f"     • Resolved advanced environment slicing: True\n")
+        ct = meta.get("cradlecrafter_telemetry", {})
+        if ct.get("is_cradle") or (ct.get("signatures", {}) and ct["signatures"].get("is_cradle")) or ct.get("decoded_payloads_count", 0) > 0:
+            sig = ct.get("signatures", {})
+            sys.stderr.write(f"  ↳ Invoke-CradleCrafter / PowerShell Stager Detected: True (Confidence: {sig.get('confidence', ct.get('confidence', 0.0))})\n")
+            if sig.get("indicators"):
+                sys.stderr.write(f"     • Indicators: {', '.join(sig['indicators'])}\n")
+            if ct.get("decoded_payloads_count"):
+                sys.stderr.write(f"     • Decoded Base64 stager payloads: {ct['decoded_payloads_count']}\n")
+            if ct.get("extracted_urls"):
+                sys.stderr.write(f"     • Extracted download URLs: {', '.join(ct['extracted_urls'])}\n")
+            if ct.get("cradle_methods"):
+                sys.stderr.write(f"     • Identified cradle methods: {', '.join(ct['cradle_methods'])}\n")
+            if ct.get("extracted_destinations"):
+                sys.stderr.write(f"     • Extracted file destinations: {', '.join(ct['extracted_destinations'])}\n")
         if meta["symbol_table"]:
             sys.stderr.write("  ↳ Symbol Table:\n")
             for k, v in list(meta["symbol_table"].items())[:10]:

@@ -13,12 +13,12 @@ This document tracks shipped capabilities and future engineering milestones for 
 - [x] **0xidiz3r Zero-Literal Bootstrap & Alphabet Normalizer (v1.4.0)** — Three-stage primitive seed resolver (`set`, `space`, `equals`), full reversible variable alphabet inversion, literal percent escape (`%%` -> `%`) handling, base64 watermark (`VGhpcyBmaWxl...`) and dead alphabet store elimination (DSE), and cryptographic dictionary memory wiping.
 - [x] **Abobus Unicode Noise, Decoy & Trap Normalizer (v1.5.0)** — Zero-width character & LTR/RTL mark filtering, Kaomoji, Arabic decoy glyph, and Chinese warning string variable elimination, caret quote (`^"`) and keyword unescaping, multi-stage Chinese substring dictionary extraction and `%public%` slicing inversion, `random_if` opaque predicate and anti-analysis trap pruning, and cryptographic dictionary zeroization.
 - [x] **Invoke-DOSfuscation Bohannon Static Transformer (v1.6.0)** — Complete static deobfuscation for Daniel Bohannon's Invoke-DOSfuscation techniques: Out-DosReversedCommand `for /L` reverse reconstruction loop unrolling (with arbitrary negative strides and character padding support), Out-DosFORcodedCommand `for %A in (...)` index array command reconstruction with sentinel detection, Out-EnvVarEncodedCommand advanced environment variable slicing (supporting negative offsets, explicit plus signs, embedded whitespace/tabs, and clamped boundaries), delayed expansion (`!var!`) and substring substitution (`!var:old=new!`), Bohannon delimiter noise cluster (`,;,`, `;,;`, etc.) normalization, heuristic signature detection, and in-memory cryptographic buffer zeroization.
+- [x] **Invoke-CradleCrafter & PowerShell Stager Deobfuscator (v1.7.0)** — Complete static deobfuscation for Daniel Bohannon's Invoke-CradleCrafter and PowerShell download cradles: Base64 UTF-16LE EncodedCommand (`-enc`, `-encodedcommand`, `-e`) decoding and payload normalization, inline `[Convert]::FromBase64String` decoding and Deflate/zlib decompression, format operator (`-f`) reordering and inlining, integer character code arrays (`[char]73+[char]69+[char]88`, `(-join (73,69,88|%{[char]$_}))`) casting, string reversal (`[-1..-N]`) resolution, PowerShell identifier backtick unmasking, obfuscated IEX aliases (`.(GCI Alias:\IE*)`, `.(gcm *iex*)`, `$env:ComSpec`) normalization, cradle method classification (WebClient, IWR, IRM, BITS, Certutil), target URL and destination file forensic extraction, and in-memory cryptographic buffer zeroization.
 
 ---
 
 ## Planned Milestones
 
-- [ ] **PowerShell Download Cradle & Staging Extractor** — De-chunking and inline stager reconstruction pipeline.
 - [ ] **BEDeCode Native Self-Extracting Unpacker** — Embedded PE executable and batch inline stub extraction.
 - [ ] **BatchShield Dynamic Symbol Table Solver** — Automated resolution for high-entropy obfuscation dictionaries.
 - [ ] **PandaCrypter Hex & Certutil Decoding Pipeline** — Static Certutil `-decode` and multi-stage payload extraction.
@@ -27,3 +27,5 @@ This document tracks shipped capabilities and future engineering milestones for 
 - [ ] **Native Rust Fixed-Point AST Acceleration Core** — PyO3 bindings for sub-millisecond AST processing on megabyte-scale scripts.
 - [ ] **LLVM/Rust Batch-to-Binary Static Forensics Pipeline** — Static extraction and AST reverse engineering for batch payloads embedded in compiled native binaries (Rust, Go, Nim).
 - [ ] **eBPF/ETW Inline Batch Execution Telemetry Harness** — Real-time telemetry decoder interfacing with Microsoft-Windows-CommandProcessor ETW channels.
+- [ ] **PowerShell 7+ Pwsh Cross-Platform Stager Forensics** — Multi-architecture shell stager and triple-encoding static analyzer.
+- [ ] **Hypervisor Virtual Registry Batch Persistence Mapper** — Static extractor and forensic mapper for RunKey and ScheduledTask persistence mechanisms in batch scripts.

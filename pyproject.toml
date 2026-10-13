@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "batch-deobfuscator"
-version = "1.5.0"
+version = "1.7.0"
 description = "Multi-Pass Windows Batch Script Deobfuscator & Static Forensics CLI Toolchain"
 readme = "README.md"
 authors = [
