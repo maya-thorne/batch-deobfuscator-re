@@ -399,6 +399,11 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
       <td align="center"><code>False</code></td>
     </tr>
     <tr>
+      <td><code>--no-bedecode</code></td>
+      <td>Disable Batch-Encryption-DeCoder (BEDeCode) runtime stub peeling and slice decoding</td>
+      <td align="center"><code>False</code></td>
+    </tr>
+    <tr>
       <td><code>--no-dse</code></td>
       <td>Disable Dead Store Elimination (DSE) for unreferenced temporary variables</td>
       <td align="center"><code>False</code></td>
@@ -411,7 +416,7 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
     <tr>
       <td><code>--version</code></td>
       <td>Display engine version, release tag, and author attribution</td>
-      <td align="center"><code>1.7.0</code></td>
+      <td align="center"><code>1.8.0</code></td>
     </tr>
   </tbody>
 </table>
@@ -441,13 +446,13 @@ python benchmarks/eval_corpus_runner.py --corpus BatCloak
 | **Total Corpora Evaluated** | **28 / 28** | Complete |
 | **Verification Pass Rate** | **100.0% (28/28)** | Passed |
 | **Mean Composite Score** | **96.2 / 100.0** | Grade: A+ |
-| **Mean Convergence Passes** | **2.0 passes** | Deterministic |
+| **Mean Convergence Passes** | **1.96 passes** | Deterministic |
 | **Mean Execution Latency** | **&lt; 0.7 ms / corpus** | High Performance |
-| **Core Enhancements Tested** | `&-splits`, BatCloak Fake BOM, `%RANDOM%` Pruning, Caesar Inversion, Zero-Literal Bootstrap, Abobus Unicode Noise, DOSfuscation Slicing & CradleCrafter Stagers | Verified |
+| **Core Enhancements Tested** | `&-splits`, BatCloak Fake BOM, `%RANDOM%` Pruning, Caesar Inversion, Zero-Literal Bootstrap, Abobus Unicode Noise, DOSfuscation Slicing, CradleCrafter Stagers & BEDeCode Stubs | Verified |
 
 ### 4.5 Automated Verification Test Suites
 ```bash
-python -m unittest discover tests       # 130 comprehensive automated tests
+python -m unittest discover tests       # 142 comprehensive automated tests
 python tests/test_cradlecrafter.py      # 16 Invoke-CradleCrafter & stager tests
 python tests/test_dosfuscation.py       # 14 Invoke-DOSfuscation Bohannon loop tests
 python tests/test_abobus.py             # 14 Abobus Unicode noise, decoy & trap tests

@@ -46,6 +46,11 @@ from .cradlecrafter import (
     detect_cradle_signatures,
     CradleCrafterNormalizer,
 )
+from .bedecode import (
+    normalize_bedecode,
+    detect_bedecode_signatures,
+    BEDeCodeNormalizer,
+)
 
 class BatchDeobfuscator:
     """Multi-Pass Fixed-Point Batch Script Deobfuscator."""
@@ -87,6 +92,7 @@ class BatchDeobfuscator:
                  enable_oxidizer: bool = True, enable_abobus: bool = True,
                  enable_dosfuscation: bool = True,
                  enable_cradlecrafter: bool = True,
+                 enable_bedecode: bool = True,
                  eliminate_dead_code: bool = True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
@@ -97,6 +103,7 @@ class BatchDeobfuscator:
         self.enable_abobus = enable_abobus
         self.enable_dosfuscation = enable_dosfuscation
         self.enable_cradlecrafter = enable_cradlecrafter
+        self.enable_bedecode = enable_bedecode
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars: Dict[str, str] = dict(self.DEFAULT_ENV)
         if custom_env:
@@ -254,11 +261,13 @@ class BatchDeobfuscator:
         abobus_sig = detect_abobus_signatures(script_text)
         dosfuscation_sig = detect_dosfuscation_signatures(script_text)
         cradle_sig = detect_cradle_signatures(script_text)
+        bedecode_sig = detect_bedecode_signatures(script_text)
         removed_random_vars: List[str] = []
         eliminated_dead_vars: List[str] = []
         somalifuscator_meta: Dict[str, Any] = {}
         oxidizer_meta: Dict[str, Any] = {}
         abobus_meta: Dict[str, Any] = {}
+        bedecode_meta: Dict[str, Any] = {}
         dosfuscation_meta: Dict[str, Any] = {}
         cradle_meta: Dict[str, Any] = {}
 
@@ -281,6 +290,10 @@ class BatchDeobfuscator:
         # Step 0.75: Abobus Unicode noise filtering, decoy elimination, and trap chaff removal
         if self.enable_abobus:
             curr_text, abobus_meta = normalize_abobus(curr_text, custom_env=self.env_vars)
+
+        # Step 0.77: Batch-Encryption-DeCoder (BEDeCode) runtime stub peeling & slice normalization
+        if self.enable_bedecode:
+            curr_text, bedecode_meta = normalize_bedecode(curr_text, custom_env=self.env_vars)
 
         # Step 0.78: Invoke-DOSfuscation Bohannon loop unwrapping and delimiter normalization
         if self.enable_dosfuscation:
@@ -341,6 +354,16 @@ class BatchDeobfuscator:
                 cradle_meta["extracted_urls"] = list(set(cradle_meta.get("extracted_urls", []) + post_cradle_meta.get("extracted_urls", [])))
                 cradle_meta["extracted_destinations"] = list(set(cradle_meta.get("extracted_destinations", []) + post_cradle_meta.get("extracted_destinations", [])))
                 cradle_meta["cradle_methods"] = list(set(cradle_meta.get("cradle_methods", []) + post_cradle_meta.get("cradle_methods", [])))
+
+        # Step 4.6: Post-convergence BEDeCode check for newly emerged table stubs
+        if self.enable_bedecode and ("set '" in curr_text.lower() or "%':~" in curr_text or "%'~" in curr_text):
+            curr_text, post_bedecode_meta = normalize_bedecode(curr_text, custom_env=self.env_vars)
+            if post_bedecode_meta.get("is_bedecode"):
+                bedecode_meta["is_bedecode"] = True
+                bedecode_meta["confidence"] = max(bedecode_meta.get("confidence", 0.0), post_bedecode_meta.get("confidence", 0.0))
+                bedecode_meta["indicators"] = list(set(bedecode_meta.get("indicators", []) + post_bedecode_meta.get("indicators", [])))
+                bedecode_meta["layers_unwrapped"] = bedecode_meta.get("layers_unwrapped", 0) + post_bedecode_meta.get("layers_unwrapped", 0)
+                bedecode_meta["slices_resolved"] = bedecode_meta.get("slices_resolved", 0) + post_bedecode_meta.get("slices_resolved", 0)
 
         # Step 5: Dead Store Elimination (DSE) for ephemeral alias variables & chaff
         if self.eliminate_dead_code:
@@ -408,6 +431,16 @@ class BatchDeobfuscator:
                 "extracted_urls": [],
                 "extracted_destinations": [],
                 "cradle_methods": [],
+            },
+            "bedecode_telemetry": bedecode_meta or {
+                "signatures": bedecode_sig,
+                "detected": bedecode_sig["is_bedecode"] if self.enable_bedecode else False,
+                "is_bedecode": bedecode_sig["is_bedecode"] if self.enable_bedecode else False,
+                "confidence": bedecode_sig["confidence"] if self.enable_bedecode else 0.0,
+                "indicators": bedecode_sig["indicators"] if self.enable_bedecode else [],
+                "layers_unwrapped": 0,
+                "env_bootstraps_resolved": 0,
+                "slices_resolved": 0,
             }
         }
 
@@ -420,6 +453,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
                        enable_abobus: bool = True,
                        enable_dosfuscation: bool = True,
                        enable_cradlecrafter: bool = True,
+                       enable_bedecode: bool = True,
                        eliminate_dead_code: bool = True) -> str:
     """Convenience helper to deobfuscate a script and return clean string."""
     engine = BatchDeobfuscator(
@@ -432,6 +466,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
         enable_abobus=enable_abobus,
         enable_dosfuscation=enable_dosfuscation,
         enable_cradlecrafter=enable_cradlecrafter,
+        enable_bedecode=enable_bedecode,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, _ = engine.deobfuscate(script_text)
@@ -444,6 +479,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
                       enable_abobus: bool = True,
                       enable_dosfuscation: bool = True,
                       enable_cradlecrafter: bool = True,
+                      enable_bedecode: bool = True,
                       eliminate_dead_code: bool = True) -> Tuple[str, Dict[str, Any]]:
     """
     Deobfuscate raw batch file bytes, neutralizing fake UTF-16LE BOM headers and decoys.
@@ -461,6 +497,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
         enable_abobus=enable_abobus,
         enable_dosfuscation=enable_dosfuscation,
         enable_cradlecrafter=enable_cradlecrafter,
+        enable_bedecode=enable_bedecode,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, meta = engine.deobfuscate(text)

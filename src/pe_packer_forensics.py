@@ -136,6 +136,21 @@ class PEBatchPackerForensics:
             "decrypted_preview": dec_payload[:120].decode("utf-8", errors="replace"),
         }
 
+    def unpack_bedecode_runtime_stub(self) -> Dict[str, Any]:
+        """
+        Statically inspects PE executable for BEDeCode / Batch-to-EXE runtime wrapper signatures
+        and extracts any embedded batch script payload from sections, resources, or overlays.
+        """
+        import sys
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+        from deobfuscator.bedecode import inspect_bedecode_pe, normalize_bedecode
+        info = inspect_bedecode_pe(self.raw)
+        if info.get("has_embedded_script") and info.get("extracted_script"):
+            clean_script, bedecode_meta = normalize_bedecode(info["extracted_script"])
+            info["deobfuscated_script"] = clean_script
+            info["bedecode_meta"] = bedecode_meta
+        return info
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

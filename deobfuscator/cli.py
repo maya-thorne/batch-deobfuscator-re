@@ -114,6 +114,12 @@ Engineered by Maya Thorne.
     )
 
     parser.add_argument(
+        "--no-bedecode",
+        action="store_true",
+        help="Disable Batch-Encryption-DeCoder (BEDeCode) runtime stub peeling and slice decoding"
+    )
+
+    parser.add_argument(
         "--no-dse",
         action="store_true",
         help="Disable Dead Store Elimination (DSE) for unreferenced variables"
@@ -165,6 +171,7 @@ def main(args=None) -> int:
         enable_abobus=not opts.no_abobus,
         enable_dosfuscation=not opts.no_dosfuscation,
         enable_cradlecrafter=not opts.no_cradlecrafter,
+        enable_bedecode=not opts.no_bedecode,
         eliminate_dead_code=not opts.no_dse
     )
     clean_text, meta = engine.deobfuscate(script_text)
@@ -246,6 +253,18 @@ def main(args=None) -> int:
                 sys.stderr.write(f"     • Identified cradle methods: {', '.join(ct['cradle_methods'])}\n")
             if ct.get("extracted_destinations"):
                 sys.stderr.write(f"     • Extracted file destinations: {', '.join(ct['extracted_destinations'])}\n")
+        bdt = meta.get("bedecode_telemetry", {})
+        if bdt.get("is_bedecode") or (bdt.get("signatures", {}) and bdt["signatures"].get("is_bedecode")):
+            sig = bdt.get("signatures", {})
+            sys.stderr.write(f"  ↳ Batch-Encryption-DeCoder (BEDeCode) Detected: True (Confidence: {sig.get('confidence', bdt.get('confidence', 0.0))})\n")
+            if sig.get("indicators"):
+                sys.stderr.write(f"     • Indicators: {', '.join(sig['indicators'])}\n")
+            if bdt.get("layers_unwrapped"):
+                sys.stderr.write(f"     • Unwrapped nested onion layers: {bdt['layers_unwrapped']}\n")
+            if bdt.get("slices_resolved"):
+                sys.stderr.write(f"     • Resolved character slices: {bdt['slices_resolved']}\n")
+            if bdt.get("env_bootstraps_resolved"):
+                sys.stderr.write(f"     • Resolved environment bootstrap references: {bdt['env_bootstraps_resolved']}\n")
         if meta["symbol_table"]:
             sys.stderr.write("  ↳ Symbol Table:\n")
             for k, v in list(meta["symbol_table"].items())[:10]:
