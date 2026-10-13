@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-10-13
+
+### Added
+- **Invoke-CradleCrafter PowerShell Download Stager Chunking Restoration Pipeline (`deobfuscator/cradlecrafter.py`)**:
+  - Multi-indicator heuristic signature detection (`detect_cradle_signatures`): classifies CradleCrafter and Invoke-Stealth obfuscation patterns across 17 download cradle methods (Net.WebClient, BitsTransfer, WinHttp, ComObject, Invoke-WebRequest, IEX aliases, etc.) with calculated confidence scores.
+  - Base64 stager extraction and decoding (`decode_base64_payload`): statically extracts `-EncodedCommand` / `-enc` payloads, validates wide-character null byte distributions to accurately distinguish UTF-16LE from UTF-8 without unicode decode corruption, and handles Deflate/zlib decompression streams.
+  - Advanced PowerShell AST and token normalization (`normalize_powershell_stager`):
+    - Format string operator resolution (`-f`) unpacking indexed replacement arrays (`"{1}{0}" -f 'B','A'`).
+    - Character code array resolution unrolling `[char]` casts and pipeline byte transformations (`(-join (73,69,88|%{[char]$_}))`).
+    - Substring and string reversal unrolling (`[-1..-N]`).
+    - Identifier unmasking stripping backtick escape characters (`` `I`e`X ``).
+    - Obfuscated IEX / execution alias normalization resolving `.(GCI Alias:\IE*)`, `.(gcm *iex*)`, and `$env:ComSpec`.
+  - Stager chunking and cleartext conversion (`normalize_cradlecrafter`): normalizes `-enc <Base64>` stagers into transparent `-Command "..."` payloads, preserving script execution flow while exposing hidden logic.
+  - Forensic telemetry extraction (`extract_cradle_telemetry`): analyzes reconstructed stagers to catalog extracted C2 URLs and destination download paths for incident response analysis.
+  - Cryptographic in-memory buffer zeroization (`zeroize_dict`, `zeroize_bytes`): securely overwrites parsed payloads, decrypted byte arrays, and forensic metadata tables prior to memory release.
+  - `CradleCrafterNormalizer` production class exposing clean `detect()` and `normalize()` interfaces.
+- **Dedicated Invoke-CradleCrafter Verification Suite (`tests/test_cradlecrafter.py`)**:
+  - Added 16 unit tests covering signature detection, Base64 UTF-16LE/UTF-8 discrimination, format string unrolling, character array reconstruction, reverse indexing, backtick identifier stripping, IEX alias expansion, telemetry extraction, in-memory zeroization, pipeline integration, and edge-case error tolerance (expanding test suite to 130 tests).
+
+### Changed
+- Integrated CradleCrafter normalization into the core convergence pipeline (`deobfuscator/core.py`, `deobfuscate_script`, `deobfuscate_bytes`) via `enable_cradlecrafter=True` (executing pre-convergence in Step 0.79 and post-convergence in Step 4.5).
+- Brought standalone engine (`src/deobfuscator_engine.py`) into full parity with CradleCrafter normalization passes.
+- Updated CLI toolchain (`deobfuscator/cli.py`) with `--no-cradlecrafter` flag and structured CradleCrafter forensic telemetry reporting in verbose mode.
+- Fixed Python 3.10 and 3.11 runner compatibility by eliminating PEP 701 backslash-in-f-string syntax in `deobfuscator/abobus.py`.
+- Synchronized architecture mapping guide (`scripts/ARCHITECTURE_MAP.md`) and bumped package version to v1.7.0.
+
 ## [1.6.0] - 2026-10-13
 
 ### Added

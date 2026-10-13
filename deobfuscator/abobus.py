@@ -102,7 +102,8 @@ def detect_abobus_signatures(script_text: str) -> Dict[str, Any]:
     for marker in ABOBUS_MARKERS:
         if marker.lower() in script_text.lower():
             markers_found.append(marker)
-            indicators.append(f"marker_{marker.strip(':;\" ')}")
+            clean_marker = marker.strip(':;" ')
+            indicators.append(f"marker_{clean_marker}")
             confidence += 0.45
 
     # 2. Arabic decoy character detection

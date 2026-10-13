@@ -60,8 +60,15 @@ from .dosfuscation import (
     normalize_dosfuscation_delimiters,
     normalize_dosfuscation,
 )
+from .cradlecrafter import (
+    CradleCrafterNormalizer,
+    normalize_cradlecrafter,
+    detect_cradle_signatures,
+    decode_base64_payload,
+    normalize_powershell_stager,
+)
 
-__version__ = "1.6.0"
+__version__ = "1.7.0"
 __author__ = "Maya Thorne"
 __all__ = [
     "BatchDeobfuscator",
@@ -111,4 +118,9 @@ __all__ = [
     "resolve_dosfuscation_slicing",
     "normalize_dosfuscation_delimiters",
     "normalize_dosfuscation",
+    "CradleCrafterNormalizer",
+    "normalize_cradlecrafter",
+    "detect_cradle_signatures",
+    "decode_base64_payload",
+    "normalize_powershell_stager",
 ]

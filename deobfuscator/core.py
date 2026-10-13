@@ -41,6 +41,11 @@ from .dosfuscation import (
     resolve_dosfuscation_slicing,
     normalize_dosfuscation_delimiters,
 )
+from .cradlecrafter import (
+    normalize_cradlecrafter,
+    detect_cradle_signatures,
+    CradleCrafterNormalizer,
+)
 
 class BatchDeobfuscator:
     """Multi-Pass Fixed-Point Batch Script Deobfuscator."""
@@ -81,6 +86,7 @@ class BatchDeobfuscator:
                  enable_batcloak: bool = True, enable_somalifuscator: bool = True,
                  enable_oxidizer: bool = True, enable_abobus: bool = True,
                  enable_dosfuscation: bool = True,
+                 enable_cradlecrafter: bool = True,
                  eliminate_dead_code: bool = True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
@@ -90,6 +96,7 @@ class BatchDeobfuscator:
         self.enable_oxidizer = enable_oxidizer
         self.enable_abobus = enable_abobus
         self.enable_dosfuscation = enable_dosfuscation
+        self.enable_cradlecrafter = enable_cradlecrafter
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars: Dict[str, str] = dict(self.DEFAULT_ENV)
         if custom_env:
@@ -246,12 +253,14 @@ class BatchDeobfuscator:
         oxidizer_sig = detect_oxidizer_signatures(script_text)
         abobus_sig = detect_abobus_signatures(script_text)
         dosfuscation_sig = detect_dosfuscation_signatures(script_text)
+        cradle_sig = detect_cradle_signatures(script_text)
         removed_random_vars: List[str] = []
         eliminated_dead_vars: List[str] = []
         somalifuscator_meta: Dict[str, Any] = {}
         oxidizer_meta: Dict[str, Any] = {}
         abobus_meta: Dict[str, Any] = {}
         dosfuscation_meta: Dict[str, Any] = {}
+        cradle_meta: Dict[str, Any] = {}
 
         # Step 0: Split multi-line chained statements (&-splits outside quotes)
         if self.split_chains:
@@ -276,6 +285,10 @@ class BatchDeobfuscator:
         # Step 0.78: Invoke-DOSfuscation Bohannon loop unwrapping and delimiter normalization
         if self.enable_dosfuscation:
             curr_text, dosfuscation_meta = normalize_dosfuscation(curr_text, custom_env=self.env_vars)
+
+        # Step 0.79: Invoke-CradleCrafter PowerShell stager reconstruction & Base64 decoding
+        if self.enable_cradlecrafter:
+            curr_text, cradle_meta = normalize_cradlecrafter(curr_text, custom_env=self.env_vars)
 
         # Step 0.8: Pre-scan symbol table for set declarations across script
         for line in curr_text.splitlines():
@@ -311,6 +324,23 @@ class BatchDeobfuscator:
             # Check mathematical fixed-point convergence
             if curr_text == prev_pass_text:
                 break
+
+        # Step 4.5: Post-convergence CradleCrafter check for newly assembled stagers
+        if self.enable_cradlecrafter and ("powershell" in curr_text.lower() or "-enc" in curr_text.lower() or "download" in curr_text.lower()):
+            curr_text, post_cradle_meta = normalize_cradlecrafter(curr_text, custom_env=self.env_vars)
+            if post_cradle_meta.get("is_cradle"):
+                cradle_meta["is_cradle"] = True
+                cradle_meta["confidence"] = max(cradle_meta.get("confidence", 0.0), post_cradle_meta.get("confidence", 0.0))
+                cradle_meta["indicators"] = list(set(cradle_meta.get("indicators", []) + post_cradle_meta.get("indicators", [])))
+                cradle_meta["signatures"] = post_cradle_meta.get("signatures", cradle_meta.get("signatures", {}))
+            if post_cradle_meta.get("decoded_payloads"):
+                if "decoded_payloads" not in cradle_meta:
+                    cradle_meta["decoded_payloads"] = []
+                cradle_meta["decoded_payloads"].extend(post_cradle_meta["decoded_payloads"])
+                cradle_meta["decoded_payloads_count"] = len(cradle_meta["decoded_payloads"])
+                cradle_meta["extracted_urls"] = list(set(cradle_meta.get("extracted_urls", []) + post_cradle_meta.get("extracted_urls", [])))
+                cradle_meta["extracted_destinations"] = list(set(cradle_meta.get("extracted_destinations", []) + post_cradle_meta.get("extracted_destinations", [])))
+                cradle_meta["cradle_methods"] = list(set(cradle_meta.get("cradle_methods", []) + post_cradle_meta.get("cradle_methods", [])))
 
         # Step 5: Dead Store Elimination (DSE) for ephemeral alias variables & chaff
         if self.eliminate_dead_code:
@@ -367,6 +397,17 @@ class BatchDeobfuscator:
                 "unwrapped_commands": [],
                 "delimiters_normalized": False,
                 "slicing_resolved": False,
+            },
+            "cradlecrafter_telemetry": cradle_meta or {
+                "signatures": cradle_sig,
+                "is_cradle": cradle_sig["is_cradle"] if self.enable_cradlecrafter else False,
+                "confidence": cradle_sig["confidence"] if self.enable_cradlecrafter else 0.0,
+                "indicators": cradle_sig["indicators"] if self.enable_cradlecrafter else [],
+                "decoded_payloads_count": 0,
+                "decoded_payloads": [],
+                "extracted_urls": [],
+                "extracted_destinations": [],
+                "cradle_methods": [],
             }
         }
 
@@ -378,6 +419,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
                        enable_oxidizer: bool = True,
                        enable_abobus: bool = True,
                        enable_dosfuscation: bool = True,
+                       enable_cradlecrafter: bool = True,
                        eliminate_dead_code: bool = True) -> str:
     """Convenience helper to deobfuscate a script and return clean string."""
     engine = BatchDeobfuscator(
@@ -389,6 +431,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
         enable_oxidizer=enable_oxidizer,
         enable_abobus=enable_abobus,
         enable_dosfuscation=enable_dosfuscation,
+        enable_cradlecrafter=enable_cradlecrafter,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, _ = engine.deobfuscate(script_text)
@@ -400,6 +443,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
                       enable_oxidizer: bool = True,
                       enable_abobus: bool = True,
                       enable_dosfuscation: bool = True,
+                      enable_cradlecrafter: bool = True,
                       eliminate_dead_code: bool = True) -> Tuple[str, Dict[str, Any]]:
     """
     Deobfuscate raw batch file bytes, neutralizing fake UTF-16LE BOM headers and decoys.
@@ -416,6 +460,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
         enable_oxidizer=enable_oxidizer,
         enable_abobus=enable_abobus,
         enable_dosfuscation=enable_dosfuscation,
+        enable_cradlecrafter=enable_cradlecrafter,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, meta = engine.deobfuscate(text)

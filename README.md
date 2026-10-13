@@ -394,6 +394,11 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
       <td align="center"><code>False</code></td>
     </tr>
     <tr>
+      <td><code>--no-cradlecrafter</code></td>
+      <td>Disable Invoke-CradleCrafter and PowerShell download stager deobfuscation</td>
+      <td align="center"><code>False</code></td>
+    </tr>
+    <tr>
       <td><code>--no-dse</code></td>
       <td>Disable Dead Store Elimination (DSE) for unreferenced temporary variables</td>
       <td align="center"><code>False</code></td>
@@ -406,7 +411,7 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
     <tr>
       <td><code>--version</code></td>
       <td>Display engine version, release tag, and author attribution</td>
-      <td align="center"><code>1.6.0</code></td>
+      <td align="center"><code>1.7.0</code></td>
     </tr>
   </tbody>
 </table>
@@ -438,17 +443,19 @@ python benchmarks/eval_corpus_runner.py --corpus BatCloak
 | **Mean Composite Score** | **96.2 / 100.0** | Grade: A+ |
 | **Mean Convergence Passes** | **2.0 passes** | Deterministic |
 | **Mean Execution Latency** | **&lt; 0.7 ms / corpus** | High Performance |
-| **Core Enhancements Tested** | `&-splits`, BatCloak Fake BOM, `%RANDOM%` Pruning, Caesar Inversion, Zero-Literal Bootstrap, Abobus Unicode Noise & Caret Normalization | Verified |
+| **Core Enhancements Tested** | `&-splits`, BatCloak Fake BOM, `%RANDOM%` Pruning, Caesar Inversion, Zero-Literal Bootstrap, Abobus Unicode Noise, DOSfuscation Slicing & CradleCrafter Stagers | Verified |
 
 ### 4.5 Automated Verification Test Suites
 ```bash
-python -m unittest discover tests       # 100 comprehensive automated tests
+python -m unittest discover tests       # 130 comprehensive automated tests
+python tests/test_cradlecrafter.py      # 16 Invoke-CradleCrafter & stager tests
+python tests/test_dosfuscation.py       # 14 Invoke-DOSfuscation Bohannon loop tests
 python tests/test_abobus.py             # 14 Abobus Unicode noise, decoy & trap tests
 python tests/test_oxidizer.py           # 10 0xidiz3r zero-literal bootstrap & alphabet tests
 python tests/test_somalifuscator.py     # 12 Somalifuscator Caesar inversion & KDOT tests
 python tests/test_batcloak.py           # 11 BatCloak, fake BOM & DSE tests
 python tests/test_benchmark_runner.py   # 42 benchmark suite & metrics tests
-python tests/test_cli.py                # 7 CLI flags, diff mode, and JSON telemetry tests
+python tests/test_cli.py                # 8 CLI flags, diff mode, and JSON telemetry tests
 python tests/test_suite.py              # 4 core AST deobfuscation & PE overlay tests
 ```
 

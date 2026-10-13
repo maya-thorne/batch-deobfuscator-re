@@ -10,13 +10,14 @@ import sys
 import os
 from pathlib import Path
 
-# Try importing BatCloak, Somalifuscator, Oxidizer, Abobus & DOSfuscation modules from project root
+# Try importing BatCloak, Somalifuscator, Oxidizer, Abobus, DOSfuscation & CradleCrafter modules from project root
 try:
     from deobfuscator.batcloak import strip_batcloak_random_vars, eliminate_dead_stores
     from deobfuscator.somalifuscator import normalize_somalifuscator
     from deobfuscator.oxidizer import normalize_oxidizer
     from deobfuscator.abobus import normalize_abobus
     from deobfuscator.dosfuscation import normalize_dosfuscation
+    from deobfuscator.cradlecrafter import normalize_cradlecrafter
     HAS_SECURITY_MODULES = True
 except ImportError:
     try:
@@ -26,6 +27,7 @@ except ImportError:
         from deobfuscator.oxidizer import normalize_oxidizer
         from deobfuscator.abobus import normalize_abobus
         from deobfuscator.dosfuscation import normalize_dosfuscation
+        from deobfuscator.cradlecrafter import normalize_cradlecrafter
         HAS_SECURITY_MODULES = True
     except ImportError:
         HAS_SECURITY_MODULES = False
@@ -33,7 +35,8 @@ except ImportError:
 class BatchDeobfuscator:
     def __init__(self, max_passes=15, strip_undefined=True, split_chains=True,
                  enable_batcloak=True, enable_somalifuscator=True, enable_oxidizer=True,
-                 enable_abobus=True, enable_dosfuscation=True, eliminate_dead_code=True):
+                 enable_abobus=True, enable_dosfuscation=True, enable_cradlecrafter=True,
+                 eliminate_dead_code=True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
         self.split_chains = split_chains
@@ -42,6 +45,7 @@ class BatchDeobfuscator:
         self.enable_oxidizer = enable_oxidizer
         self.enable_abobus = enable_abobus
         self.enable_dosfuscation = enable_dosfuscation
+        self.enable_cradlecrafter = enable_cradlecrafter
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars = {}
         # Prepopulate default Windows environment variables commonly used for slicing
@@ -415,6 +419,10 @@ class BatchDeobfuscator:
         if self.enable_dosfuscation and HAS_SECURITY_MODULES:
             current, _ = normalize_dosfuscation(current, custom_env=self.env_vars)
 
+        # Step 0.79: Invoke-CradleCrafter PowerShell stager reconstruction & Base64 decoding
+        if self.enable_cradlecrafter and HAS_SECURITY_MODULES:
+            current, _ = normalize_cradlecrafter(current, custom_env=self.env_vars)
+
         # Pre-scan symbol table across script
         for line in current.splitlines():
             self.extract_and_set_vars(line)
@@ -442,6 +450,10 @@ class BatchDeobfuscator:
             # Convergence check
             if current == prev:
                 break
+
+        # Step 4.5: Post-convergence CradleCrafter check for newly assembled stagers
+        if self.enable_cradlecrafter and HAS_SECURITY_MODULES and ("powershell" in current.lower() or "-enc" in current.lower() or "download" in current.lower()):
+            current, _ = normalize_cradlecrafter(current, custom_env=self.env_vars)
 
         # Step 5: Dead Store Elimination for unreferenced variables and ephemeral aliases
         if self.eliminate_dead_code and HAS_SECURITY_MODULES:
