@@ -126,6 +126,13 @@ Engineered by Maya Thorne.
     )
 
     parser.add_argument(
+        "--no-pandacrypter", "--no-certutil",
+        action="store_true",
+        dest="no_pandacrypter",
+        help="Disable PandaCrypter colon noise stripping and Certutil stager payload decoding"
+    )
+
+    parser.add_argument(
         "--no-dse",
         action="store_true",
         help="Disable Dead Store Elimination (DSE) for unreferenced variables"
@@ -179,6 +186,7 @@ def main(args=None) -> int:
         enable_cradlecrafter=not opts.no_cradlecrafter,
         enable_bedecode=not opts.no_bedecode,
         enable_batchshield=not opts.no_batchshield,
+        enable_pandacrypter=not opts.no_pandacrypter,
         eliminate_dead_code=not opts.no_dse
     )
     clean_text, meta = engine.deobfuscate(script_text)
@@ -286,6 +294,19 @@ def main(args=None) -> int:
                 sys.stderr.write(f"     • Stripped dummy noise tokens: {bst['noise_stripped_count']}\n")
             if bst.get("chaff_eliminated_count"):
                 sys.stderr.write(f"     • Pruned dead symbol definition lines: {bst['chaff_eliminated_count']}\n")
+        pt = meta.get("pandacrypter_telemetry", {})
+        if pt.get("is_pandacrypter") or pt.get("is_certutil") or pt.get("decoded_payloads_count", 0) > 0:
+            sig = pt.get("signatures", {})
+            label = "PandaCrypter & Certutil Stager" if pt.get("is_pandacrypter") else "Certutil Stager"
+            sys.stderr.write(f"  ↳ {label} Detected: True (Confidence: {sig.get('confidence', pt.get('confidence', 0.0))})\n")
+            if pt.get("indicators"):
+                sys.stderr.write(f"     • Indicators: {', '.join(pt['indicators'])}\n")
+            if pt.get("colon_padding_stripped"):
+                sys.stderr.write(f"     • Neutralized colon padding noise: {pt['colon_padding_stripped']} lines\n")
+            if pt.get("decoded_payloads_count"):
+                sys.stderr.write(f"     • Decoded staged payloads: {pt['decoded_payloads_count']}\n")
+                for payload in pt.get("decoded_payloads", []):
+                    sys.stderr.write(f"       - Mode: {payload.get('mode')} -> {payload.get('out_file')} (Size: {payload.get('size_bytes')} bytes, Format: {payload.get('format_desc')})\n")
         if meta["symbol_table"]:
             sys.stderr.write("  ↳ Symbol Table:\n")
             for k, v in list(meta["symbol_table"].items())[:10]:

@@ -56,6 +56,12 @@ from .batchshield import (
     detect_batchshield_signatures,
     BatchShieldNormalizer,
 )
+from .pandacrypter import (
+    normalize_pandacrypter,
+    detect_pandacrypter_signatures,
+    detect_certutil_signatures,
+    PandaCrypterNormalizer,
+)
 
 class BatchDeobfuscator:
     """Multi-Pass Fixed-Point Batch Script Deobfuscator."""
@@ -99,6 +105,7 @@ class BatchDeobfuscator:
                  enable_cradlecrafter: bool = True,
                  enable_bedecode: bool = True,
                  enable_batchshield: bool = True,
+                 enable_pandacrypter: bool = True,
                  eliminate_dead_code: bool = True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
@@ -111,6 +118,7 @@ class BatchDeobfuscator:
         self.enable_cradlecrafter = enable_cradlecrafter
         self.enable_bedecode = enable_bedecode
         self.enable_batchshield = enable_batchshield
+        self.enable_pandacrypter = enable_pandacrypter
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars: Dict[str, str] = dict(self.DEFAULT_ENV)
         if custom_env:
@@ -270,6 +278,8 @@ class BatchDeobfuscator:
         cradle_sig = detect_cradle_signatures(script_text)
         bedecode_sig = detect_bedecode_signatures(script_text)
         batchshield_sig = detect_batchshield_signatures(script_text)
+        pandacrypter_sig = detect_pandacrypter_signatures(script_text)
+        certutil_sig = detect_certutil_signatures(script_text)
         removed_random_vars: List[str] = []
         eliminated_dead_vars: List[str] = []
         somalifuscator_meta: Dict[str, Any] = {}
@@ -279,6 +289,7 @@ class BatchDeobfuscator:
         bedecode_meta: Dict[str, Any] = {}
         dosfuscation_meta: Dict[str, Any] = {}
         cradle_meta: Dict[str, Any] = {}
+        pandacrypter_meta: Dict[str, Any] = {}
 
         # Step 0: Split multi-line chained statements (&-splits outside quotes)
         if self.split_chains:
@@ -295,6 +306,10 @@ class BatchDeobfuscator:
         # Step 0.7: 0xidiz3r zero-literal bootstrap resolution and alphabet normalization
         if self.enable_oxidizer:
             curr_text, oxidizer_meta = normalize_oxidizer(curr_text, custom_env=self.env_vars)
+
+        # Step 0.74: PandaCrypter colon noise stripping and Certutil stager payload recovery
+        if self.enable_pandacrypter:
+            curr_text, pandacrypter_meta = normalize_pandacrypter(curr_text, custom_env=self.env_vars)
 
         # Step 0.75: Abobus Unicode noise filtering, decoy elimination, and trap chaff removal
         if self.enable_abobus:
@@ -387,6 +402,19 @@ class BatchDeobfuscator:
                 batchshield_meta["indicators"] = list(set(batchshield_meta.get("indicators", []) + post_batchshield_meta.get("indicators", [])))
                 batchshield_meta["chains_resolved_count"] = batchshield_meta.get("chains_resolved_count", 0) + post_batchshield_meta.get("chains_resolved_count", 0)
 
+        # Step 4.8: Post-convergence PandaCrypter / Certutil check for newly emerged stagers
+        if self.enable_pandacrypter and ("certutil" in curr_text.lower() or "-decode" in curr_text.lower() or ":::" in curr_text):
+            curr_text, post_panda_meta = normalize_pandacrypter(curr_text, custom_env=self.env_vars)
+            if post_panda_meta.get("is_certutil") or post_panda_meta.get("is_pandacrypter"):
+                pandacrypter_meta["is_certutil"] = True
+                pandacrypter_meta["confidence"] = max(pandacrypter_meta.get("confidence", 0.0), post_panda_meta.get("confidence", 0.0))
+                pandacrypter_meta["indicators"] = list(set(pandacrypter_meta.get("indicators", []) + post_panda_meta.get("indicators", [])))
+                if post_panda_meta.get("decoded_payloads"):
+                    if "decoded_payloads" not in pandacrypter_meta:
+                        pandacrypter_meta["decoded_payloads"] = []
+                    pandacrypter_meta["decoded_payloads"].extend(post_panda_meta["decoded_payloads"])
+                    pandacrypter_meta["decoded_payloads_count"] = len(pandacrypter_meta["decoded_payloads"])
+
         # Step 5: Dead Store Elimination (DSE) for ephemeral alias variables & chaff
         if self.eliminate_dead_code:
             curr_text, eliminated_dead_vars = eliminate_dead_stores(curr_text)
@@ -474,6 +502,18 @@ class BatchDeobfuscator:
                 "chains_resolved_count": 0,
                 "noise_stripped_count": 0,
                 "chaff_eliminated_count": 0,
+            },
+            "pandacrypter_telemetry": pandacrypter_meta or {
+                "signatures": pandacrypter_sig,
+                "certutil_signatures": certutil_sig,
+                "is_pandacrypter": pandacrypter_sig["is_pandacrypter"] if self.enable_pandacrypter else False,
+                "is_certutil": certutil_sig["is_certutil"] if self.enable_pandacrypter else False,
+                "confidence": max(pandacrypter_sig["confidence"], certutil_sig["confidence"]) if self.enable_pandacrypter else 0.0,
+                "indicators": pandacrypter_sig["indicators"] if self.enable_pandacrypter else [],
+                "colon_padding_stripped": 0,
+                "decoded_payloads_count": 0,
+                "decoded_payloads": [],
+                "staged_files": [],
             }
         }
 
@@ -488,6 +528,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
                        enable_cradlecrafter: bool = True,
                        enable_bedecode: bool = True,
                        enable_batchshield: bool = True,
+                       enable_pandacrypter: bool = True,
                        eliminate_dead_code: bool = True) -> str:
     """Convenience helper to deobfuscate a script and return clean string."""
     engine = BatchDeobfuscator(
@@ -502,6 +543,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
         enable_cradlecrafter=enable_cradlecrafter,
         enable_bedecode=enable_bedecode,
         enable_batchshield=enable_batchshield,
+        enable_pandacrypter=enable_pandacrypter,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, _ = engine.deobfuscate(script_text)
@@ -516,6 +558,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
                       enable_cradlecrafter: bool = True,
                       enable_bedecode: bool = True,
                       enable_batchshield: bool = True,
+                      enable_pandacrypter: bool = True,
                       eliminate_dead_code: bool = True) -> Tuple[str, Dict[str, Any]]:
     """
     Deobfuscate raw batch file bytes, neutralizing fake UTF-16LE BOM headers and decoys.
@@ -535,6 +578,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
         enable_cradlecrafter=enable_cradlecrafter,
         enable_bedecode=enable_bedecode,
         enable_batchshield=enable_batchshield,
+        enable_pandacrypter=enable_pandacrypter,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, meta = engine.deobfuscate(text)
