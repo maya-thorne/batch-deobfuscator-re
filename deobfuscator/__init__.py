@@ -96,8 +96,20 @@ from .pandacrypter import (
     extract_embedded_payloads_from_comments,
     trace_virtual_staged_files,
 )
+from .exorcism import (
+    ExorcismNormalizer,
+    normalize_exorcism,
+    detect_exorcism_signatures,
+    flatten_jump_trampolines,
+    normalize_opaque_predicates,
+    inline_subroutines,
+    linearize_control_flow,
+    prune_unreachable_blocks,
+    emulate_exorcism_dispatch,
+    export_exorcism_trace,
+)
 
-__version__ = "1.10.0"
+__version__ = "1.11.0"
 __author__ = "Maya Thorne"
 __all__ = [
     "BatchDeobfuscator",
@@ -175,4 +187,14 @@ __all__ = [
     "emulate_certutil_decodehex",
     "extract_embedded_payloads_from_comments",
     "trace_virtual_staged_files",
+    "ExorcismNormalizer",
+    "normalize_exorcism",
+    "detect_exorcism_signatures",
+    "flatten_jump_trampolines",
+    "normalize_opaque_predicates",
+    "inline_subroutines",
+    "linearize_control_flow",
+    "prune_unreachable_blocks",
+    "emulate_exorcism_dispatch",
+    "export_exorcism_trace",
 ]

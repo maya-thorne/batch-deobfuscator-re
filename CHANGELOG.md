@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2026-10-14
+
+### Added
+- **Exorcism Subroutine Label Jump & Control Flow Normalization Engine (`deobfuscator/exorcism.py`)**:
+  - Multi-indicator heuristic signature detection (`detect_exorcism_signatures`): identifies non-sequential execution graphs and control flow obfuscation across 6 indicators (unconditional goto hopping, spaghetti jumps, trampolines, opaque predicates, leaf subroutine calls, and command dispatch chaining) with quantitative confidence scoring.
+  - Trampoline jump chain flattening (`flatten_jump_trampolines`): collapses intermediate label hops (`:hop1 goto :hop2 \n :hop2 goto :dest`) directly to target labels, resolving transitive pointer chains with cycle detection.
+  - Opaque predicate normalizer (`normalize_opaque_predicates`): evaluates static constant conditions (`if 1==1`, `if 1 EQU 1`, `if "%x%"=="%x%"`, `if 1==0`, `if not 1==1`, `/i` case-insensitivity) to unwrap true branches and discard dead conditional blocks, while strictly preserving runtime dynamic variables (`%errorlevel%`, `%~1`, `%var%`).
+  - Leaf subroutine inlining (`inline_subroutines`): inlines non-recursive leaf `call :sub [args]` routines with parameter substitutions (`%~1`, `%1`, `%*`, `%~2`..`%~9`) and strips subroutine return boilerplate (`goto :eof`, `exit /b`).
+  - Control flow graph linearization (`linearize_control_flow`): reconstructs natural linear execution paths from entry points following unconditional gotos and fall-throughs, reordering scattered label blocks and pruning redundant fall-through gotos.
+  - Dead block & chaff label pruning (`prune_unreachable_blocks`): eliminates unreachable decoy blocks and labels with in-degree 0 that cannot be reached from any valid execution path.
+  - Exorcism runtime dispatch trace emulation (`emulate_exorcism_dispatch`, `export_exorcism_trace`): simulates `cmd.exe!FindFixAndRun` command dispatch, normalizing chained commands (`&`, `&&`, `||`) and exporting structured JSON traces compatible with Exorcism `cmd_hook.json`.
+  - In-memory cryptographic buffer sanitization (`zeroize_dict`, `zeroize_bytes`): securely overwrites parsed label tables, CFG nodes, and trace data in memory.
+  - `ExorcismNormalizer` production class exposing clean object-oriented normalization API with custom environment support.
+- **Dedicated Exorcism Verification Suite (`tests/test_exorcism.py`)**:
+  - Added 20 comprehensive unit and integration tests covering signature detection (positive/negative), trampoline jump flattening (simple/multi-hop/cycle-resistant), opaque predicate evaluation (true/false/else/case-insensitive/identical strings), leaf subroutine inlining, non-leaf call preservation, control flow linearization and redundant goto pruning, unreachable block pruning, dispatch trace emulation, JSON trace export, memory zeroization, class interface wrapper methods, and full `BatchDeobfuscator` pipeline convergence (expanding the test suite to 195 tests).
+
+### Changed
+- Integrated Exorcism normalization into the core multi-pass convergence pipeline (`deobfuscator/core.py`, `deobfuscate_script`, `deobfuscate_bytes`) via `enable_exorcism=True` (executing pre-convergence in Step 0.73 and post-convergence in Step 4.9).
+- Updated standalone engine (`src/deobfuscator_engine.py`) with Exorcism normalization passes and parity.
+- Extended CLI toolchain (`deobfuscator/cli.py`) with `--no-exorcism` flag and verbose telemetry reporting for detected indicators, collapsed trampolines, normalized predicates, inlined subroutines, pruned fall-through gotos, and dead blocks.
+- Synchronized architecture mapping guide (`scripts/ARCHITECTURE_MAP.md`) and bumped package version across `package.json`, `pyproject.toml`, and `deobfuscator/__init__.py` to v1.11.0.
+
 ## [1.10.0] - 2026-10-14
 
 ### Added

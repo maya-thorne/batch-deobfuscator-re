@@ -21,6 +21,7 @@ try:
     from deobfuscator.bedecode import normalize_bedecode
     from deobfuscator.batchshield import normalize_batchshield
     from deobfuscator.pandacrypter import normalize_pandacrypter
+    from deobfuscator.exorcism import normalize_exorcism
     HAS_SECURITY_MODULES = True
 except ImportError:
     try:
@@ -34,6 +35,7 @@ except ImportError:
         from deobfuscator.bedecode import normalize_bedecode
         from deobfuscator.batchshield import normalize_batchshield
         from deobfuscator.pandacrypter import normalize_pandacrypter
+        from deobfuscator.exorcism import normalize_exorcism
         HAS_SECURITY_MODULES = True
     except ImportError:
         HAS_SECURITY_MODULES = False
@@ -43,6 +45,7 @@ class BatchDeobfuscator:
                  enable_batcloak=True, enable_somalifuscator=True, enable_oxidizer=True,
                  enable_abobus=True, enable_dosfuscation=True, enable_cradlecrafter=True,
                  enable_bedecode=True, enable_batchshield=True, enable_pandacrypter=True,
+                 enable_exorcism=True,
                  eliminate_dead_code=True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
@@ -56,6 +59,7 @@ class BatchDeobfuscator:
         self.enable_bedecode = enable_bedecode
         self.enable_batchshield = enable_batchshield
         self.enable_pandacrypter = enable_pandacrypter
+        self.enable_exorcism = enable_exorcism
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars = {}
         # Prepopulate default Windows environment variables commonly used for slicing
@@ -421,6 +425,10 @@ class BatchDeobfuscator:
         if self.enable_oxidizer and HAS_SECURITY_MODULES:
             current, _ = normalize_oxidizer(current, custom_env=self.env_vars)
 
+        # Step 0.73: Exorcism control flow normalization, jump trampolines & opaque predicates
+        if self.enable_exorcism and HAS_SECURITY_MODULES:
+            current, _ = normalize_exorcism(current, custom_env=self.env_vars)
+
         # Step 0.74: PandaCrypter colon noise stripping and Certutil stager payload recovery
         if self.enable_pandacrypter and HAS_SECURITY_MODULES:
             current, _ = normalize_pandacrypter(current, custom_env=self.env_vars)
@@ -488,6 +496,10 @@ class BatchDeobfuscator:
         # Step 4.8: Post-convergence PandaCrypter / Certutil check for newly emerged stagers
         if self.enable_pandacrypter and HAS_SECURITY_MODULES and ("certutil" in current.lower() or "-decode" in current.lower() or ":::" in current):
             current, _ = normalize_pandacrypter(current, custom_env=self.env_vars)
+
+        # Step 4.9: Post-convergence Exorcism control flow normalization for newly unmasked jumps
+        if self.enable_exorcism and HAS_SECURITY_MODULES and ("goto :" in current.lower() or "call :" in current.lower() or "if 1==" in current):
+            current, _ = normalize_exorcism(current, custom_env=self.env_vars)
 
         # Step 5: Dead Store Elimination for unreferenced variables and ephemeral aliases
         if self.eliminate_dead_code and HAS_SECURITY_MODULES:
