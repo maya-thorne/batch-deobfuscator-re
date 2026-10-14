@@ -414,6 +414,11 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
       <td align="center"><code>False</code></td>
     </tr>
     <tr>
+      <td><code>--no-exorcism</code></td>
+      <td>Disable Exorcism subroutine label jump and control flow normalization</td>
+      <td align="center"><code>False</code></td>
+    </tr>
+    <tr>
       <td><code>--no-dse</code></td>
       <td>Disable Dead Store Elimination (DSE) for unreferenced temporary variables</td>
       <td align="center"><code>False</code></td>
@@ -426,7 +431,7 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
     <tr>
       <td><code>--version</code></td>
       <td>Display engine version, release tag, and author attribution</td>
-      <td align="center"><code>1.10.0</code></td>
+      <td align="center"><code>1.11.0</code></td>
     </tr>
   </tbody>
 </table>
@@ -497,13 +502,20 @@ batch-deobfuscator-re/
 │   └── eval_corpus_runner.py              # 28-Corpus Automated Evaluation & Scoring Engine
 │
 ├── deobfuscator/                          # 🛠️ Production CLI Toolchain Package (python -m deobfuscator)
-│   ├── __init__.py                        # Package initialization, v1.4.0 & Public API exports
+│   ├── __init__.py                        # Package initialization, v1.11.0 & Public API exports
 │   ├── __main__.py                        # Direct module execution entrypoint (-m deobfuscator)
 │   ├── cli.py                             # Rich CLI Interface (argparse, JSON export, Diff, Verbose)
 │   ├── core.py                            # Multi-Pass Fixed-Point AST Convergence Loop Coordinator
 │   ├── batcloak.py                        # BatCloak Fake BOM De-masking & Random Variable Pruning
 │   ├── somalifuscator.py                  # Somalifuscator Caesar Inversion & KDOT Array Slicing
 │   ├── oxidizer.py                        # 0xidiz3r Zero-Literal Bootstrap & Reversible Alphabet Inversion
+│   ├── abobus.py                          # Abobus Unicode Noise Filtering, Decoy & Trap Elimination
+│   ├── dosfuscation.py                    # Invoke-DOSfuscation Bohannon Loop Unwrapping & Advanced Slicing
+│   ├── cradlecrafter.py                   # Invoke-CradleCrafter & PowerShell Download Stager Recovery
+│   ├── bedecode.py                        # Batch-Encryption-DeCoder Runtime Stub Peeling & PE Forensics
+│   ├── batchshield.py                     # BatchShield Symbol Table & Compound Env Chain Resolver
+│   ├── pandacrypter.py                    # PandaCrypter & Certutil Stager Deobfuscator
+│   ├── exorcism.py                        # Exorcism Control Flow Normalizer, Trampolines & Opaque Predicates
 │   ├── normalizers.py                     # Carets, Quotes, &-Splits, Undefined Vars, Env Slicing
 │   └── diff.py                            # Terminal ANSI 256-Color Unified Diff Renderer
 │

@@ -133,6 +133,12 @@ Engineered by Maya Thorne.
     )
 
     parser.add_argument(
+        "--no-exorcism",
+        action="store_true",
+        help="Disable Exorcism subroutine label jump and control flow normalization"
+    )
+
+    parser.add_argument(
         "--no-dse",
         action="store_true",
         help="Disable Dead Store Elimination (DSE) for unreferenced variables"
@@ -187,6 +193,7 @@ def main(args=None) -> int:
         enable_bedecode=not opts.no_bedecode,
         enable_batchshield=not opts.no_batchshield,
         enable_pandacrypter=not opts.no_pandacrypter,
+        enable_exorcism=not opts.no_exorcism,
         eliminate_dead_code=not opts.no_dse
     )
     clean_text, meta = engine.deobfuscate(script_text)
@@ -307,6 +314,22 @@ def main(args=None) -> int:
                 sys.stderr.write(f"     • Decoded staged payloads: {pt['decoded_payloads_count']}\n")
                 for payload in pt.get("decoded_payloads", []):
                     sys.stderr.write(f"       - Mode: {payload.get('mode')} -> {payload.get('out_file')} (Size: {payload.get('size_bytes')} bytes, Format: {payload.get('format_desc')})\n")
+        ext = meta.get("exorcism_telemetry", {})
+        if ext.get("is_exorcism") or ext.get("trampolines_collapsed", 0) > 0 or ext.get("predicates_normalized", 0) > 0 or ext.get("subroutines_inlined_count", 0) > 0:
+            sig = ext.get("signatures", {})
+            sys.stderr.write(f"  ↳ Exorcism Control Flow Detected: True (Confidence: {sig.get('confidence', ext.get('confidence', 0.0))})\n")
+            if ext.get("indicators"):
+                sys.stderr.write(f"     • Indicators: {', '.join(ext['indicators'])}\n")
+            if ext.get("trampolines_collapsed"):
+                sys.stderr.write(f"     • Collapsed jump trampolines: {ext['trampolines_collapsed']}\n")
+            if ext.get("predicates_normalized"):
+                sys.stderr.write(f"     • Normalized opaque predicates: {ext['predicates_normalized']}\n")
+            if ext.get("subroutines_inlined_count"):
+                sys.stderr.write(f"     • Inlined leaf subroutines: {ext['subroutines_inlined_count']}\n")
+            if ext.get("fallthrough_gotos_removed"):
+                sys.stderr.write(f"     • Pruned obsolete fall-through gotos: {ext['fallthrough_gotos_removed']}\n")
+            if ext.get("pruned_blocks_count"):
+                sys.stderr.write(f"     • Pruned unreachable dead blocks: {ext['pruned_blocks_count']}\n")
         if meta["symbol_table"]:
             sys.stderr.write("  ↳ Symbol Table:\n")
             for k, v in list(meta["symbol_table"].items())[:10]:

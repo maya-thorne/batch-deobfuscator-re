@@ -62,6 +62,35 @@ from .pandacrypter import (
     detect_certutil_signatures,
     PandaCrypterNormalizer,
 )
+from .exorcism import (
+    normalize_exorcism,
+    detect_exorcism_signatures,
+    ExorcismNormalizer,
+)
+
+
+def zeroize_dict(target: Dict[str, Any]) -> None:
+    """Cryptographically sanitize dictionary buffers in memory."""
+    for key in list(target.keys()):
+        val = target[key]
+        if isinstance(val, dict):
+            zeroize_dict(val)
+        elif isinstance(val, list):
+            for i in range(len(val)):
+                val[i] = None
+            val.clear()
+        elif isinstance(val, bytearray):
+            for i in range(len(val)):
+                val[i] = 0
+        target[key] = None
+    target.clear()
+
+
+def zeroize_bytes(buffer: bytearray) -> None:
+    """Cryptographically zeroize raw bytearray buffers in memory."""
+    for i in range(len(buffer)):
+        buffer[i] = 0
+
 
 class BatchDeobfuscator:
     """Multi-Pass Fixed-Point Batch Script Deobfuscator."""
@@ -106,6 +135,7 @@ class BatchDeobfuscator:
                  enable_bedecode: bool = True,
                  enable_batchshield: bool = True,
                  enable_pandacrypter: bool = True,
+                 enable_exorcism: bool = True,
                  eliminate_dead_code: bool = True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
@@ -119,11 +149,26 @@ class BatchDeobfuscator:
         self.enable_bedecode = enable_bedecode
         self.enable_batchshield = enable_batchshield
         self.enable_pandacrypter = enable_pandacrypter
+        self.enable_exorcism = enable_exorcism
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars: Dict[str, str] = dict(self.DEFAULT_ENV)
         if custom_env:
             self.env_vars.update({k.lower(): v for k, v in custom_env.items()})
         self.pass_history: List[Dict[str, Any]] = []
+
+    def zeroize(self) -> None:
+        """Cryptographically sanitize symbol tables, label maps, and pass history buffers."""
+        zeroize_dict(self.env_vars)
+        for entry in self.pass_history:
+            if isinstance(entry, dict):
+                zeroize_dict(entry)
+        self.pass_history.clear()
+
+    def __del__(self):
+        try:
+            self.zeroize()
+        except Exception:
+            pass
 
     def extract_and_set_vars(self, line: str):
         """
@@ -280,10 +325,12 @@ class BatchDeobfuscator:
         batchshield_sig = detect_batchshield_signatures(script_text)
         pandacrypter_sig = detect_pandacrypter_signatures(script_text)
         certutil_sig = detect_certutil_signatures(script_text)
+        exorcism_sig = detect_exorcism_signatures(script_text) if self.enable_exorcism else {"is_exorcism": False, "confidence": 0.0, "indicators": []}
         removed_random_vars: List[str] = []
         eliminated_dead_vars: List[str] = []
         somalifuscator_meta: Dict[str, Any] = {}
         oxidizer_meta: Dict[str, Any] = {}
+        exorcism_meta: Dict[str, Any] = {}
         abobus_meta: Dict[str, Any] = {}
         batchshield_meta: Dict[str, Any] = {}
         bedecode_meta: Dict[str, Any] = {}
@@ -306,6 +353,10 @@ class BatchDeobfuscator:
         # Step 0.7: 0xidiz3r zero-literal bootstrap resolution and alphabet normalization
         if self.enable_oxidizer:
             curr_text, oxidizer_meta = normalize_oxidizer(curr_text, custom_env=self.env_vars)
+
+        # Step 0.73: Exorcism control flow normalization, jump trampolines & opaque predicates
+        if self.enable_exorcism:
+            curr_text, exorcism_meta = normalize_exorcism(curr_text, custom_env=self.env_vars)
 
         # Step 0.74: PandaCrypter colon noise stripping and Certutil stager payload recovery
         if self.enable_pandacrypter:
@@ -415,6 +466,19 @@ class BatchDeobfuscator:
                     pandacrypter_meta["decoded_payloads"].extend(post_panda_meta["decoded_payloads"])
                     pandacrypter_meta["decoded_payloads_count"] = len(pandacrypter_meta["decoded_payloads"])
 
+        # Step 4.9: Post-convergence Exorcism control flow normalization for newly unmasked jumps
+        if self.enable_exorcism and ("goto :" in curr_text.lower() or "call :" in curr_text.lower() or "if 1==" in curr_text):
+            curr_text, post_exorcism_meta = normalize_exorcism(curr_text, custom_env=self.env_vars)
+            if post_exorcism_meta.get("is_exorcism") or post_exorcism_meta.get("trampolines_collapsed", 0) > 0:
+                exorcism_meta["is_exorcism"] = True
+                exorcism_meta["confidence"] = max(exorcism_meta.get("confidence", 0.0), post_exorcism_meta.get("confidence", 0.0))
+                exorcism_meta["indicators"] = list(set(exorcism_meta.get("indicators", []) + post_exorcism_meta.get("indicators", [])))
+                exorcism_meta["trampolines_collapsed"] = exorcism_meta.get("trampolines_collapsed", 0) + post_exorcism_meta.get("trampolines_collapsed", 0)
+                exorcism_meta["predicates_normalized"] = exorcism_meta.get("predicates_normalized", 0) + post_exorcism_meta.get("predicates_normalized", 0)
+                exorcism_meta["subroutines_inlined_count"] = exorcism_meta.get("subroutines_inlined_count", 0) + post_exorcism_meta.get("subroutines_inlined_count", 0)
+                exorcism_meta["fallthrough_gotos_removed"] = exorcism_meta.get("fallthrough_gotos_removed", 0) + post_exorcism_meta.get("fallthrough_gotos_removed", 0)
+                exorcism_meta["pruned_blocks_count"] = exorcism_meta.get("pruned_blocks_count", 0) + post_exorcism_meta.get("pruned_blocks_count", 0)
+
         # Step 5: Dead Store Elimination (DSE) for ephemeral alias variables & chaff
         if self.eliminate_dead_code:
             curr_text, eliminated_dead_vars = eliminate_dead_stores(curr_text)
@@ -514,6 +578,18 @@ class BatchDeobfuscator:
                 "decoded_payloads_count": 0,
                 "decoded_payloads": [],
                 "staged_files": [],
+            },
+            "exorcism_telemetry": exorcism_meta or {
+                "signatures": exorcism_sig,
+                "is_exorcism": exorcism_sig.get("is_exorcism", False) if self.enable_exorcism else False,
+                "confidence": exorcism_sig.get("confidence", 0.0) if self.enable_exorcism else 0.0,
+                "indicators": exorcism_sig.get("indicators", []) if self.enable_exorcism else [],
+                "trampolines_collapsed": 0,
+                "predicates_normalized": 0,
+                "subroutines_inlined_count": 0,
+                "fallthrough_gotos_removed": 0,
+                "pruned_blocks_count": 0,
+                "dispatch_events_count": 0,
             }
         }
 
@@ -529,6 +605,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
                        enable_bedecode: bool = True,
                        enable_batchshield: bool = True,
                        enable_pandacrypter: bool = True,
+                       enable_exorcism: bool = True,
                        eliminate_dead_code: bool = True) -> str:
     """Convenience helper to deobfuscate a script and return clean string."""
     engine = BatchDeobfuscator(
@@ -544,6 +621,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
         enable_bedecode=enable_bedecode,
         enable_batchshield=enable_batchshield,
         enable_pandacrypter=enable_pandacrypter,
+        enable_exorcism=enable_exorcism,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, _ = engine.deobfuscate(script_text)
@@ -559,6 +637,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
                       enable_bedecode: bool = True,
                       enable_batchshield: bool = True,
                       enable_pandacrypter: bool = True,
+                      enable_exorcism: bool = True,
                       eliminate_dead_code: bool = True) -> Tuple[str, Dict[str, Any]]:
     """
     Deobfuscate raw batch file bytes, neutralizing fake UTF-16LE BOM headers and decoys.
@@ -579,6 +658,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
         enable_bedecode=enable_bedecode,
         enable_batchshield=enable_batchshield,
         enable_pandacrypter=enable_pandacrypter,
+        enable_exorcism=enable_exorcism,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, meta = engine.deobfuscate(text)

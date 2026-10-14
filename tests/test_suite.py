@@ -69,6 +69,25 @@ class TestBatchDeobfuscatorEngine(unittest.TestCase):
         finally:
             tmp_path.unlink(missing_ok=True)
 
+    def test_core_zeroize_buffers(self):
+        from deobfuscator.core import BatchDeobfuscator as CoreDeobf, zeroize_dict, zeroize_bytes
+        engine = CoreDeobf()
+        engine.env_vars["secret_token"] = "SensitiveBatchKey123"
+        engine.pass_history.append({"pass": 1, "delta": 10})
+        self.assertIn("secret_token", engine.env_vars)
+        engine.zeroize()
+        self.assertEqual(len(engine.env_vars), 0)
+        self.assertEqual(len(engine.pass_history), 0)
+
+        # Test zeroize_dict & zeroize_bytes standalone
+        b = bytearray(b"HighlySensitiveKeyData")
+        zeroize_bytes(b)
+        self.assertEqual(b, bytearray(len(b)))
+
+        d = {"sub": {"key": "val"}, "buf": bytearray(b"test"), "lst": [1, 2, 3]}
+        zeroize_dict(d)
+        self.assertEqual(d, {})
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

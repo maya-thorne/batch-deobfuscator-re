@@ -45,3 +45,4 @@ dev_logs/
 # Local Autonomous Memory & Maps (Excluded from public GitHub)
 TASK_BACKLOG.md
 ARCHITECTURE_MAP.md
+scripts/
