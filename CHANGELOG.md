@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2026-10-14
+
+### Added
+- **PandaCrypter & Certutil Multi-Stage Stager Deobfuscator & Forensic Emulation Engine (`deobfuscator/pandacrypter.py`)**:
+  - Heuristic signature detection (`detect_pandacrypter_signatures`, `detect_certutil_signatures`): classifies PandaCrypter and advanced Certutil/PowerShell batch stager patterns across 8 distinct evasion indicators (colon padding, self-extraction, decode, decodehex, echo redirection, comment payloads, AMSI bypass) with quantitative confidence scoring.
+  - Multi-format Certutil hexadecimal static emulation (`emulate_certutil_decodehex`): converts hexadecimal byte streams into cleartext or binary payloads without invoking Windows command processes, supporting mixed hex pairs, raw continuous hex, dash-delimited sequences, comma-separated `0x` byte arrays, and formatted memory dumps with address offsets and right-hand ASCII previews (Formats 0, 4, 11, and 12).
+  - Certutil Base64 static emulation (`emulate_certutil_decode`): safely extracts and decodes Base64 payloads, filtering certificate wrapper headers (`-----BEGIN CERTIFICATE-----`), inline comment tags (`::B64:`, `::PAYLOAD:`), and handling whitespace or irregular padding.
+  - PandaCrypter colon padding neutralization (`strip_pandacrypter_colon_padding`): eliminates large repetitive colon noise blocks (`:::...`) inserted to distort file entropy and bypass statistical scanners, while strictly preserving legitimate batch labels (`:label`, `:EOF`).
+  - Virtual file staging and redirection tracker (`trace_virtual_staged_files`): tracks files constructed across execution flows via `echo >` / `echo >>` pipelines and `findstr` extractions targeting `%~f0`, resolving target file paths against environment mappings.
+  - Staged payload inlining and PE binary triage (`emulate_certutil_staging`): automatically intercepts `certutil -decode` and `certutil -decodehex` command lines, decodes staged inputs, inlines recovered batch scripts or commands directly at subsequent execution points (`call`, `cmd /c`), and safely classifies PE executables (`MZ` header) with cryptographic SHA-256 hashes and size telemetry.
+  - In-memory cryptographic buffer sanitization (`zeroize_dict`, `zeroize_bytes`): securely overwrites parsed staging buffers, decoded bytearrays, and forensic dictionaries prior to deallocation.
+  - `PandaCrypterNormalizer` production class exposing clean object-oriented normalization API with custom environment support.
+- **Dedicated PandaCrypter Verification Suite (`tests/test_pandacrypter.py`)**:
+  - Added 19 comprehensive unit and integration tests covering colon padding stripping, Certutil command signature detection, PandaCrypter heuristic triage, spaced/continuous/dash/comma hex decoding, address-offset hex dump parsing, Base64 certificate decoding, comment extraction, virtual file echo tracing, end-to-end hex and Base64 staging pipeline inlining, binary PE payload classification, memory zeroization, class interface wrapper methods, and full `BatchDeobfuscator` pipeline convergence (expanding the test suite to 174 tests).
+
+### Changed
+- Integrated PandaCrypter normalization into the core multi-pass convergence pipeline (`deobfuscator/core.py`, `deobfuscate_script`, `deobfuscate_bytes`) via `enable_pandacrypter=True` (executing pre-convergence in Step 0.74 and post-convergence in Step 4.8).
+- Updated standalone engine (`src/deobfuscator_engine.py`) with PandaCrypter normalization passes and parity.
+- Extended CLI toolchain (`deobfuscator/cli.py`) with `--no-pandacrypter` / `--no-certutil` flags and verbose telemetry reporting for detected indicators, stripped colon lines, and decoded staged payload telemetry.
+- Synchronized architecture mapping guide (`scripts/ARCHITECTURE_MAP.md`) and bumped package version across `package.json`, `pyproject.toml`, and `deobfuscator/__init__.py` to v1.10.0.
+
 ## [1.9.0] - 2026-10-13
 
 ### Added

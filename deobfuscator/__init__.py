@@ -85,8 +85,19 @@ from .batchshield import (
     eliminate_batchshield_chaff,
     DEFAULT_OS_ENV,
 )
+from .pandacrypter import (
+    PandaCrypterNormalizer,
+    normalize_pandacrypter,
+    detect_pandacrypter_signatures,
+    detect_certutil_signatures,
+    strip_pandacrypter_colon_padding,
+    emulate_certutil_decode,
+    emulate_certutil_decodehex,
+    extract_embedded_payloads_from_comments,
+    trace_virtual_staged_files,
+)
 
-__version__ = "1.9.0"
+__version__ = "1.10.0"
 __author__ = "Maya Thorne"
 __all__ = [
     "BatchDeobfuscator",
@@ -155,4 +166,13 @@ __all__ = [
     "strip_batchshield_dummy_noise",
     "eliminate_batchshield_chaff",
     "DEFAULT_OS_ENV",
+    "PandaCrypterNormalizer",
+    "normalize_pandacrypter",
+    "detect_pandacrypter_signatures",
+    "detect_certutil_signatures",
+    "strip_pandacrypter_colon_padding",
+    "emulate_certutil_decode",
+    "emulate_certutil_decodehex",
+    "extract_embedded_payloads_from_comments",
+    "trace_virtual_staged_files",
 ]
