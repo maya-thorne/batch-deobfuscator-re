@@ -139,6 +139,19 @@ Engineered by Maya Thorne.
     )
 
     parser.add_argument(
+        "--no-batchtoapp", "--no-dosx",
+        action="store_true",
+        dest="no_batchtoapp",
+        help="Disable BatchToApp / DosX native wrapper and operator table deobfuscation"
+    )
+
+    parser.add_argument(
+        "--no-machine1337",
+        action="store_true",
+        help="Disable batobfuscate-machine1337 fake header de-masking and CJK transcode recovery"
+    )
+
+    parser.add_argument(
         "--no-dse",
         action="store_true",
         help="Disable Dead Store Elimination (DSE) for unreferenced variables"
@@ -175,9 +188,21 @@ def main(args=None) -> int:
         sys.stderr.write(f"[-] Error: Input file not found: {input_path}\n")
         return 1
 
+    b2a_pe_info = None
     try:
         raw_bytes = input_path.read_bytes()
-        script_text = normalize_bom(raw_bytes)
+        if raw_bytes[:2] == b"MZ" and not opts.no_batchtoapp:
+            from .batchtoapp import inspect_batchtoapp_pe
+            b2a_info = inspect_batchtoapp_pe(raw_bytes)
+            if b2a_info.get("has_embedded_script") and b2a_info.get("extracted_script"):
+                script_text = b2a_info["extracted_script"]
+                b2a_pe_info = b2a_info
+                if opts.verbose:
+                    sys.stderr.write(f"[+] Successfully extracted embedded BatchToApp script from PE ({len(script_text)} chars)\n")
+            else:
+                script_text = normalize_bom(raw_bytes)
+        else:
+            script_text = normalize_bom(raw_bytes)
     except Exception as e:
         sys.stderr.write(f"[-] Error reading file: {e}\n")
         return 1
@@ -194,9 +219,13 @@ def main(args=None) -> int:
         enable_batchshield=not opts.no_batchshield,
         enable_pandacrypter=not opts.no_pandacrypter,
         enable_exorcism=not opts.no_exorcism,
+        enable_batchtoapp=not opts.no_batchtoapp,
+        enable_machine1337=not opts.no_machine1337,
         eliminate_dead_code=not opts.no_dse
     )
     clean_text, meta = engine.deobfuscate(script_text)
+    if b2a_pe_info:
+        meta["batchtoapp_pe"] = b2a_pe_info
 
     if opts.verbose:
         sys.stderr.write(f"\n[+] Analysis for: {input_path.name}\n")
@@ -330,6 +359,47 @@ def main(args=None) -> int:
                 sys.stderr.write(f"     • Pruned obsolete fall-through gotos: {ext['fallthrough_gotos_removed']}\n")
             if ext.get("pruned_blocks_count"):
                 sys.stderr.write(f"     • Pruned unreachable dead blocks: {ext['pruned_blocks_count']}\n")
+        b2at = meta.get("batchtoapp_telemetry", {})
+        if b2at.get("is_batchtoapp") or (b2at.get("signatures", {}) and b2at["signatures"].get("is_batchtoapp")) or b2at.get("operators_resolved", 0) > 0 or b2at.get("noise_slices_stripped", 0) > 0:
+            sig = b2at.get("signatures", {})
+            sys.stderr.write(f"  ↳ BatchToApp / DosX Detected: True (Confidence: {sig.get('confidence', b2at.get('confidence', 0.0))})\n")
+            if b2at.get("indicators") or sig.get("indicators"):
+                ind = b2at.get("indicators") or sig.get("indicators", [])
+                sys.stderr.write(f"     • Indicators: {', '.join(ind)}\n")
+            if b2at.get("noise_slices_stripped"):
+                sys.stderr.write(f"     • Stripped noise variable slices: {b2at['noise_slices_stripped']} tokens\n")
+            if b2at.get("mutation_block_stripped"):
+                sys.stderr.write(f"     • Unwrapped mutation jump & binary junk block: True\n")
+            if b2at.get("operators_resolved"):
+                sys.stderr.write(f"     • Resolved operator variable mappings: {b2at['operators_resolved']} commands\n")
+            if b2at.get("closing_bracket_var"):
+                sys.stderr.write(f"     • Inverted closing bracket variable: %{b2at['closing_bracket_var']}%\n")
+            if b2at.get("fake_labels_pruned"):
+                sys.stderr.write(f"     • Pruned unreferenced fake labels: {b2at['fake_labels_pruned']}\n")
+            if b2at.get("header_shift_removed") or b2at.get("exit_label_removed") or b2at.get("guard_check_removed"):
+                sys.stderr.write(f"     • Normalized wrapper headers, guards & exit label: True\n")
+        m13t = meta.get("machine1337_telemetry", {})
+        if m13t.get("is_machine1337") or m13t.get("header_stripped") or m13t.get("cjk_recovered") or m13t.get("carets_normalized", 0) > 0:
+            sig = m13t.get("signatures", {})
+            sys.stderr.write(f"  ↳ batobfuscate-machine1337 Detected: True (Confidence: {sig.get('confidence', m13t.get('confidence', 0.0))})\n")
+            if m13t.get("header_stripped"):
+                sys.stderr.write(f"     • Stripped fake wide header: {m13t.get('header_variant')} ({m13t.get('stripped_bytes')} bytes)\n")
+            if m13t.get("cjk_recovered"):
+                sys.stderr.write(f"     • Recovered CJK transcoded batch commands: True\n")
+            if m13t.get("cls_preamble_stripped"):
+                sys.stderr.write(f"     • Stripped cls execution error preamble: True\n")
+            if m13t.get("carets_normalized"):
+                sys.stderr.write(f"     • Normalized inline caret scrambling: {m13t['carets_normalized']} tokens\n")
+        if meta.get("batchtoapp_pe"):
+            bpe = meta["batchtoapp_pe"]
+            sys.stderr.write(f"  ↳ BatchToApp PE Wrapper Forensics:\n")
+            sys.stderr.write(f"     • Architecture: {bpe.get('architecture', 'Unknown')}\n")
+            if bpe.get("app_id"):
+                sys.stderr.write(f"     • Application GUID: {bpe['app_id']}\n")
+            if bpe.get("is_hidden") is not None:
+                sys.stderr.write(f"     • Window Hidden: {bpe['is_hidden']}\n")
+            if bpe.get("fs_protection") is not None:
+                sys.stderr.write(f"     • FileSystem Anti-Tamper: {bpe['fs_protection']}\n")
         if meta["symbol_table"]:
             sys.stderr.write("  ↳ Symbol Table:\n")
             for k, v in list(meta["symbol_table"].items())[:10]:

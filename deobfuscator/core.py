@@ -67,6 +67,20 @@ from .exorcism import (
     detect_exorcism_signatures,
     ExorcismNormalizer,
 )
+from .batchtoapp import (
+    normalize_batchtoapp,
+    detect_batchtoapp_signatures,
+    inspect_batchtoapp_pe,
+    BatchToAppNormalizer,
+)
+from .machine1337 import (
+    normalize_machine1337,
+    detect_machine1337_signatures,
+    neutralize_machine1337_headers,
+    is_machine1337_header,
+    Machine1337Normalizer,
+)
+from .telemetry import assemble_deobfuscator_metadata
 
 
 def zeroize_dict(target: Dict[str, Any]) -> None:
@@ -130,12 +144,10 @@ class BatchDeobfuscator:
                  strip_undefined: bool = True, split_chains: bool = True,
                  enable_batcloak: bool = True, enable_somalifuscator: bool = True,
                  enable_oxidizer: bool = True, enable_abobus: bool = True,
-                 enable_dosfuscation: bool = True,
-                 enable_cradlecrafter: bool = True,
-                 enable_bedecode: bool = True,
-                 enable_batchshield: bool = True,
-                 enable_pandacrypter: bool = True,
-                 enable_exorcism: bool = True,
+                 enable_dosfuscation: bool = True, enable_cradlecrafter: bool = True,
+                 enable_bedecode: bool = True, enable_batchshield: bool = True,
+                 enable_pandacrypter: bool = True, enable_exorcism: bool = True,
+                 enable_batchtoapp: bool = True, enable_machine1337: bool = True,
                  eliminate_dead_code: bool = True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
@@ -150,6 +162,8 @@ class BatchDeobfuscator:
         self.enable_batchshield = enable_batchshield
         self.enable_pandacrypter = enable_pandacrypter
         self.enable_exorcism = enable_exorcism
+        self.enable_batchtoapp = enable_batchtoapp
+        self.enable_machine1337 = enable_machine1337
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars: Dict[str, str] = dict(self.DEFAULT_ENV)
         if custom_env:
@@ -326,10 +340,14 @@ class BatchDeobfuscator:
         pandacrypter_sig = detect_pandacrypter_signatures(script_text)
         certutil_sig = detect_certutil_signatures(script_text)
         exorcism_sig = detect_exorcism_signatures(script_text) if self.enable_exorcism else {"is_exorcism": False, "confidence": 0.0, "indicators": []}
+        batchtoapp_sig = detect_batchtoapp_signatures(script_text) if self.enable_batchtoapp else {"is_batchtoapp": False, "confidence": 0.0, "indicators": []}
+        machine1337_sig = detect_machine1337_signatures(None, script_text) if self.enable_machine1337 else {"is_machine1337": False, "confidence": 0.0, "indicators": []}
         removed_random_vars: List[str] = []
         eliminated_dead_vars: List[str] = []
         somalifuscator_meta: Dict[str, Any] = {}
         oxidizer_meta: Dict[str, Any] = {}
+        batchtoapp_meta: Dict[str, Any] = {}
+        machine1337_meta: Dict[str, Any] = {}
         exorcism_meta: Dict[str, Any] = {}
         abobus_meta: Dict[str, Any] = {}
         batchshield_meta: Dict[str, Any] = {}
@@ -346,6 +364,10 @@ class BatchDeobfuscator:
         if self.enable_batcloak:
             curr_text, removed_random_vars = strip_batcloak_random_vars(curr_text)
 
+        # Step 0.55: batobfuscate-machine1337 fake header de-masking, CJK transcode & caret normalization
+        if self.enable_machine1337:
+            curr_text, machine1337_meta = normalize_machine1337(curr_text, custom_env=self.env_vars)
+
         # Step 0.6: Somalifuscator Caesar cipher inversion and array normalization
         if self.enable_somalifuscator:
             curr_text, somalifuscator_meta = normalize_somalifuscator(curr_text, custom_env=self.env_vars)
@@ -353,6 +375,10 @@ class BatchDeobfuscator:
         # Step 0.7: 0xidiz3r zero-literal bootstrap resolution and alphabet normalization
         if self.enable_oxidizer:
             curr_text, oxidizer_meta = normalize_oxidizer(curr_text, custom_env=self.env_vars)
+
+        # Step 0.72: BatchToApp / DosX native wrapper and operator table normalizer
+        if self.enable_batchtoapp:
+            curr_text, batchtoapp_meta = normalize_batchtoapp(curr_text, custom_env=self.env_vars)
 
         # Step 0.73: Exorcism control flow normalization, jump trampolines & opaque predicates
         if self.enable_exorcism:
@@ -479,188 +505,143 @@ class BatchDeobfuscator:
                 exorcism_meta["fallthrough_gotos_removed"] = exorcism_meta.get("fallthrough_gotos_removed", 0) + post_exorcism_meta.get("fallthrough_gotos_removed", 0)
                 exorcism_meta["pruned_blocks_count"] = exorcism_meta.get("pruned_blocks_count", 0) + post_exorcism_meta.get("pruned_blocks_count", 0)
 
+        # Step 4.95: Post-convergence BatchToApp check for newly unmasked operator variables or fake labels
+        if self.enable_batchtoapp and (":label_0x" in curr_text or "b2a_exitprocess" in curr_text.lower() or "@shift /0" in curr_text.lower() or ":~4" in curr_text or ":~5" in curr_text or "=^)" in curr_text):
+            curr_text, post_b2a_meta = normalize_batchtoapp(curr_text, custom_env=self.env_vars)
+            if post_b2a_meta.get("is_batchtoapp"):
+                batchtoapp_meta["is_batchtoapp"] = True
+                batchtoapp_meta["confidence"] = max(batchtoapp_meta.get("confidence", 0.0), post_b2a_meta.get("confidence", 0.0))
+                batchtoapp_meta["indicators"] = list(set(batchtoapp_meta.get("indicators", []) + post_b2a_meta.get("indicators", [])))
+                batchtoapp_meta["noise_slices_stripped"] = batchtoapp_meta.get("noise_slices_stripped", 0) + post_b2a_meta.get("noise_slices_stripped", 0)
+                batchtoapp_meta["mutation_block_stripped"] = batchtoapp_meta.get("mutation_block_stripped", False) or post_b2a_meta.get("mutation_block_stripped", False)
+                batchtoapp_meta["operators_resolved"] = batchtoapp_meta.get("operators_resolved", 0) + post_b2a_meta.get("operators_resolved", 0)
+                if post_b2a_meta.get("closing_bracket_var"):
+                    batchtoapp_meta["closing_bracket_var"] = post_b2a_meta.get("closing_bracket_var")
+                batchtoapp_meta["declaration_lines_pruned"] = batchtoapp_meta.get("declaration_lines_pruned", 0) + post_b2a_meta.get("declaration_lines_pruned", 0)
+                batchtoapp_meta["fake_labels_pruned"] = batchtoapp_meta.get("fake_labels_pruned", 0) + post_b2a_meta.get("fake_labels_pruned", 0)
+                batchtoapp_meta["header_shift_removed"] = batchtoapp_meta.get("header_shift_removed", False) or post_b2a_meta.get("header_shift_removed", False)
+                batchtoapp_meta["guard_check_removed"] = batchtoapp_meta.get("guard_check_removed", False) or post_b2a_meta.get("guard_check_removed", False)
+                batchtoapp_meta["exit_label_removed"] = batchtoapp_meta.get("exit_label_removed", False) or post_b2a_meta.get("exit_label_removed", False)
+
         # Step 5: Dead Store Elimination (DSE) for ephemeral alias variables & chaff
         if self.eliminate_dead_code:
             curr_text, eliminated_dead_vars = eliminate_dead_stores(curr_text)
 
         elapsed_ms = (time.perf_counter() - start_time) * 1000.0
 
-        metadata = {
-            "passes_executed": len(self.pass_history),
-            "converged": self.pass_history[-1]["converged"] if self.pass_history else True,
-            "elapsed_ms": round(elapsed_ms, 3),
-            "symbols_resolved_count": len(self.env_vars) - len(self.DEFAULT_ENV),
-            "symbol_table": {k: v for k, v in self.env_vars.items() if k not in self.DEFAULT_ENV},
-            "pass_telemetry": self.pass_history,
-            "batcloak_telemetry": {
-                "detected": batcloak_sig["is_batcloak_family"],
-                "confidence": batcloak_sig["confidence"],
-                "indicators": batcloak_sig["indicators"],
-                "removed_random_vars": removed_random_vars,
-                "eliminated_dead_stores": eliminated_dead_vars,
-            },
-            "somalifuscator_telemetry": somalifuscator_meta or {
-                "signatures": somalifuscator_sig,
-                "rotation_value": None,
-                "unwrapped_loops_count": 0,
-                "kdot_detected": False,
-                "caesar_symbols_count": 0,
-                "eliminated_chaff_count": 0,
-            },
-            "oxidizer_telemetry": oxidizer_meta or {
-                "signatures": oxidizer_sig,
-                "is_oxidizer": oxidizer_sig["is_oxidizer"],
-                "confidence": oxidizer_sig["confidence"],
-                "bootstrap_vars": oxidizer_sig["bootstrap_vars"],
-                "alphabet_size": 0,
-                "eliminated_preamble_count": 0,
-            },
-            "abobus_telemetry": abobus_meta or {
-                "signatures": abobus_sig,
-                "is_abobus": abobus_sig["is_abobus"] if self.enable_abobus else False,
-                "confidence": abobus_sig["confidence"] if self.enable_abobus else 0.0,
-                "indicators": abobus_sig["indicators"] if self.enable_abobus else [],
-                "eliminated_traps_count": 0,
-                "stripped_noise_count": 0,
-                "dictionaries_resolved_count": 0,
-                "dictionary_variables": [],
-            },
-            "dosfuscation_telemetry": dosfuscation_meta or {
-                "signatures": dosfuscation_sig,
-                "is_dosfuscation": dosfuscation_sig["is_dosfuscation"] if self.enable_dosfuscation else False,
-                "confidence": dosfuscation_sig["confidence"] if self.enable_dosfuscation else 0.0,
-                "indicators": dosfuscation_sig["indicators"] if self.enable_dosfuscation else [],
-                "unwrapped_loops_count": 0,
-                "unwrapped_commands": [],
-                "delimiters_normalized": False,
-                "slicing_resolved": False,
-            },
-            "cradlecrafter_telemetry": cradle_meta or {
-                "signatures": cradle_sig,
-                "is_cradle": cradle_sig["is_cradle"] if self.enable_cradlecrafter else False,
-                "confidence": cradle_sig["confidence"] if self.enable_cradlecrafter else 0.0,
-                "indicators": cradle_sig["indicators"] if self.enable_cradlecrafter else [],
-                "decoded_payloads_count": 0,
-                "decoded_payloads": [],
-                "extracted_urls": [],
-                "extracted_destinations": [],
-                "cradle_methods": [],
-            },
-            "bedecode_telemetry": bedecode_meta or {
-                "signatures": bedecode_sig,
-                "detected": bedecode_sig["is_bedecode"] if self.enable_bedecode else False,
-                "is_bedecode": bedecode_sig["is_bedecode"] if self.enable_bedecode else False,
-                "confidence": bedecode_sig["confidence"] if self.enable_bedecode else 0.0,
-                "indicators": bedecode_sig["indicators"] if self.enable_bedecode else [],
-                "layers_unwrapped": 0,
-                "env_bootstraps_resolved": 0,
-                "slices_resolved": 0,
-            },
-            "batchshield_telemetry": batchshield_meta or {
-                "signatures": batchshield_sig,
-                "detected": batchshield_sig["is_batchshield"] if self.enable_batchshield else False,
-                "is_batchshield": batchshield_sig["is_batchshield"] if self.enable_batchshield else False,
-                "confidence": batchshield_sig["confidence"] if self.enable_batchshield else 0.0,
-                "indicators": batchshield_sig["indicators"] if self.enable_batchshield else [],
-                "symbols_resolved_count": 0,
-                "chains_resolved_count": 0,
-                "noise_stripped_count": 0,
-                "chaff_eliminated_count": 0,
-            },
-            "pandacrypter_telemetry": pandacrypter_meta or {
-                "signatures": pandacrypter_sig,
-                "certutil_signatures": certutil_sig,
-                "is_pandacrypter": pandacrypter_sig["is_pandacrypter"] if self.enable_pandacrypter else False,
-                "is_certutil": certutil_sig["is_certutil"] if self.enable_pandacrypter else False,
-                "confidence": max(pandacrypter_sig["confidence"], certutil_sig["confidence"]) if self.enable_pandacrypter else 0.0,
-                "indicators": pandacrypter_sig["indicators"] if self.enable_pandacrypter else [],
-                "colon_padding_stripped": 0,
-                "decoded_payloads_count": 0,
-                "decoded_payloads": [],
-                "staged_files": [],
-            },
-            "exorcism_telemetry": exorcism_meta or {
-                "signatures": exorcism_sig,
-                "is_exorcism": exorcism_sig.get("is_exorcism", False) if self.enable_exorcism else False,
-                "confidence": exorcism_sig.get("confidence", 0.0) if self.enable_exorcism else 0.0,
-                "indicators": exorcism_sig.get("indicators", []) if self.enable_exorcism else [],
-                "trampolines_collapsed": 0,
-                "predicates_normalized": 0,
-                "subroutines_inlined_count": 0,
-                "fallthrough_gotos_removed": 0,
-                "pruned_blocks_count": 0,
-                "dispatch_events_count": 0,
-            }
-        }
+        metadata = assemble_deobfuscator_metadata(
+            elapsed_ms=elapsed_ms,
+            pass_history=self.pass_history,
+            env_vars=self.env_vars,
+            default_env=self.DEFAULT_ENV,
+            batcloak_sig=batcloak_sig,
+            removed_random_vars=removed_random_vars,
+            eliminated_dead_vars=eliminated_dead_vars,
+            somalifuscator_meta=somalifuscator_meta,
+            somalifuscator_sig=somalifuscator_sig,
+            oxidizer_meta=oxidizer_meta,
+            oxidizer_sig=oxidizer_sig,
+            abobus_meta=abobus_meta,
+            abobus_sig=abobus_sig,
+            enable_abobus=self.enable_abobus,
+            dosfuscation_meta=dosfuscation_meta,
+            dosfuscation_sig=dosfuscation_sig,
+            enable_dosfuscation=self.enable_dosfuscation,
+            cradle_meta=cradle_meta,
+            cradle_sig=cradle_sig,
+            enable_cradlecrafter=self.enable_cradlecrafter,
+            bedecode_meta=bedecode_meta,
+            bedecode_sig=bedecode_sig,
+            enable_bedecode=self.enable_bedecode,
+            batchshield_meta=batchshield_meta,
+            batchshield_sig=batchshield_sig,
+            enable_batchshield=self.enable_batchshield,
+            pandacrypter_meta=pandacrypter_meta,
+            pandacrypter_sig=pandacrypter_sig,
+            certutil_sig=certutil_sig,
+            enable_pandacrypter=self.enable_pandacrypter,
+            exorcism_meta=exorcism_meta,
+            exorcism_sig=exorcism_sig,
+            enable_exorcism=self.enable_exorcism,
+            batchtoapp_meta=batchtoapp_meta,
+            batchtoapp_sig=batchtoapp_sig,
+            enable_batchtoapp=self.enable_batchtoapp,
+            machine1337_meta=machine1337_meta,
+            machine1337_sig=machine1337_sig,
+            enable_machine1337=self.enable_machine1337,
+        )
 
         return curr_text, metadata
 
+
 def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: bool = True,
                        split_chains: bool = True, enable_batcloak: bool = True,
-                       enable_somalifuscator: bool = True,
-                       enable_oxidizer: bool = True,
-                       enable_abobus: bool = True,
-                       enable_dosfuscation: bool = True,
-                       enable_cradlecrafter: bool = True,
-                       enable_bedecode: bool = True,
-                       enable_batchshield: bool = True,
-                       enable_pandacrypter: bool = True,
-                       enable_exorcism: bool = True,
-                       eliminate_dead_code: bool = True) -> str:
+                       enable_somalifuscator: bool = True, enable_oxidizer: bool = True,
+                       enable_abobus: bool = True, enable_dosfuscation: bool = True,
+                       enable_cradlecrafter: bool = True, enable_bedecode: bool = True,
+                       enable_batchshield: bool = True, enable_pandacrypter: bool = True,
+                       enable_exorcism: bool = True, enable_batchtoapp: bool = True,
+                       enable_machine1337: bool = True, eliminate_dead_code: bool = True) -> str:
     """Convenience helper to deobfuscate a script and return clean string."""
     engine = BatchDeobfuscator(
-        max_passes=max_passes,
-        strip_undefined=strip_undefined,
-        split_chains=split_chains,
-        enable_batcloak=enable_batcloak,
-        enable_somalifuscator=enable_somalifuscator,
-        enable_oxidizer=enable_oxidizer,
-        enable_abobus=enable_abobus,
-        enable_dosfuscation=enable_dosfuscation,
-        enable_cradlecrafter=enable_cradlecrafter,
-        enable_bedecode=enable_bedecode,
-        enable_batchshield=enable_batchshield,
-        enable_pandacrypter=enable_pandacrypter,
-        enable_exorcism=enable_exorcism,
+        max_passes=max_passes, strip_undefined=strip_undefined, split_chains=split_chains,
+        enable_batcloak=enable_batcloak, enable_somalifuscator=enable_somalifuscator,
+        enable_oxidizer=enable_oxidizer, enable_abobus=enable_abobus,
+        enable_dosfuscation=enable_dosfuscation, enable_cradlecrafter=enable_cradlecrafter,
+        enable_bedecode=enable_bedecode, enable_batchshield=enable_batchshield,
+        enable_pandacrypter=enable_pandacrypter, enable_exorcism=enable_exorcism,
+        enable_batchtoapp=enable_batchtoapp, enable_machine1337=enable_machine1337,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, _ = engine.deobfuscate(script_text)
     return clean_text
 
+
 def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool = True,
                       split_chains: bool = True, enable_batcloak: bool = True,
-                      enable_somalifuscator: bool = True,
-                      enable_oxidizer: bool = True,
-                      enable_abobus: bool = True,
-                      enable_dosfuscation: bool = True,
-                      enable_cradlecrafter: bool = True,
-                      enable_bedecode: bool = True,
-                      enable_batchshield: bool = True,
-                      enable_pandacrypter: bool = True,
-                      enable_exorcism: bool = True,
+                      enable_somalifuscator: bool = True, enable_oxidizer: bool = True,
+                      enable_abobus: bool = True, enable_dosfuscation: bool = True,
+                      enable_cradlecrafter: bool = True, enable_bedecode: bool = True,
+                      enable_batchshield: bool = True, enable_pandacrypter: bool = True,
+                      enable_exorcism: bool = True, enable_batchtoapp: bool = True,
+                      enable_machine1337: bool = True,
                       eliminate_dead_code: bool = True) -> Tuple[str, Dict[str, Any]]:
     """
     Deobfuscate raw batch file bytes, neutralizing fake UTF-16LE BOM headers and decoys.
+    If binary data is a BatchToApp PE executable, extracts embedded batch script payload.
+    If binary data has machine1337 multi-BOM header, extracts clean decoded script.
     Returns:
         Tuple[clean_script_text, forensic_metadata]
     """
-    text, header_meta = normalize_batcloak_headers(data)
+    b2a_pe = inspect_batchtoapp_pe(data) if enable_batchtoapp else {"is_pe": False, "has_embedded_script": False}
+    if b2a_pe.get("has_embedded_script") and b2a_pe.get("extracted_script"):
+        text = b2a_pe["extracted_script"]
+        header_meta = {"pe_extracted": True, "b2a_pe": b2a_pe}
+    elif enable_machine1337 and is_machine1337_header(data)[0]:
+        text, header_meta = neutralize_machine1337_headers(data)
+    else:
+        text, header_meta = normalize_batcloak_headers(data)
+
     engine = BatchDeobfuscator(
-        max_passes=max_passes,
-        strip_undefined=strip_undefined,
-        split_chains=split_chains,
-        enable_batcloak=enable_batcloak,
-        enable_somalifuscator=enable_somalifuscator,
-        enable_oxidizer=enable_oxidizer,
-        enable_abobus=enable_abobus,
-        enable_dosfuscation=enable_dosfuscation,
-        enable_cradlecrafter=enable_cradlecrafter,
-        enable_bedecode=enable_bedecode,
-        enable_batchshield=enable_batchshield,
-        enable_pandacrypter=enable_pandacrypter,
-        enable_exorcism=enable_exorcism,
+        max_passes=max_passes, strip_undefined=strip_undefined, split_chains=split_chains,
+        enable_batcloak=enable_batcloak, enable_somalifuscator=enable_somalifuscator,
+        enable_oxidizer=enable_oxidizer, enable_abobus=enable_abobus,
+        enable_dosfuscation=enable_dosfuscation, enable_cradlecrafter=enable_cradlecrafter,
+        enable_bedecode=enable_bedecode, enable_batchshield=enable_batchshield,
+        enable_pandacrypter=enable_pandacrypter, enable_exorcism=enable_exorcism,
+        enable_batchtoapp=enable_batchtoapp, enable_machine1337=enable_machine1337,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, meta = engine.deobfuscate(text)
     meta["header_metadata"] = header_meta
+    if header_meta.get("is_machine1337"):
+        meta["machine1337_telemetry"]["is_machine1337"] = True
+        meta["machine1337_telemetry"]["header_stripped"] = True
+        meta["machine1337_telemetry"]["header_variant"] = header_meta.get("header_variant", "none")
+        meta["machine1337_telemetry"]["stripped_bytes"] = header_meta.get("stripped_bytes", 0)
+        if header_meta.get("cls_preamble_stripped"):
+            meta["machine1337_telemetry"]["cls_preamble_stripped"] = True
+    if enable_batchtoapp and b2a_pe.get("is_batchtoapp"):
+        meta["batchtoapp_pe"] = b2a_pe
     return clean_text, meta
+

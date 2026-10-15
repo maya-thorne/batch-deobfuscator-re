@@ -104,6 +104,11 @@ class PEBatchPackerForensics:
             off = self.raw.find(self.SEVENZIP_MAGIC)
             indicators.append(f"7zS2.sfx embedded 7-Zip archive header at file offset {hex(off)}")
 
+        if b"GeneratedWithBatchToApp" in self.raw or b"embeddedBatchScript" in self.raw:
+            family = "BatchToApp-DosX (.NET CLR Deflate ManifestResource Wrapper)"
+            off = self.raw.find(b"GeneratedWithBatchToApp") if b"GeneratedWithBatchToApp" in self.raw else self.raw.find(b"embeddedBatchScript")
+            indicators.append(f"BatchToApp-DosX marker detected at file offset {hex(off)}")
+
         return {
             "file": self.binary_path.name,
             "size_bytes": len(self.raw),
@@ -149,6 +154,21 @@ class PEBatchPackerForensics:
             clean_script, bedecode_meta = normalize_bedecode(info["extracted_script"])
             info["deobfuscated_script"] = clean_script
             info["bedecode_meta"] = bedecode_meta
+        return info
+
+    def unpack_batchtoapp_pe(self) -> Dict[str, Any]:
+        """
+        Statically inspects PE executable for BatchToApp / DosX .NET wrapper signatures,
+        extracts embedded Deflate-compressed batch scripts, and normalizes them.
+        """
+        import sys
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+        from deobfuscator.batchtoapp import inspect_batchtoapp_pe, normalize_batchtoapp
+        info = inspect_batchtoapp_pe(self.raw)
+        if info.get("has_embedded_script") and info.get("extracted_script"):
+            clean_script, b2a_meta = normalize_batchtoapp(info["extracted_script"])
+            info["deobfuscated_script"] = clean_script
+            info["batchtoapp_meta"] = b2a_meta
         return info
 
 

@@ -93,5 +93,45 @@ class TestBatchDeobfuscatorCLI(unittest.TestCase):
         self.assertEqual(res.returncode, 0)
         self.assertIn("--no-cradlecrafter", res.stdout)
 
+    def test_cli_no_batchtoapp_flag(self):
+        res = self.run_cli(["--help"])
+        self.assertEqual(res.returncode, 0)
+        self.assertIn("--no-batchtoapp", res.stdout)
+
+    def test_cli_batchtoapp_script_sample(self):
+        sample7 = self.samples_dir / "07_batchtoapp_dosx_sample.bat"
+        if not sample7.exists():
+            self.skipTest("sample7 not found")
+        res = self.run_cli([str(sample7), "--format", "json"])
+        self.assertEqual(res.returncode, 0)
+        data = json.loads(res.stdout)
+        self.assertIn("meta", data)
+        self.assertIn("cmd /c whoami", data["deobfuscated_script"])
+        b2at = data["meta"].get("batchtoapp_telemetry", {})
+        self.assertTrue(b2at.get("detected") or b2at.get("is_batchtoapp"))
+
+    def test_cli_batchtoapp_pe_forensics(self):
+        import zlib
+        from tests.test_batchtoapp import create_minimal_pe
+        payload = b"@shift /0\r\necho CLI PE Extraction Test\r\n:b2a_ExitProcess"
+        compressor = zlib.compressobj(level=9, method=zlib.DEFLATED, wbits=-15)
+        comp = compressor.compress(payload) + compressor.flush()
+        pe_bytes = create_minimal_pe(comp, app_id="feedbeef")
+        temp_pe = REPO_ROOT / "tests" / "temp_cli_test.exe"
+        try:
+            temp_pe.write_bytes(pe_bytes)
+            res = self.run_cli([str(temp_pe), "--format", "json", "-v"])
+            self.assertEqual(res.returncode, 0)
+            data = json.loads(res.stdout)
+            self.assertIn("echo CLI PE Extraction Test", data["deobfuscated_script"])
+            self.assertIn("batchtoapp_pe", data["meta"])
+            self.assertEqual(data["meta"]["batchtoapp_pe"]["app_id"], "feedbeef")
+            self.assertIn("BatchToApp PE Wrapper Forensics", res.stderr)
+        finally:
+            if temp_pe.exists():
+                temp_pe.unlink()
+
+
 if __name__ == "__main__":
     unittest.main()
+

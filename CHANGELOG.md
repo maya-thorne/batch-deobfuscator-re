@@ -5,7 +5,65 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.0] - 2026-10-15
+
+### Added
+- **batobfuscate-machine1337 Fake Header Neutralizer & Original Batch Recovery (`deobfuscator/machine1337.py`)**:
+  - Heuristic signature detection (`detect_machine1337_signatures`): classifies machine1337 fake headers and obfuscation artifacts across 5 indicators (multi-BOM sequence, CJK Chinese transcoded glyphs, inline caret spam, `&cls` preamble masking, and decoy header bytes) with quantitative confidence scoring.
+  - Multi-BOM binary header stripping (`strip_machine1337_header`, `neutralize_machine1337_headers`): identifies and strips composite UTF-16LE double-BOM patterns (`FF FE 26 63 6C 73 0D 0A FF FE 0A 0D`, CRLF, LF, Big-Endian variants) and corrupted UTF-8 replacement byte sequences (`\xef\xbf\xbd\xef\xbf\xbd&cls...`) without misclassifying single-BOM formats like BatCloak.
+  - CJK Chinese pseudo-text transcode recovery (`recover_cjk_transcoded_batch`): detects batch files incorrectly decoded by UTF-16LE editors (yielding glyphs such as `挦獬਍`), re-encodes to UTF-16LE binary bytes, strips the header trap, and cleanly reconstructs the original 8-bit ASCII batch script.
+  - Inline caret unescaping (`unescape_machine1337_carets`): unescapes redundant caret escape characters (`^`) outside quoted string literals while preserving escaped quotes and special control characters.
+  - Error suppression de-masking (`strip_cls_preamble`): purges `&cls & ` and `@cls & ` preambles used to mask parse error messages when batch scripts execute in `cmd.exe`.
+  - In-memory cryptographic buffer sanitization (`zeroize_bytes`, `zeroize_dict`): securely wipes binary header buffers, intermediate decodes, and forensic telemetry dictionaries prior to deallocation.
+  - `Machine1337Normalizer` production class exposing clean object-oriented normalization API with custom environment support.
+- **Dedicated Telemetry Module (`deobfuscator/telemetry.py`)**:
+  - Extracted telemetry collection, aggregation, formatting, and memory wiping logic from `deobfuscator/core.py` into a dedicated submodule to maintain strict codebase modularity (<700 lines).
+- **Dedicated machine1337 Verification Suite (`tests/test_machine1337.py`)**:
+  - Added 14 comprehensive unit and integration tests covering multi-BOM stripping (CRLF, LF, Big-Endian), corrupted UTF-8 replacement headers, CJK transcode recovery, caret unescaping, preamble de-masking, signature detection (positive/negative), memory zeroization, class interface methods, and end-to-end `BatchDeobfuscator` pipeline convergence (expanding the test suite to 244 tests).
+
+### Changed
+- Integrated machine1337 normalization into the core multi-pass convergence pipeline (`deobfuscator/core.py`, `deobfuscate_script`, `deobfuscate_bytes`) via `enable_machine1337=True` (executing pre-convergence in Step 0.55).
+- Updated standalone engine (`src/deobfuscator_engine.py`) with machine1337 normalization passes and parity.
+- Extended CLI toolchain (`deobfuscator/cli.py`) with `--no-machine1337` flag and verbose telemetry reporting for detected indicators, stripped headers, CJK transcoded recoveries, and unescaped carets.
+- Synchronized architecture mapping guide (`scripts/ARCHITECTURE_MAP.md`) and bumped package version across `package.json`, `pyproject.toml`, and `deobfuscator/__init__.py` to v1.13.0.
+
+### Fixed
+- **BatCloak Single-BOM False Positive Prevention**: Constrained `is_machine1337_header` byte matching to require trailing double-BOM signatures or specific corrupted UTF-8 headers, ensuring 8-byte BatCloak single-BOM scripts remain intact for BatCloak-specific processing.
+- **Quoted Literal Preservation in Caret Unescaper**: Added quote-state tracking to `unescape_machine1337_carets` to ensure caret characters inside string literals (`"..."`) are preserved without corruption.
+
+## [1.12.0] - 2026-10-14
+
+### Added
+- **BatchToApp / DosX Native Wrapper & Operator Deobfuscation Engine (`deobfuscator/batchtoapp.py`)**:
+  - Heuristic signature detection (`detect_batchtoapp_signatures`): classifies BatchToApp and DosX wrapper patterns across 6 indicators (wrapper header `@shift /0`, exit routine `:b2a_ExitProcess`, character noise slicing, mutation jump block, operator variables, and fake labels) with quantitative confidence scoring.
+  - Static PE forensics and embedded batch extraction (`extract_embedded_batch_from_pe`, `inspect_batchtoapp_pe`): triages .NET CLR executables without executing untrusted code, extracts DeflateStream resources matching RFC 1951 (-15 wbits) with fallback heuristic scanners, decodes CP866 / UTF-8 / Latin-1 payloads, and reports application GUID, window visibility, and anti-tamper filesystem flags.
+  - Character noise slicing neutralization (`strip_batchtoapp_noise_slices`): inverts `ObfuscateString` single-character variable slices (`^c%path:~40000,-40000%`) and joins caret line continuations (`^\r\n` / `^\n`).
+  - Mutation block & binary junk unwrapping (`strip_batchtoapp_mutation_block`): detects and prunes dead mutation jump preambles (`@goto <label> ... binary junk ... @exit /b ... :<label>`).
+  - Operator variable mapping & closing bracket resolution (`resolve_batchtoapp_operators`): harvests operator dictionaries (`%guard% @set <op_var>=^\n<op>`), inverts commands in script body, resolves closing bracket variable (`@set <bracket_var>=^)`), and strips declaration boilerplate.
+  - Fake label pruning (`prune_batchtoapp_fake_labels`): prunes unreferenced `:label_0x[0-9a-f]{8}` decoy labels inserted by `AddFakeLabels` while preserving valid execution targets.
+  - Wrapper header & exit routine normalization (`normalize_batchtoapp_headers`): removes `@shift /0` preamble and `:b2a_ExitProcess` wrapper footer.
+  - In-memory cryptographic buffer sanitization (`zeroize_dict`, `zeroize_bytes`): securely overwrites parsed operator tables, bytearrays, and forensic dictionaries prior to deallocation.
+  - `BatchToAppNormalizer` production class exposing clean object-oriented normalization API with custom environment support.
+- **Dedicated BatchToApp Verification Suite (`tests/test_batchtoapp.py`)**:
+  - Added 32 comprehensive unit and integration tests covering Deflate decompression, noise slicing stripping, mutation block unwrapping, operator mapping resolution, fake label pruning, header normalization, anti-tamper guards, dynamic jump dispatches, word-boundary preservation, NUL byte rejection, positive/negative signature detection, non-PE triage, synthetic BatchToApp PE generation and extraction, memory zeroization, class interface methods, and full `BatchDeobfuscator` pipeline convergence (expanding the test suite to 230 tests).
+
+### Changed
+- Integrated BatchToApp normalization into the core multi-pass convergence pipeline (`deobfuscator/core.py`, `deobfuscate_script`, `deobfuscate_bytes`) via `enable_batchtoapp=True` (executing pre-convergence in Step 0.72 and post-convergence in Step 4.95).
+- Added automatic PE embedded batch extraction in `deobfuscate_bytes()` when given PE executable bytes.
+- Updated standalone engine (`src/deobfuscator_engine.py`) with BatchToApp normalization passes and parity.
+- Extended CLI toolchain (`deobfuscator/cli.py`) with `--no-batchtoapp` / `--no-dosx` flags, automated PE triage extraction on `.exe` inputs, and verbose telemetry reporting for detected indicators, stripped noise slices, unwrapped mutation blocks, resolved operators, pruned fake labels, and extracted PE forensics metadata (`meta["batchtoapp_pe"]`).
+- Synchronized architecture mapping guide (`scripts/ARCHITECTURE_MAP.md`) and bumped package version across `package.json`, `pyproject.toml`, and `deobfuscator/__init__.py` to v1.12.0.
+
+### Fixed
+- **Anti-Tamper Temp Directory Header Guard Stripping**: Resolved fatal dangling jump where BatchToApp header normalizer stripped footer label `:b2a_ExitProcess` without removing the matching `@if not "%~dp0" == "%TEMP%\" goto b2a_ExitProcess` header guard, by expanding `normalize_batchtoapp_headers` and signature tracking to purge the check.
+- **Subroutine False-Positive Preservation in Mutation Stripper**: Constrained mutation block regex in `strip_batchtoapp_mutation_block` from generic `[a-zA-Z0-9_]+` to signature `label_0x[0-9a-fA-F]{8}`, preventing accidental deletion of legitimate user functions.
+- **Fake Label Dynamic Jump Target Preservation**: Added wildcard prefix/suffix matching (`goto :label_0x12%stage%`) to `prune_batchtoapp_fake_labels`, preventing premature pruning of active labels targeted by runtime dynamic dispatches.
+- **Set Variable and Comment False-Positive Exclusion**: Tokenized command lines across `&`/`|` and excluded `set` assignment targets and comments (`REM`, `::`) from label reference harvesting, ensuring truly unreferenced fake labels are pruned cleanly.
+- **PE Candidate Scoring & Alignment Robustness**: Added NUL byte (`\x00`) rejection to heuristic scoring, upgraded resource table scanner to select the maximum scoring candidate (`max(c[0]) >= 20`) with 4-byte alignment, avoiding redundant and fragile full-binary scans.
+
+
 ## [1.11.0] - 2026-10-14
+
 
 ### Added
 - **Exorcism Subroutine Label Jump & Control Flow Normalization Engine (`deobfuscator/exorcism.py`)**:

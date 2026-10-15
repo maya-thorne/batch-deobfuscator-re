@@ -22,6 +22,8 @@ try:
     from deobfuscator.batchshield import normalize_batchshield
     from deobfuscator.pandacrypter import normalize_pandacrypter
     from deobfuscator.exorcism import normalize_exorcism
+    from deobfuscator.batchtoapp import normalize_batchtoapp
+    from deobfuscator.machine1337 import normalize_machine1337
     HAS_SECURITY_MODULES = True
 except ImportError:
     try:
@@ -36,6 +38,8 @@ except ImportError:
         from deobfuscator.batchshield import normalize_batchshield
         from deobfuscator.pandacrypter import normalize_pandacrypter
         from deobfuscator.exorcism import normalize_exorcism
+        from deobfuscator.batchtoapp import normalize_batchtoapp
+        from deobfuscator.machine1337 import normalize_machine1337
         HAS_SECURITY_MODULES = True
     except ImportError:
         HAS_SECURITY_MODULES = False
@@ -46,6 +50,8 @@ class BatchDeobfuscator:
                  enable_abobus=True, enable_dosfuscation=True, enable_cradlecrafter=True,
                  enable_bedecode=True, enable_batchshield=True, enable_pandacrypter=True,
                  enable_exorcism=True,
+                 enable_batchtoapp=True,
+                 enable_machine1337=True,
                  eliminate_dead_code=True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
@@ -60,6 +66,8 @@ class BatchDeobfuscator:
         self.enable_batchshield = enable_batchshield
         self.enable_pandacrypter = enable_pandacrypter
         self.enable_exorcism = enable_exorcism
+        self.enable_batchtoapp = enable_batchtoapp
+        self.enable_machine1337 = enable_machine1337
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars = {}
         # Prepopulate default Windows environment variables commonly used for slicing
@@ -417,6 +425,10 @@ class BatchDeobfuscator:
         if self.enable_batcloak and HAS_SECURITY_MODULES:
             current, _ = strip_batcloak_random_vars(current)
 
+        # Step 0.55: batobfuscate-machine1337 fake header de-masking, CJK transcode & caret normalization
+        if self.enable_machine1337 and HAS_SECURITY_MODULES:
+            current, _ = normalize_machine1337(current, custom_env=self.env_vars)
+
         # Step 0.6: Somalifuscator Caesar cipher inversion and array normalization
         if self.enable_somalifuscator and HAS_SECURITY_MODULES:
             current, _ = normalize_somalifuscator(current, custom_env=self.env_vars)
@@ -424,6 +436,10 @@ class BatchDeobfuscator:
         # Step 0.7: 0xidiz3r zero-literal bootstrap resolution and alphabet normalization
         if self.enable_oxidizer and HAS_SECURITY_MODULES:
             current, _ = normalize_oxidizer(current, custom_env=self.env_vars)
+
+        # Step 0.72: BatchToApp / DosX native wrapper and operator table normalizer
+        if self.enable_batchtoapp and HAS_SECURITY_MODULES:
+            current, _ = normalize_batchtoapp(current, custom_env=self.env_vars)
 
         # Step 0.73: Exorcism control flow normalization, jump trampolines & opaque predicates
         if self.enable_exorcism and HAS_SECURITY_MODULES:
@@ -500,6 +516,10 @@ class BatchDeobfuscator:
         # Step 4.9: Post-convergence Exorcism control flow normalization for newly unmasked jumps
         if self.enable_exorcism and HAS_SECURITY_MODULES and ("goto :" in current.lower() or "call :" in current.lower() or "if 1==" in current):
             current, _ = normalize_exorcism(current, custom_env=self.env_vars)
+
+        # Step 4.95: Post-convergence BatchToApp check for newly unmasked operator variables or fake labels
+        if self.enable_batchtoapp and HAS_SECURITY_MODULES and (":label_0x" in current or "b2a_exitprocess" in current.lower() or "@shift /0" in current.lower() or ":~4" in current or ":~5" in current or "=^)" in current):
+            current, _ = normalize_batchtoapp(current, custom_env=self.env_vars)
 
         # Step 5: Dead Store Elimination for unreferenced variables and ephemeral aliases
         if self.eliminate_dead_code and HAS_SECURITY_MODULES:

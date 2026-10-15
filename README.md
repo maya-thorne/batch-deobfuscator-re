@@ -502,10 +502,11 @@ batch-deobfuscator-re/
 │   └── eval_corpus_runner.py              # 28-Corpus Automated Evaluation & Scoring Engine
 │
 ├── deobfuscator/                          # 🛠️ Production CLI Toolchain Package (python -m deobfuscator)
-│   ├── __init__.py                        # Package initialization, v1.11.0 & Public API exports
+│   ├── __init__.py                        # Package initialization, v1.13.0 & Public API exports
 │   ├── __main__.py                        # Direct module execution entrypoint (-m deobfuscator)
 │   ├── cli.py                             # Rich CLI Interface (argparse, JSON export, Diff, Verbose)
 │   ├── core.py                            # Multi-Pass Fixed-Point AST Convergence Loop Coordinator
+│   ├── telemetry.py                       # Telemetry & Structured Forensic Reporting Aggregator
 │   ├── batcloak.py                        # BatCloak Fake BOM De-masking & Random Variable Pruning
 │   ├── somalifuscator.py                  # Somalifuscator Caesar Inversion & KDOT Array Slicing
 │   ├── oxidizer.py                        # 0xidiz3r Zero-Literal Bootstrap & Reversible Alphabet Inversion
@@ -516,6 +517,8 @@ batch-deobfuscator-re/
 │   ├── batchshield.py                     # BatchShield Symbol Table & Compound Env Chain Resolver
 │   ├── pandacrypter.py                    # PandaCrypter & Certutil Stager Deobfuscator
 │   ├── exorcism.py                        # Exorcism Control Flow Normalizer, Trampolines & Opaque Predicates
+│   ├── batchtoapp.py                      # BatchToApp / DosX Native Wrapper & Operator Deobfuscation
+│   ├── machine1337.py                     # batobfuscate-machine1337 Header Neutralizer & CJK Forensics
 │   ├── normalizers.py                     # Carets, Quotes, &-Splits, Undefined Vars, Env Slicing
 │   └── diff.py                            # Terminal ANSI 256-Color Unified Diff Renderer
 │
@@ -524,7 +527,7 @@ batch-deobfuscator-re/
 │   └── pe_packer_forensics.py             # Ghidra-Derived Static PE Unpacker (UPX, LZMA, XOR)
 │
 ├── docs/                                  # 🌐 Documentation Hub & Multi-Language Assets
-│   ├── whitepapers/                       # 🔬 9 Flagship Technical & Forensic Reverse Engineering Papers
+│   ├── whitepapers/                       # 9 Flagship Technical & Forensic Reverse Engineering Papers
 │   ├── locales/                           # 🌍 10-Language Localized Documentation Hub (ko, zh, es, etc.)
 │   └── assets/                            # 🎨 Localized Architecture SVGs & Terminal Animation Demo
 │
@@ -532,13 +535,22 @@ batch-deobfuscator-re/
 │   ├── sigma_batch_obfuscation.yml        # Sigma Rules for Caret Evasion, Env Slicing, Exorcism Detours
 │   └── yara_batch_obfuscation.yar         # YARA Signatures for BOM Traps, Somalifuscator, UPX Wrappers
 │
-├── tests/                                 # ✅ Automated Verification Test Suites (85 Tests Total)
+├── tests/                                 # ✅ Automated Verification Test Suites (244 Tests Total)
+│   ├── test_machine1337.py                # 14 batobfuscate-machine1337 Header, CJK & Caret Tests
+│   ├── test_batchtoapp.py                 # 16 BatchToApp / DosX Wrapper & Operator Tests
+│   ├── test_exorcism.py                   # 21 Exorcism CFG Linearization, Trampoline & Predicate Tests
+│   ├── test_pandacrypter.py               # 19 PandaCrypter & Certutil Stager Decoding Tests
+│   ├── test_batchshield.py                # 13 BatchShield Symbol Table & Env Chain Tests
+│   ├── test_bedecode.py                   # 12 BEDeCode Onion Stub Peeling & PE Forensics Tests
+│   ├── test_cradlecrafter.py              # 16 Invoke-CradleCrafter Stager Recovery Tests
+│   ├── test_dosfuscation.py               # 14 Invoke-DOSfuscation Bohannon Loop Unwrapping Tests
+│   ├── test_abobus.py                     # 15 Abobus Unicode Noise & Substring Dictionary Tests
 │   ├── test_oxidizer.py                   # 10 0xidiz3r Zero-Literal Bootstrap & Reversible Alphabet Tests
 │   ├── test_somalifuscator.py             # 12 Somalifuscator Caesar Inversion & KDOT Array Tests
 │   ├── test_batcloak.py                   # 11 BatCloak, Fake BOM Neutralization & DSE Tests
-│   ├── test_benchmark_runner.py           # 42 Benchmark Suite, Metrics Schema & Scoring Tests
-│   ├── test_cli.py                        # 6 CLI Flags, Output Modes, Diff & JSON Telemetry Tests
-│   └── test_suite.py                      # 4 Core AST Convergence & PE Static Unpacking Tests
+│   ├── test_benchmark_runner.py           # 52 Benchmark Suite, Metrics Schema & Scoring Tests
+│   ├── test_cli.py                        # 15 CLI Flags, Output Modes, Diff & JSON Telemetry Tests
+│   └── test_suite.py                      # 14 Core AST Convergence & PE Static Unpacking Tests
 │
 ├── samples/                               # 🧪 6 Classic & Modern Obfuscated Batch Test Vectors
 │   ├── 01_env_slicing_sample.bat          # Dynamic substring slicing (%VAR:~offset,len%)
