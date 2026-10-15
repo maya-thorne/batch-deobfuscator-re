@@ -108,8 +108,29 @@ from .exorcism import (
     emulate_exorcism_dispatch,
     export_exorcism_trace,
 )
+from .batchtoapp import (
+    BatchToAppNormalizer,
+    normalize_batchtoapp,
+    detect_batchtoapp_signatures,
+    inspect_batchtoapp_pe,
+    extract_embedded_batch_from_pe,
+    strip_batchtoapp_noise_slices,
+    strip_batchtoapp_mutation_block,
+    resolve_batchtoapp_operators,
+    prune_batchtoapp_fake_labels,
+    normalize_batchtoapp_headers,
+)
+from .machine1337 import (
+    Machine1337Normalizer,
+    normalize_machine1337,
+    detect_machine1337_signatures,
+    neutralize_machine1337_headers,
+    recover_cjk_transcoded_batch,
+    is_machine1337_header,
+    normalize_machine1337_carets_and_preamble,
+)
 
-__version__ = "1.11.0"
+__version__ = "1.13.0"
 __author__ = "Maya Thorne"
 __all__ = [
     "BatchDeobfuscator",
@@ -197,4 +218,22 @@ __all__ = [
     "prune_unreachable_blocks",
     "emulate_exorcism_dispatch",
     "export_exorcism_trace",
+    "BatchToAppNormalizer",
+    "normalize_batchtoapp",
+    "detect_batchtoapp_signatures",
+    "inspect_batchtoapp_pe",
+    "extract_embedded_batch_from_pe",
+    "strip_batchtoapp_noise_slices",
+    "strip_batchtoapp_mutation_block",
+    "resolve_batchtoapp_operators",
+    "prune_batchtoapp_fake_labels",
+    "normalize_batchtoapp_headers",
+    "Machine1337Normalizer",
+    "normalize_machine1337",
+    "detect_machine1337_signatures",
+    "neutralize_machine1337_headers",
+    "recover_cjk_transcoded_batch",
+    "is_machine1337_header",
+    "normalize_machine1337_carets_and_preamble",
 ]
+

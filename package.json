@@ -1,6 +1,6 @@
 {
   "name": "batch-deobfuscator-re",
-  "version": "1.11.0",
+  "version": "1.13.0",
   "description": "Windows Batch Multi-Pass Deobfuscator Engine, Ghidra PE Unpacker Forensics & 48+ Reference Archive",
   "scripts": {
     "verify-assets": "node scripts/verify_assets.mjs",
@@ -23,7 +23,11 @@
     "batchshield",
     "pandacrypter",
     "certutil",
-    "exorcism"
+    "exorcism",
+    "batchtoapp",
+    "dosx",
+    "machine1337",
+    "batobfuscate"
   ],
   "author": "Maya Thorne",
   "license": "Apache-2.0"
