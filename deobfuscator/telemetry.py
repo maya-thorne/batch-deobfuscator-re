@@ -55,6 +55,9 @@ def assemble_deobfuscator_metadata(
     cmd_deobfuscator_meta: Optional[Dict[str, Any]] = None,
     cmd_deobfuscator_sig: Optional[Dict[str, Any]] = None,
     enable_cmd_deobfuscator: bool = True,
+    simple_obfuscator_meta: Optional[Dict[str, Any]] = None,
+    simple_obfuscator_sig: Optional[Dict[str, Any]] = None,
+    enable_simple_obfuscator: bool = True,
 ) -> Dict[str, Any]:
     """Assemble complete forensic telemetry across all specialized deobfuscator engines."""
     return {
@@ -203,5 +206,19 @@ def assemble_deobfuscator_metadata(
             "empty_quotes_stripped_count": 0,
             "nested_cmds_flattened_count": 0,
             "delimiters_normalized_count": 0,
+        },
+        "simple_obfuscator_telemetry": simple_obfuscator_meta or {
+            "signatures": simple_obfuscator_sig or {},
+            "is_simple_obfuscator": simple_obfuscator_sig.get("is_simple_obfuscator", False) if enable_simple_obfuscator and simple_obfuscator_sig else False,
+            "confidence": simple_obfuscator_sig.get("confidence", 0.0) if enable_simple_obfuscator and simple_obfuscator_sig else 0.0,
+            "indicators": simple_obfuscator_sig.get("indicators", []) if enable_simple_obfuscator and simple_obfuscator_sig else [],
+            "delayed_expansion_normalized": False,
+            "dynamic_set_aliases": [],
+            "chunks_harvested_count": 0,
+            "chunks_assembled_count": 0,
+            "assembled_command": None,
+            "decoded_powershell": None,
+            "undefined_vars_stripped_count": 0,
+            "stripped_variable_names": [],
         },
     }

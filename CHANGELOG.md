@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.0] - 2026-10-16
+
+### Added
+- **simple-batch-obfuscator Infiltration Normalizer & Chunk Reassembly Engine (`deobfuscator/simple_obfuscator.py`)**:
+  - Heuristic signature detection (`detect_simple_obfuscator_signatures`): identifies David Niessen's simple-batch-obfuscator patterns across 5 indicator categories (character-level variable infiltration chains, multi-token delayed expansion noise, dynamic `set` keyword synthesis, dynamic statement dispatch clustering, and chunk concatenation lines) with quantitative confidence scoring and 0xidiz3r zero-literal bootstrap exclusions.
+  - Delayed execution string restoration (`normalize_delayed_execution_string`): restores fragmented `setlocal enabledelayedexpansion` statements scattered across multi-token variable noise wrappers (`%var%s%var%...%e%var%...%n%var%`).
+  - Dynamic `set` keyword alias resolution (`resolve_dynamic_set_aliases`): tracks character variables (`set "v1=s"`, `set "v2=t"`), identifies composite assignments (`set "alias=!v1!e!v2!"`), and unmasks invocations (`!alias! "var=chunk"` -> `set "var=chunk"`).
+  - Multi-variable chunk reassembly (`extract_and_assemble_chunks`): harvests variable chunks from assignments, identifies the terminal concatenation line, and substitutes chunk variables while preserving literal command tokens, spaces, and flags.
+  - PowerShell Base64 UTF-16LE stager decoding: automatically extracts and decodes Base64 UTF-16LE payloads from assembled `-EncodedCommand` and `-enc` stagers.
+  - Multi-pass undefined variable noise elimination (`strip_undefined_variable_noise`): strips random dummy variable tokens (`%random_chaff%`) interspersed between individual characters while strictly safeguarding defined environment parameters, script arguments (`%~dp0`, `%0`..`%9`), and substring slicing expressions.
+  - In-memory cryptographic buffer sanitization (`zeroize_dict`, `zeroize_bytes`): securely wipes harvested chunk tables, stager decodes, and forensic telemetry dictionaries prior to deallocation.
+  - `SimpleObfuscatorNormalizer` production class and `normalize_simple_obfuscator` functional wrapper.
+- **Dedicated simple-batch-obfuscator Verification Suite (`tests/test_simple_obfuscator.py`)**:
+  - Added 13 comprehensive unit and integration tests covering signature detection, delayed expansion normalization, dynamic set alias resolution, undefined variable stripping with slicing protection, chunk reassembly, Base64 UTF-16LE PowerShell stager extraction, memory zeroization, class and functional wrappers, Corpus 14 parity, and reference README sample parsing (expanding the test suite to 270 tests).
+
+### Changed
+- Integrated simple-batch-obfuscator into core multi-pass convergence pipeline (`deobfuscator/core.py`, `deobfuscate_script`, `deobfuscate_bytes`) via `enable_simple_obfuscator=True` (executing in Step 0.52).
+- Updated telemetry aggregator (`deobfuscator/telemetry.py`) with `simple_obfuscator_telemetry` metrics.
+- Extended CLI toolchain (`deobfuscator/cli.py`) with `--no-simple-obfuscator` flag and verbose telemetry reporting.
+- Updated standalone engine (`src/deobfuscator_engine.py`) with simple-batch-obfuscator normalization passes and parity.
+- Updated architecture map (`scripts/ARCHITECTURE_MAP.md`) and bumped package version across `package.json`, `pyproject.toml`, and `deobfuscator/__init__.py` to v1.15.0.
+
 ## [1.14.0] - 2026-10-16
 
 ### Added

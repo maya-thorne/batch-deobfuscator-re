@@ -434,6 +434,11 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
       <td align="center"><code>False</code></td>
     </tr>
     <tr>
+      <td><code>--no-simple-obfuscator</code></td>
+      <td>Disable simple-batch-obfuscator random var infiltration stripping, delayed string restoration, and chunk reassembly</td>
+      <td align="center"><code>False</code></td>
+    </tr>
+    <tr>
       <td><code>--no-dse</code></td>
       <td>Disable Dead Store Elimination (DSE) for unreferenced temporary variables</td>
       <td align="center"><code>False</code></td>
@@ -446,7 +451,7 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
     <tr>
       <td><code>--version</code></td>
       <td>Display engine version, release tag, and author attribution</td>
-      <td align="center"><code>1.14.0</code></td>
+      <td align="center"><code>1.15.0</code></td>
     </tr>
   </tbody>
 </table>

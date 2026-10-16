@@ -24,6 +24,8 @@ try:
     from deobfuscator.exorcism import normalize_exorcism
     from deobfuscator.batchtoapp import normalize_batchtoapp
     from deobfuscator.machine1337 import normalize_machine1337
+    from deobfuscator.cmd_deobfuscator import normalize_cmd_deobfuscator
+    from deobfuscator.simple_obfuscator import normalize_simple_obfuscator
     HAS_SECURITY_MODULES = True
 except ImportError:
     try:
@@ -40,6 +42,8 @@ except ImportError:
         from deobfuscator.exorcism import normalize_exorcism
         from deobfuscator.batchtoapp import normalize_batchtoapp
         from deobfuscator.machine1337 import normalize_machine1337
+        from deobfuscator.cmd_deobfuscator import normalize_cmd_deobfuscator
+        from deobfuscator.simple_obfuscator import normalize_simple_obfuscator
         HAS_SECURITY_MODULES = True
     except ImportError:
         HAS_SECURITY_MODULES = False
@@ -52,6 +56,8 @@ class BatchDeobfuscator:
                  enable_exorcism=True,
                  enable_batchtoapp=True,
                  enable_machine1337=True,
+                 enable_cmd_deobfuscator=True,
+                 enable_simple_obfuscator=True,
                  eliminate_dead_code=True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
@@ -68,6 +74,8 @@ class BatchDeobfuscator:
         self.enable_exorcism = enable_exorcism
         self.enable_batchtoapp = enable_batchtoapp
         self.enable_machine1337 = enable_machine1337
+        self.enable_cmd_deobfuscator = enable_cmd_deobfuscator
+        self.enable_simple_obfuscator = enable_simple_obfuscator
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars = {}
         # Prepopulate default Windows environment variables commonly used for slicing
@@ -425,6 +433,10 @@ class BatchDeobfuscator:
         if self.enable_batcloak and HAS_SECURITY_MODULES:
             current, _ = strip_batcloak_random_vars(current)
 
+        # Step 0.52: simple-batch-obfuscator random variable fragment infiltration & chunk assembly
+        if self.enable_simple_obfuscator and HAS_SECURITY_MODULES:
+            current, _ = normalize_simple_obfuscator(current, custom_env=self.env_vars)
+
         # Step 0.55: batobfuscate-machine1337 fake header de-masking, CJK transcode & caret normalization
         if self.enable_machine1337 and HAS_SECURITY_MODULES:
             current, _ = normalize_machine1337(current, custom_env=self.env_vars)
@@ -468,6 +480,10 @@ class BatchDeobfuscator:
         # Step 0.79: Invoke-CradleCrafter PowerShell stager reconstruction & Base64 decoding
         if self.enable_cradlecrafter and HAS_SECURITY_MODULES:
             current, _ = normalize_cradlecrafter(current, custom_env=self.env_vars)
+
+        # Step 0.795: CMD-DeObfuscator chained variables, quote widening, and nested cmd flattening
+        if self.enable_cmd_deobfuscator and HAS_SECURITY_MODULES:
+            current, _ = normalize_cmd_deobfuscator(current, custom_env=self.env_vars)
 
         # Pre-scan symbol table across script
         for line in current.splitlines():

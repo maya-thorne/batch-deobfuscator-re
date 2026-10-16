@@ -141,8 +141,17 @@ from .cmd_deobfuscator import (
     flatten_nested_cmd,
     normalize_delimiters_outside_quotes,
 )
+from .simple_obfuscator import (
+    SimpleObfuscatorNormalizer,
+    normalize_simple_obfuscator,
+    detect_simple_obfuscator_signatures,
+    strip_undefined_variable_noise,
+    normalize_delayed_execution_string,
+    resolve_dynamic_set_aliases,
+    extract_and_assemble_chunks,
+)
 
-__version__ = "1.14.0"
+__version__ = "1.15.0"
 __author__ = "Maya Thorne"
 __all__ = [
     "BatchDeobfuscator",
@@ -257,5 +266,12 @@ __all__ = [
     "strip_empty_quote_pairs",
     "flatten_nested_cmd",
     "normalize_delimiters_outside_quotes",
+    "SimpleObfuscatorNormalizer",
+    "normalize_simple_obfuscator",
+    "detect_simple_obfuscator_signatures",
+    "strip_undefined_variable_noise",
+    "normalize_delayed_execution_string",
+    "resolve_dynamic_set_aliases",
+    "extract_and_assemble_chunks",
 ]
 
