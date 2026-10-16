@@ -52,6 +52,9 @@ def assemble_deobfuscator_metadata(
     machine1337_meta: Optional[Dict[str, Any]],
     machine1337_sig: Dict[str, Any],
     enable_machine1337: bool,
+    cmd_deobfuscator_meta: Optional[Dict[str, Any]] = None,
+    cmd_deobfuscator_sig: Optional[Dict[str, Any]] = None,
+    enable_cmd_deobfuscator: bool = True,
 ) -> Dict[str, Any]:
     """Assemble complete forensic telemetry across all specialized deobfuscator engines."""
     return {
@@ -187,5 +190,18 @@ def assemble_deobfuscator_metadata(
             "cls_preamble_stripped": False,
             "carets_normalized": 0,
             "encoding_used": "utf-8",
+        },
+        "cmd_deobfuscator_telemetry": cmd_deobfuscator_meta or {
+            "signatures": cmd_deobfuscator_sig or {},
+            "is_cmd_deobfuscator": cmd_deobfuscator_sig.get("is_cmd_deobfuscator", False) if enable_cmd_deobfuscator and cmd_deobfuscator_sig else False,
+            "confidence": cmd_deobfuscator_sig.get("confidence", 0.0) if enable_cmd_deobfuscator and cmd_deobfuscator_sig else 0.0,
+            "indicators": cmd_deobfuscator_sig.get("indicators", []) if enable_cmd_deobfuscator and cmd_deobfuscator_sig else [],
+            "chains_resolved_count": 0,
+            "cycles_detected_count": 0,
+            "delayed_expansions_resolved": 0,
+            "quotes_widened_count": 0,
+            "empty_quotes_stripped_count": 0,
+            "nested_cmds_flattened_count": 0,
+            "delimiters_normalized_count": 0,
         },
     }

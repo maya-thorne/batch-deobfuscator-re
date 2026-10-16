@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.0] - 2026-10-16
+
+### Added
+- **CMD-DeObfuscator Multi-Level Chained Environment Variable & Syntax Normalizer (`deobfuscator/cmd_deobfuscator.py`)**:
+  - Chained environment variable dependency graph resolution & topological solver (`build_variable_dependency_graph`, `resolve_chained_environment_variables`): extracts variable dependencies across script statements, builds directed dependency graphs, and iteratively computes fixed-point expansions.
+  - Cycle detection & loop guards: uses DFS state tracking to identify direct self-references (`set a=%a%x`) and mutual dependency cycles (`set a=%b%` / `set b=%a%`), bounding recursion depth to safely resolve DAG components without hanging or overflowing the stack.
+  - Delayed expansion resolution (`eval_delayed_expansion`): handles `!VAR!`, substring slices `!VAR:~start,len!`, and dynamic substitutions `!VAR:old=new!` / `!VAR:*old=new!`.
+  - Token quote widening (`widen_token_quotes`): identifies fragmented internal quotes injected into commands (`w"s"c"r"i"p"t` -> `"wscript"`, `h"t"t"p"` -> `"http"`, `c"al"c.exe` -> `"calc.exe"`) and widens quotes to clean token boundaries while strictly preserving cleanly quoted strings (`"hello world"`) and `set` variable definitions.
+  - Empty quote pair stripping (`strip_empty_quote_pairs`): purges word-internal double quote pairs (`pow""ersh""ell` -> `powershell`) while retaining intentional empty arguments.
+  - Redundant nested `cmd.exe` flattening (`flatten_nested_cmd`): unwraps multi-layered `cmd.exe` and `%comspec%` wrapper shells (`cmd /c cmd /c "whoami"` -> `whoami`, `cmd cmd cmd calc.exe` -> `calc.exe`).
+  - Delimiter and comma normalization outside quotes (`normalize_delimiters_outside_quotes`): normalizes redundant clusters of commas, semicolons, and spaces (`cmd , , ,` -> `cmd`, `cmd , , , /c , , whoami` -> `cmd /c whoami`) outside quoted strings and variable expressions (`%VAR%`, `!VAR!`).
+  - Heuristic signature detection (`detect_cmd_deobfuscator_signatures`): classifies CMD-DeObfuscator artifacts across 5 indicator categories with confidence metrics.
+  - In-memory cryptographic buffer sanitization (`zeroize_dict`, `zeroize_bytes`): wipes harvested symbol tables and telemetry buffers.
+  - `CMDDeobfuscatorNormalizer` production class and `normalize_cmd_deobfuscator` functional wrapper.
+- **Dedicated CMD-DeObfuscator Verification Suite (`tests/test_cmd_deobfuscator.py`)**:
+  - Added 13 comprehensive unit and integration tests covering quote widening, empty quote stripping, nested cmd flattening, delimiter normalization outside quotes and variables, delayed expansion, chained variable topological resolution, cycle guards, signature detection, memory zeroization, class and functional wrappers, and full `BatchDeobfuscator` pipeline convergence (expanding the test suite to 257 tests).
+
+### Changed
+- Integrated CMD-DeObfuscator into core multi-pass convergence pipeline (`deobfuscator/core.py`, `deobfuscate_script`, `deobfuscate_bytes`) via `enable_cmd_deobfuscator=True` (executing in Step 0.795).
+- Updated telemetry aggregator (`deobfuscator/telemetry.py`) with `cmd_deobfuscator_telemetry` metrics.
+- Extended CLI toolchain (`deobfuscator/cli.py`) with `--no-cmd-deobfuscator` flag and verbose telemetry reporting.
+- Updated architecture map (`scripts/ARCHITECTURE_MAP.md`) and bumped package version across `package.json`, `pyproject.toml`, and `deobfuscator/__init__.py` to v1.14.0.
+
 ## [1.13.0] - 2026-10-15
 
 ### Added
