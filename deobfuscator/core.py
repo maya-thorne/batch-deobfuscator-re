@@ -85,6 +85,11 @@ from .cmd_deobfuscator import (
     detect_cmd_deobfuscator_signatures,
     CMDDeobfuscatorNormalizer,
 )
+from .simple_obfuscator import (
+    normalize_simple_obfuscator,
+    detect_simple_obfuscator_signatures,
+    SimpleObfuscatorNormalizer,
+)
 from .telemetry import assemble_deobfuscator_metadata
 
 
@@ -154,6 +159,7 @@ class BatchDeobfuscator:
                  enable_pandacrypter: bool = True, enable_exorcism: bool = True,
                  enable_batchtoapp: bool = True, enable_machine1337: bool = True,
                  enable_cmd_deobfuscator: bool = True,
+                 enable_simple_obfuscator: bool = True,
                  eliminate_dead_code: bool = True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
@@ -171,6 +177,7 @@ class BatchDeobfuscator:
         self.enable_batchtoapp = enable_batchtoapp
         self.enable_machine1337 = enable_machine1337
         self.enable_cmd_deobfuscator = enable_cmd_deobfuscator
+        self.enable_simple_obfuscator = enable_simple_obfuscator
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars: Dict[str, str] = dict(self.DEFAULT_ENV)
         if custom_env:
@@ -350,6 +357,7 @@ class BatchDeobfuscator:
         batchtoapp_sig = detect_batchtoapp_signatures(script_text) if self.enable_batchtoapp else {"is_batchtoapp": False, "confidence": 0.0, "indicators": []}
         machine1337_sig = detect_machine1337_signatures(None, script_text) if self.enable_machine1337 else {"is_machine1337": False, "confidence": 0.0, "indicators": []}
         cmd_deobfuscator_sig = detect_cmd_deobfuscator_signatures(script_text) if self.enable_cmd_deobfuscator else {"is_cmd_deobfuscator": False, "confidence": 0.0, "indicators": []}
+        simple_obfuscator_sig = detect_simple_obfuscator_signatures(script_text) if self.enable_simple_obfuscator else {"is_simple_obfuscator": False, "confidence": 0.0, "indicators": []}
         removed_random_vars: List[str] = []
         eliminated_dead_vars: List[str] = []
         somalifuscator_meta: Dict[str, Any] = {}
@@ -357,6 +365,7 @@ class BatchDeobfuscator:
         batchtoapp_meta: Dict[str, Any] = {}
         machine1337_meta: Dict[str, Any] = {}
         cmd_deobfuscator_meta: Dict[str, Any] = {}
+        simple_obfuscator_meta: Dict[str, Any] = {}
         exorcism_meta: Dict[str, Any] = {}
         abobus_meta: Dict[str, Any] = {}
         batchshield_meta: Dict[str, Any] = {}
@@ -372,6 +381,10 @@ class BatchDeobfuscator:
         # Step 0.5: BatCloak random variable pre-filtering
         if self.enable_batcloak:
             curr_text, removed_random_vars = strip_batcloak_random_vars(curr_text)
+
+        # Step 0.52: simple-batch-obfuscator random variable fragment infiltration & chunk assembly
+        if self.enable_simple_obfuscator:
+            curr_text, simple_obfuscator_meta = normalize_simple_obfuscator(curr_text, custom_env=self.env_vars)
 
         # Step 0.55: batobfuscate-machine1337 fake header de-masking, CJK transcode & caret normalization
         if self.enable_machine1337:
@@ -585,6 +598,9 @@ class BatchDeobfuscator:
             cmd_deobfuscator_meta=cmd_deobfuscator_meta,
             cmd_deobfuscator_sig=cmd_deobfuscator_sig,
             enable_cmd_deobfuscator=self.enable_cmd_deobfuscator,
+            simple_obfuscator_meta=simple_obfuscator_meta,
+            simple_obfuscator_sig=simple_obfuscator_sig,
+            enable_simple_obfuscator=self.enable_simple_obfuscator,
         )
 
         return curr_text, metadata
@@ -598,6 +614,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
                        enable_batchshield: bool = True, enable_pandacrypter: bool = True,
                        enable_exorcism: bool = True, enable_batchtoapp: bool = True,
                        enable_machine1337: bool = True, enable_cmd_deobfuscator: bool = True,
+                       enable_simple_obfuscator: bool = True,
                        eliminate_dead_code: bool = True) -> str:
     """Convenience helper to deobfuscate a script and return clean string."""
     engine = BatchDeobfuscator(
@@ -609,6 +626,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
         enable_pandacrypter=enable_pandacrypter, enable_exorcism=enable_exorcism,
         enable_batchtoapp=enable_batchtoapp, enable_machine1337=enable_machine1337,
         enable_cmd_deobfuscator=enable_cmd_deobfuscator,
+        enable_simple_obfuscator=enable_simple_obfuscator,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, _ = engine.deobfuscate(script_text)
@@ -624,6 +642,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
                       enable_exorcism: bool = True, enable_batchtoapp: bool = True,
                       enable_machine1337: bool = True,
                       enable_cmd_deobfuscator: bool = True,
+                      enable_simple_obfuscator: bool = True,
                       eliminate_dead_code: bool = True) -> Tuple[str, Dict[str, Any]]:
     """
     Deobfuscate raw batch file bytes, neutralizing fake UTF-16LE BOM headers and decoys.
@@ -650,6 +669,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
         enable_pandacrypter=enable_pandacrypter, enable_exorcism=enable_exorcism,
         enable_batchtoapp=enable_batchtoapp, enable_machine1337=enable_machine1337,
         enable_cmd_deobfuscator=enable_cmd_deobfuscator,
+        enable_simple_obfuscator=enable_simple_obfuscator,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, meta = engine.deobfuscate(text)

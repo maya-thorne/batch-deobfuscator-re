@@ -158,6 +158,12 @@ Engineered by Maya Thorne.
     )
 
     parser.add_argument(
+        "--no-simple-obfuscator",
+        action="store_true",
+        help="Disable simple-batch-obfuscator random variable fragment infiltration and chunk assembly"
+    )
+
+    parser.add_argument(
         "--no-dse",
         action="store_true",
         help="Disable Dead Store Elimination (DSE) for unreferenced variables"
@@ -228,6 +234,7 @@ def main(args=None) -> int:
         enable_batchtoapp=not opts.no_batchtoapp,
         enable_machine1337=not opts.no_machine1337,
         enable_cmd_deobfuscator=not opts.no_cmd_deobfuscator,
+        enable_simple_obfuscator=not opts.no_simple_obfuscator,
         eliminate_dead_code=not opts.no_dse
     )
     clean_text, meta = engine.deobfuscate(script_text)
@@ -418,6 +425,19 @@ def main(args=None) -> int:
                 sys.stderr.write(f"     • Flattened nested cmd.exe wrappers: {cdt['nested_cmds_flattened_count']} layers\n")
             if cdt.get("delimiters_normalized_count"):
                 sys.stderr.write(f"     • Normalized delimiter clusters: {cdt['delimiters_normalized_count']} lines\n")
+        sot = meta.get("simple_obfuscator_telemetry", {})
+        if sot.get("is_simple_obfuscator") or sot.get("chunks_assembled_count", 0) > 0 or sot.get("undefined_vars_stripped_count", 0) > 0:
+            sig = sot.get("signatures", {})
+            sys.stderr.write(f"  ↳ simple-batch-obfuscator Detected: True (Confidence: {sot.get('confidence', sig.get('confidence', 0.0))})\n")
+            if sot.get("indicators"):
+                sys.stderr.write(f"     • Indicators: {', '.join(sot['indicators'])}\n")
+            if sot.get("chunks_assembled_count"):
+                sys.stderr.write(f"     • Reassembled variable chunks: {sot['chunks_assembled_count']}\n")
+            if sot.get("undefined_vars_stripped_count"):
+                sys.stderr.write(f"     • Undefined variable noise stripped: {sot['undefined_vars_stripped_count']}\n")
+            if sot.get("decoded_powershell"):
+                preview = sot['decoded_powershell'].replace('\n', ' ')[:70]
+                sys.stderr.write(f"     • Decoded PowerShell stager payload: {preview}...\n")
         if meta.get("batchtoapp_pe"):
             bpe = meta["batchtoapp_pe"]
             sys.stderr.write(f"  ↳ BatchToApp PE Wrapper Forensics:\n")
