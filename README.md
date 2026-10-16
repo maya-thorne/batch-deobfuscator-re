@@ -419,6 +419,21 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
       <td align="center"><code>False</code></td>
     </tr>
     <tr>
+      <td><code>--no-batchtoapp</code></td>
+      <td>Disable BatchToApp / DosX native wrapper and operator table deobfuscation</td>
+      <td align="center"><code>False</code></td>
+    </tr>
+    <tr>
+      <td><code>--no-machine1337</code></td>
+      <td>Disable batobfuscate-machine1337 fake header de-masking and CJK transcode recovery</td>
+      <td align="center"><code>False</code></td>
+    </tr>
+    <tr>
+      <td><code>--no-cmd-deobfuscator</code></td>
+      <td>Disable CMD-DeObfuscator chained env resolution, quote widening and nested cmd flattening</td>
+      <td align="center"><code>False</code></td>
+    </tr>
+    <tr>
       <td><code>--no-dse</code></td>
       <td>Disable Dead Store Elimination (DSE) for unreferenced temporary variables</td>
       <td align="center"><code>False</code></td>
@@ -431,7 +446,7 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
     <tr>
       <td><code>--version</code></td>
       <td>Display engine version, release tag, and author attribution</td>
-      <td align="center"><code>1.11.0</code></td>
+      <td align="center"><code>1.14.0</code></td>
     </tr>
   </tbody>
 </table>

@@ -129,8 +129,20 @@ from .machine1337 import (
     is_machine1337_header,
     normalize_machine1337_carets_and_preamble,
 )
+from .cmd_deobfuscator import (
+    CMDDeobfuscatorNormalizer,
+    normalize_cmd_deobfuscator,
+    detect_cmd_deobfuscator_signatures,
+    resolve_chained_environment_variables,
+    build_variable_dependency_graph,
+    eval_delayed_expansion,
+    widen_token_quotes,
+    strip_empty_quote_pairs,
+    flatten_nested_cmd,
+    normalize_delimiters_outside_quotes,
+)
 
-__version__ = "1.13.0"
+__version__ = "1.14.0"
 __author__ = "Maya Thorne"
 __all__ = [
     "BatchDeobfuscator",
@@ -235,5 +247,15 @@ __all__ = [
     "recover_cjk_transcoded_batch",
     "is_machine1337_header",
     "normalize_machine1337_carets_and_preamble",
+    "CMDDeobfuscatorNormalizer",
+    "normalize_cmd_deobfuscator",
+    "detect_cmd_deobfuscator_signatures",
+    "resolve_chained_environment_variables",
+    "build_variable_dependency_graph",
+    "eval_delayed_expansion",
+    "widen_token_quotes",
+    "strip_empty_quote_pairs",
+    "flatten_nested_cmd",
+    "normalize_delimiters_outside_quotes",
 ]
 

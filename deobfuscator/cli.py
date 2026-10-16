@@ -152,6 +152,12 @@ Engineered by Maya Thorne.
     )
 
     parser.add_argument(
+        "--no-cmd-deobfuscator",
+        action="store_true",
+        help="Disable CMD-DeObfuscator chained env variable resolution, quote widening and nested cmd flattening"
+    )
+
+    parser.add_argument(
         "--no-dse",
         action="store_true",
         help="Disable Dead Store Elimination (DSE) for unreferenced variables"
@@ -221,6 +227,7 @@ def main(args=None) -> int:
         enable_exorcism=not opts.no_exorcism,
         enable_batchtoapp=not opts.no_batchtoapp,
         enable_machine1337=not opts.no_machine1337,
+        enable_cmd_deobfuscator=not opts.no_cmd_deobfuscator,
         eliminate_dead_code=not opts.no_dse
     )
     clean_text, meta = engine.deobfuscate(script_text)
@@ -390,6 +397,27 @@ def main(args=None) -> int:
                 sys.stderr.write(f"     • Stripped cls execution error preamble: True\n")
             if m13t.get("carets_normalized"):
                 sys.stderr.write(f"     • Normalized inline caret scrambling: {m13t['carets_normalized']} tokens\n")
+        cdt = meta.get("cmd_deobfuscator_telemetry", {})
+        if cdt.get("is_cmd_deobfuscator") or cdt.get("chains_resolved_count", 0) > 0 or cdt.get("quotes_widened_count", 0) > 0 or cdt.get("nested_cmds_flattened_count", 0) > 0:
+            sig = cdt.get("signatures", {})
+            sys.stderr.write(f"  ↳ CMD-DeObfuscator Detected: True (Confidence: {sig.get('confidence', cdt.get('confidence', 0.0))})\n")
+            if cdt.get("indicators") or sig.get("indicators"):
+                ind = cdt.get("indicators") or sig.get("indicators", [])
+                sys.stderr.write(f"     • Indicators: {', '.join(ind)}\n")
+            if cdt.get("chains_resolved_count"):
+                sys.stderr.write(f"     • Resolved chained environment variables: {cdt['chains_resolved_count']} definitions\n")
+            if cdt.get("cycles_detected_count"):
+                sys.stderr.write(f"     • Cyclic dependencies guarded: {cdt['cycles_detected_count']} cycles\n")
+            if cdt.get("delayed_expansions_resolved"):
+                sys.stderr.write(f"     • Resolved delayed expansions: {cdt['delayed_expansions_resolved']} tokens\n")
+            if cdt.get("quotes_widened_count"):
+                sys.stderr.write(f"     • Widened fragmented token quotes: {cdt['quotes_widened_count']} tokens\n")
+            if cdt.get("empty_quotes_stripped_count"):
+                sys.stderr.write(f"     • Stripped empty quote pairs: {cdt['empty_quotes_stripped_count']} tokens\n")
+            if cdt.get("nested_cmds_flattened_count"):
+                sys.stderr.write(f"     • Flattened nested cmd.exe wrappers: {cdt['nested_cmds_flattened_count']} layers\n")
+            if cdt.get("delimiters_normalized_count"):
+                sys.stderr.write(f"     • Normalized delimiter clusters: {cdt['delimiters_normalized_count']} lines\n")
         if meta.get("batchtoapp_pe"):
             bpe = meta["batchtoapp_pe"]
             sys.stderr.write(f"  ↳ BatchToApp PE Wrapper Forensics:\n")
