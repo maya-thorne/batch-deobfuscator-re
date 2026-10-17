@@ -150,8 +150,18 @@ from .simple_obfuscator import (
     resolve_dynamic_set_aliases,
     extract_and_assemble_chunks,
 )
+from .jsbatch import (
+    JSBatchNormalizer,
+    normalize_jsbatch,
+    detect_jsbatch_signatures,
+    harvest_jsbatch_alphabet,
+    resolve_jsbatch_slices,
+    resolve_chained_set_tokens,
+    extract_polyglot_components,
+    deobfuscate_jscript_code,
+)
 
-__version__ = "1.15.0"
+__version__ = "1.16.0"
 __author__ = "Maya Thorne"
 __all__ = [
     "BatchDeobfuscator",
@@ -273,5 +283,13 @@ __all__ = [
     "normalize_delayed_execution_string",
     "resolve_dynamic_set_aliases",
     "extract_and_assemble_chunks",
+    "JSBatchNormalizer",
+    "normalize_jsbatch",
+    "detect_jsbatch_signatures",
+    "harvest_jsbatch_alphabet",
+    "resolve_jsbatch_slices",
+    "resolve_chained_set_tokens",
+    "extract_polyglot_components",
+    "deobfuscate_jscript_code",
 ]
 

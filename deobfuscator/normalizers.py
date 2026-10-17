@@ -268,3 +268,27 @@ def resolve_substitution(text: str, env_vars: dict) -> str:
 
     pattern = re.compile(r'%([a-zA-Z0-9_\-\.\:\$]+):(\*?)([^=%\r\n]+)=([^%\r\n]*)%', re.IGNORECASE)
     return pattern.sub(sub_repl, text)
+
+
+def zeroize_dict(target: dict) -> None:
+    """Cryptographically sanitize dictionary buffers in memory."""
+    for key in list(target.keys()):
+        val = target[key]
+        if isinstance(val, dict):
+            zeroize_dict(val)
+        elif isinstance(val, list):
+            for i in range(len(val)):
+                val[i] = None
+            val.clear()
+        elif isinstance(val, bytearray):
+            for i in range(len(val)):
+                val[i] = 0
+        target[key] = None
+    target.clear()
+
+
+def zeroize_bytes(buffer: bytearray) -> None:
+    """Cryptographically zeroize raw bytearray buffers in memory."""
+    for i in range(len(buffer)):
+        buffer[i] = 0
+

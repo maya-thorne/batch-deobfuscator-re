@@ -1,11 +1,14 @@
 """
 Core Multi-Pass Fixed-Point Deobfuscator Engine.
 Deterministic convergence loop with dynamic symbol table resolution and virtual sandbox state.
+Synthesizes state-machine techniques across all specialized deobfuscator modules.
+
+Engineered by Maya Thorne.
 """
 
 import re
 import time
-from typing import Dict, Any, Tuple, List
+from typing import Dict, Any, Tuple, List, Optional
 from .normalizers import (
     strip_carets,
     strip_empty_quotes,
@@ -16,6 +19,8 @@ from .normalizers import (
     normalize_bom,
     collapse_spaces_outside_quotes,
     DYNAMIC_SYSTEM_VARS,
+    zeroize_dict,
+    zeroize_bytes,
 )
 from .batcloak import (
     normalize_batcloak_headers,
@@ -90,30 +95,12 @@ from .simple_obfuscator import (
     detect_simple_obfuscator_signatures,
     SimpleObfuscatorNormalizer,
 )
+from .jsbatch import (
+    normalize_jsbatch,
+    detect_jsbatch_signatures,
+    JSBatchNormalizer,
+)
 from .telemetry import assemble_deobfuscator_metadata
-
-
-def zeroize_dict(target: Dict[str, Any]) -> None:
-    """Cryptographically sanitize dictionary buffers in memory."""
-    for key in list(target.keys()):
-        val = target[key]
-        if isinstance(val, dict):
-            zeroize_dict(val)
-        elif isinstance(val, list):
-            for i in range(len(val)):
-                val[i] = None
-            val.clear()
-        elif isinstance(val, bytearray):
-            for i in range(len(val)):
-                val[i] = 0
-        target[key] = None
-    target.clear()
-
-
-def zeroize_bytes(buffer: bytearray) -> None:
-    """Cryptographically zeroize raw bytearray buffers in memory."""
-    for i in range(len(buffer)):
-        buffer[i] = 0
 
 
 class BatchDeobfuscator:
@@ -160,6 +147,7 @@ class BatchDeobfuscator:
                  enable_batchtoapp: bool = True, enable_machine1337: bool = True,
                  enable_cmd_deobfuscator: bool = True,
                  enable_simple_obfuscator: bool = True,
+                 enable_jsbatch: bool = True,
                  eliminate_dead_code: bool = True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
@@ -178,6 +166,7 @@ class BatchDeobfuscator:
         self.enable_machine1337 = enable_machine1337
         self.enable_cmd_deobfuscator = enable_cmd_deobfuscator
         self.enable_simple_obfuscator = enable_simple_obfuscator
+        self.enable_jsbatch = enable_jsbatch
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars: Dict[str, str] = dict(self.DEFAULT_ENV)
         if custom_env:
@@ -306,47 +295,42 @@ class BatchDeobfuscator:
                         return new_val + val[idx + len(old_val):]
                     return val
                 else:
-                    return re.compile(re.escape(old_val), re.IGNORECASE).sub(lambda _: new_val, val)
-            curr = re.sub(r'!([a-zA-Z0-9_\-\.\:\$]+):(\*?)([^=!\r\n]+)=([^!\r\n]*)!', del_sub_repl, curr)
+                    pat = re.compile(re.escape(old_val), re.IGNORECASE)
+                    return pat.sub(lambda _: new_val, val)
+            curr = re.sub(r'!([a-zA-Z0-9_\-\.\:\$]+):(\*?)([^=!]+)=([^!]*)!', del_sub_repl, curr)
 
-            # 3. Simple %VAR% with optional undefined variable stripping
+            # 3. Direct variable references (%VAR% and !VAR!)
             def var_repl(match):
-                name = match.group(1).lower()
-                if name in self.env_vars:
-                    return self.env_vars[name]
-                if name in DYNAMIC_SYSTEM_VARS:
+                vname = match.group(1).lower()
+                if vname in self.env_vars:
+                    return self.env_vars[vname]
+                if vname in DYNAMIC_SYSTEM_VARS:
                     return match.group(0)
                 if strip_undefined:
                     return ""
                 return match.group(0)
 
             curr = re.sub(r'%([a-zA-Z0-9_\-\.\:\$]+)%', var_repl, curr)
+            curr = re.sub(r'!([a-zA-Z0-9_\-\.\:\$]+)!', var_repl, curr)
 
-            # 4. Simple delayed expansion !VAR!
-            def del_var_repl(match):
-                name = match.group(1).lower()
-                if name in self.env_vars:
-                    return self.env_vars[name]
-                return match.group(0)
-
-            curr = re.sub(r'!([a-zA-Z0-9_\-\.\:\$]+)!', del_var_repl, curr)
         if strip_undefined:
             curr = collapse_spaces_outside_quotes(curr)
         return curr
 
     def deobfuscate(self, script_text: str) -> Tuple[str, Dict[str, Any]]:
         """
-        Execute iterative multi-pass fixed-point convergence loop.
+        Execute multi-pass deobfuscation until convergence or pass limit.
         Returns:
-            Tuple[clean_script, telemetry_metadata]
+            Tuple[clean_script_text, forensic_metadata]
         """
         start_time = time.perf_counter()
         curr_text = script_text
-        self.pass_history = []
+
+        # Heuristic detection for metadata
         batcloak_sig = detect_batcloak_signatures(None, script_text)
         somalifuscator_sig = detect_somalifuscator_signatures(script_text)
         oxidizer_sig = detect_oxidizer_signatures(script_text)
-        abobus_sig = detect_abobus_signatures(script_text)
+        abobus_sig = detect_abobus_signatures(script_text) if self.enable_abobus else {"is_abobus": False, "confidence": 0.0, "indicators": []}
         dosfuscation_sig = detect_dosfuscation_signatures(script_text)
         cradle_sig = detect_cradle_signatures(script_text)
         bedecode_sig = detect_bedecode_signatures(script_text)
@@ -358,6 +342,7 @@ class BatchDeobfuscator:
         machine1337_sig = detect_machine1337_signatures(None, script_text) if self.enable_machine1337 else {"is_machine1337": False, "confidence": 0.0, "indicators": []}
         cmd_deobfuscator_sig = detect_cmd_deobfuscator_signatures(script_text) if self.enable_cmd_deobfuscator else {"is_cmd_deobfuscator": False, "confidence": 0.0, "indicators": []}
         simple_obfuscator_sig = detect_simple_obfuscator_signatures(script_text) if self.enable_simple_obfuscator else {"is_simple_obfuscator": False, "confidence": 0.0, "indicators": []}
+        jsbatch_sig = detect_jsbatch_signatures(script_text) if self.enable_jsbatch else {"is_jsbatch": False, "confidence": 0.0, "indicators": []}
         removed_random_vars: List[str] = []
         eliminated_dead_vars: List[str] = []
         somalifuscator_meta: Dict[str, Any] = {}
@@ -366,6 +351,7 @@ class BatchDeobfuscator:
         machine1337_meta: Dict[str, Any] = {}
         cmd_deobfuscator_meta: Dict[str, Any] = {}
         simple_obfuscator_meta: Dict[str, Any] = {}
+        jsbatch_meta: Dict[str, Any] = {}
         exorcism_meta: Dict[str, Any] = {}
         abobus_meta: Dict[str, Any] = {}
         batchshield_meta: Dict[str, Any] = {}
@@ -381,6 +367,10 @@ class BatchDeobfuscator:
         # Step 0.5: BatCloak random variable pre-filtering
         if self.enable_batcloak:
             curr_text, removed_random_vars = strip_batcloak_random_vars(curr_text)
+
+        # Step 0.51: JSBatchDeobfuscator alphabet slicing, chained tokens & hybrid polyglot extraction
+        if self.enable_jsbatch:
+            curr_text, jsbatch_meta = normalize_jsbatch(curr_text, custom_env=self.env_vars)
 
         # Step 0.52: simple-batch-obfuscator random variable fragment infiltration & chunk assembly
         if self.enable_simple_obfuscator:
@@ -468,6 +458,15 @@ class BatchDeobfuscator:
             # Check mathematical fixed-point convergence
             if curr_text == prev_pass_text:
                 break
+
+        # Step 4.4: Post-convergence JSBatch check for newly unmasked slices or polyglot blocks
+        if self.enable_jsbatch and ("cscript" in curr_text.lower() or "/* ::" in curr_text or "@codesection" in curr_text.lower() or "%ab9:~" in curr_text.lower()):
+            curr_text, post_jsbatch_meta = normalize_jsbatch(curr_text, custom_env=self.env_vars)
+            if post_jsbatch_meta.get("is_jsbatch") or post_jsbatch_meta.get("is_polyglot"):
+                jsbatch_meta["is_jsbatch"] = True
+                jsbatch_meta["confidence"] = max(jsbatch_meta.get("confidence", 0.0), post_jsbatch_meta.get("confidence", 0.0))
+                jsbatch_meta["slices_resolved"] = jsbatch_meta.get("slices_resolved", 0) + post_jsbatch_meta.get("slices_resolved", 0)
+                jsbatch_meta["chained_tokens_resolved"] = jsbatch_meta.get("chained_tokens_resolved", 0) + post_jsbatch_meta.get("chained_tokens_resolved", 0)
 
         # Step 4.5: Post-convergence CradleCrafter check for newly assembled stagers
         if self.enable_cradlecrafter and ("powershell" in curr_text.lower() or "-enc" in curr_text.lower() or "download" in curr_text.lower()):
@@ -601,6 +600,9 @@ class BatchDeobfuscator:
             simple_obfuscator_meta=simple_obfuscator_meta,
             simple_obfuscator_sig=simple_obfuscator_sig,
             enable_simple_obfuscator=self.enable_simple_obfuscator,
+            jsbatch_meta=jsbatch_meta,
+            jsbatch_sig=jsbatch_sig,
+            enable_jsbatch=self.enable_jsbatch,
         )
 
         return curr_text, metadata
@@ -615,6 +617,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
                        enable_exorcism: bool = True, enable_batchtoapp: bool = True,
                        enable_machine1337: bool = True, enable_cmd_deobfuscator: bool = True,
                        enable_simple_obfuscator: bool = True,
+                       enable_jsbatch: bool = True,
                        eliminate_dead_code: bool = True) -> str:
     """Convenience helper to deobfuscate a script and return clean string."""
     engine = BatchDeobfuscator(
@@ -627,6 +630,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
         enable_batchtoapp=enable_batchtoapp, enable_machine1337=enable_machine1337,
         enable_cmd_deobfuscator=enable_cmd_deobfuscator,
         enable_simple_obfuscator=enable_simple_obfuscator,
+        enable_jsbatch=enable_jsbatch,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, _ = engine.deobfuscate(script_text)
@@ -643,6 +647,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
                       enable_machine1337: bool = True,
                       enable_cmd_deobfuscator: bool = True,
                       enable_simple_obfuscator: bool = True,
+                      enable_jsbatch: bool = True,
                       eliminate_dead_code: bool = True) -> Tuple[str, Dict[str, Any]]:
     """
     Deobfuscate raw batch file bytes, neutralizing fake UTF-16LE BOM headers and decoys.
@@ -670,6 +675,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
         enable_batchtoapp=enable_batchtoapp, enable_machine1337=enable_machine1337,
         enable_cmd_deobfuscator=enable_cmd_deobfuscator,
         enable_simple_obfuscator=enable_simple_obfuscator,
+        enable_jsbatch=enable_jsbatch,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, meta = engine.deobfuscate(text)
@@ -684,4 +690,3 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
     if enable_batchtoapp and b2a_pe.get("is_batchtoapp"):
         meta["batchtoapp_pe"] = b2a_pe
     return clean_text, meta
-

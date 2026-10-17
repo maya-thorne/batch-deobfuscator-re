@@ -164,6 +164,12 @@ Engineered by Maya Thorne.
     )
 
     parser.add_argument(
+        "--no-jsbatch",
+        action="store_true",
+        help="Disable JSBatchDeobfuscator alphabet slicing and hybrid JS/BAT polyglot extraction"
+    )
+
+    parser.add_argument(
         "--no-dse",
         action="store_true",
         help="Disable Dead Store Elimination (DSE) for unreferenced variables"
@@ -235,6 +241,7 @@ def main(args=None) -> int:
         enable_machine1337=not opts.no_machine1337,
         enable_cmd_deobfuscator=not opts.no_cmd_deobfuscator,
         enable_simple_obfuscator=not opts.no_simple_obfuscator,
+        enable_jsbatch=not opts.no_jsbatch,
         eliminate_dead_code=not opts.no_dse
     )
     clean_text, meta = engine.deobfuscate(script_text)
@@ -438,6 +445,22 @@ def main(args=None) -> int:
             if sot.get("decoded_powershell"):
                 preview = sot['decoded_powershell'].replace('\n', ' ')[:70]
                 sys.stderr.write(f"     • Decoded PowerShell stager payload: {preview}...\n")
+        jst = meta.get("jsbatch_telemetry", {})
+        if jst.get("is_jsbatch") or jst.get("is_polyglot") or jst.get("slices_resolved", 0) > 0 or jst.get("chained_tokens_resolved", 0) > 0:
+            sig = jst.get("signatures", {})
+            sys.stderr.write(f"  ↳ JSBatchDeobfuscator & Polyglot Detected: True (Confidence: {jst.get('confidence', sig.get('confidence', 0.0))})\n")
+            if jst.get("polyglot_type") and jst.get("polyglot_type") != "none":
+                sys.stderr.write(f"     • Polyglot wrapper type: {jst['polyglot_type']}\n")
+            if jst.get("alphabet_key"):
+                sys.stderr.write(f"     • Harvested alphabet key: %{jst['alphabet_key']}% ({jst.get('alphabet_size', 0)} chars)\n")
+            if jst.get("slices_resolved"):
+                sys.stderr.write(f"     • Resolved alphabet substring slices: {jst['slices_resolved']} tokens\n")
+            if jst.get("chained_tokens_resolved"):
+                sys.stderr.write(f"     • Resolved chained SET tokens: {jst['chained_tokens_resolved']} tokens\n")
+            if jst.get("activex_objects"):
+                sys.stderr.write(f"     • Extracted ActiveX ProgIDs: {', '.join(jst['activex_objects'])}\n")
+            if jst.get("extracted_urls"):
+                sys.stderr.write(f"     • Extracted C2 URLs: {', '.join(jst['extracted_urls'])}\n")
         if meta.get("batchtoapp_pe"):
             bpe = meta["batchtoapp_pe"]
             sys.stderr.write(f"  ↳ BatchToApp PE Wrapper Forensics:\n")

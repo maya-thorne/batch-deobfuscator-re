@@ -58,6 +58,9 @@ def assemble_deobfuscator_metadata(
     simple_obfuscator_meta: Optional[Dict[str, Any]] = None,
     simple_obfuscator_sig: Optional[Dict[str, Any]] = None,
     enable_simple_obfuscator: bool = True,
+    jsbatch_meta: Optional[Dict[str, Any]] = None,
+    jsbatch_sig: Optional[Dict[str, Any]] = None,
+    enable_jsbatch: bool = True,
 ) -> Dict[str, Any]:
     """Assemble complete forensic telemetry across all specialized deobfuscator engines."""
     return {
@@ -220,5 +223,22 @@ def assemble_deobfuscator_metadata(
             "decoded_powershell": None,
             "undefined_vars_stripped_count": 0,
             "stripped_variable_names": [],
+        },
+        "jsbatch_telemetry": jsbatch_meta or {
+            "signatures": jsbatch_sig or {},
+            "is_jsbatch": jsbatch_sig.get("is_jsbatch", False) if enable_jsbatch and jsbatch_sig else False,
+            "is_polyglot": jsbatch_sig.get("is_polyglot", False) if enable_jsbatch and jsbatch_sig else False,
+            "confidence": jsbatch_sig.get("confidence", 0.0) if enable_jsbatch and jsbatch_sig else 0.0,
+            "polyglot_type": jsbatch_sig.get("polyglot_type", "none") if enable_jsbatch and jsbatch_sig else "none",
+            "indicators": jsbatch_sig.get("indicators", []) if enable_jsbatch and jsbatch_sig else [],
+            "alphabet_key": None,
+            "alphabet_size": 0,
+            "slices_resolved": 0,
+            "chained_tokens_resolved": 0,
+            "extracted_batch_lines": 0,
+            "extracted_js_lines": 0,
+            "activex_objects": [],
+            "extracted_urls": [],
+            "polyglot_components": None,
         },
     }
