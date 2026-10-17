@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.16.0] - 2026-10-17
+
+### Added
+- **JSBatchDeobfuscator Virtual Alphabet Normalizer & Hybrid Polyglot Extraction Engine (`deobfuscator/jsbatch.py`)**:
+  - Heuristic signature detection (`detect_jsbatch_signatures`): classifies JSBatchobfuscator (guillaC / yrotak) and hybrid JS/BAT polyglots across 5 indicator categories (virtual alphabet assignments, environment variable substring slicing `%key:~idx,len%`, chained multi-statement SET tokens `set p1=...&set p2=...&%p1%%p2%`, polyglot comment wrapper blocks `0 /* :: ... */` and conditional compilation `@if (@CodeSection == @Batch)`, and JScript execution wrappers `cscript //nologo //e:jscript "%~f0"` / `mshta`) with quantitative confidence scoring.
+  - Virtual alphabet dictionary harvesting (`harvest_jsbatch_alphabet`): extracts randomized character mapping pools from high-entropy variable definitions (`set key=...` and `set "key=..."`).
+  - Substring slice resolution (`resolve_jsbatch_slices`): inverts `%key:~offset,length%` and `%key:~offset%` slicing expressions against harvested alphabet tables and active environment mappings, supporting positive/negative offsets and Pythonic slice bounds clamping.
+  - Chained SET token reconstruction (`resolve_chained_set_tokens`): identifies multi-variable command reconstruction chains (`set a=pow&set b=ershell&%a%%b% -c whoami`) across `&` statement delimiters and evaluates token concatenations into clean linear command lines.
+  - Static polyglot decomposition (`extract_polyglot_components`): decomposes hybrid multi-language files into isolated clean batch (`clean_batch`) and standalone JScript (`clean_jscript`) payloads across WSF XML elements (`<package><job>`), C-style polyglot block headers (`0 /* :: ... */`), `@if (@CodeSection == @Batch)` conditional compilation directives, and MSHTA inline scriptlets.
+  - Static JScript deobfuscator (`deobfuscate_jscript_code`): performs constant-folding on string literal concatenations (`"a" + "b"`), normalizes hexadecimal escape sequences (`unescape("%77%68%6f%61%6d%69")` -> `"whoami"`), and resolves obfuscated WScript.Shell `Run` / `Exec` invocations.
+  - In-memory cryptographic buffer sanitization (`zeroize_dict`, `zeroize_bytes`): securely overwrites parsed alphabet dictionaries, polyglot component buffers, and forensic telemetry structures prior to deallocation.
+  - `JSBatchNormalizer` production class and `normalize_jsbatch` functional wrapper.
+- **Dedicated JSBatchDeobfuscator Verification Suite (`tests/test_jsbatch.py`)**:
+  - Added 16 comprehensive unit and integration tests covering signature detection, alphabet harvesting, slice resolution with negative indices, chained SET token reconstruction, C-style and conditional compilation polyglot separation, static JScript unescaping and string concatenation, memory zeroization, class and functional wrappers, and Corpus 15 parity (expanding the test suite to 286 tests).
+
+### Changed
+- Integrated JSBatch normalization into core multi-pass convergence pipeline (`deobfuscator/core.py`, `deobfuscate_script`, `deobfuscate_bytes`) via `enable_jsbatch=True` (executing in Step 0.51 and post-convergence Step 4.4).
+- Updated telemetry aggregator (`deobfuscator/telemetry.py`) with `jsbatch_telemetry` tracking indicators, harvested alphabet counts, resolved slices, chained SET tokens, and polyglot decomposition flags.
+- Extended CLI toolchain (`deobfuscator/cli.py`) with `--no-jsbatch` flag and verbose telemetry reporting.
+- Updated standalone engine (`src/deobfuscator_engine.py`) with JSBatch normalization passes and parity.
+- Updated architecture map (`scripts/ARCHITECTURE_MAP.md`) and bumped package version across `package.json`, `pyproject.toml`, and `deobfuscator/__init__.py` to v1.16.0.
+
 ## [1.15.0] - 2026-10-16
 
 ### Added

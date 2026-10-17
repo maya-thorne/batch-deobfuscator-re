@@ -26,6 +26,7 @@ try:
     from deobfuscator.machine1337 import normalize_machine1337
     from deobfuscator.cmd_deobfuscator import normalize_cmd_deobfuscator
     from deobfuscator.simple_obfuscator import normalize_simple_obfuscator
+    from deobfuscator.jsbatch import normalize_jsbatch
     HAS_SECURITY_MODULES = True
 except ImportError:
     try:
@@ -44,6 +45,7 @@ except ImportError:
         from deobfuscator.machine1337 import normalize_machine1337
         from deobfuscator.cmd_deobfuscator import normalize_cmd_deobfuscator
         from deobfuscator.simple_obfuscator import normalize_simple_obfuscator
+        from deobfuscator.jsbatch import normalize_jsbatch
         HAS_SECURITY_MODULES = True
     except ImportError:
         HAS_SECURITY_MODULES = False
@@ -58,6 +60,7 @@ class BatchDeobfuscator:
                  enable_machine1337=True,
                  enable_cmd_deobfuscator=True,
                  enable_simple_obfuscator=True,
+                 enable_jsbatch=True,
                  eliminate_dead_code=True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
@@ -76,6 +79,7 @@ class BatchDeobfuscator:
         self.enable_machine1337 = enable_machine1337
         self.enable_cmd_deobfuscator = enable_cmd_deobfuscator
         self.enable_simple_obfuscator = enable_simple_obfuscator
+        self.enable_jsbatch = enable_jsbatch
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars = {}
         # Prepopulate default Windows environment variables commonly used for slicing
@@ -432,6 +436,10 @@ class BatchDeobfuscator:
         # Step 0.5: BatCloak random variable pre-filtering
         if self.enable_batcloak and HAS_SECURITY_MODULES:
             current, _ = strip_batcloak_random_vars(current)
+
+        # Step 0.51: JSBatchDeobfuscator alphabet slicing, chained tokens & hybrid polyglot extraction
+        if self.enable_jsbatch and HAS_SECURITY_MODULES:
+            current, _ = normalize_jsbatch(current, custom_env=self.env_vars)
 
         # Step 0.52: simple-batch-obfuscator random variable fragment infiltration & chunk assembly
         if self.enable_simple_obfuscator and HAS_SECURITY_MODULES:

@@ -327,12 +327,16 @@ def eliminate_dead_stores(script_text: str, preserve_vars: Optional[Set[str]] = 
     return "\n".join(remaining_lines), eliminated
 
 
-def detect_batcloak_signatures(raw_bytes: Optional[bytes], script_text: str) -> Dict[str, Any]:
+def detect_batcloak_signatures(raw_bytes: Optional[Any] = None, script_text: str = "") -> Dict[str, Any]:
     """
     Forensic heuristic signature analyzer for BatCloak and related obfuscation frameworks.
     Returns:
         Dict with detection indicators, confidence score (0.0 to 1.0), and architectural tags.
     """
+    if isinstance(raw_bytes, str) and not script_text:
+        script_text = raw_bytes
+        raw_bytes = None
+
     indicators: List[str] = []
     confidence = 0.0
 

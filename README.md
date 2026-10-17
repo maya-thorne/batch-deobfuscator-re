@@ -439,6 +439,11 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
       <td align="center"><code>False</code></td>
     </tr>
     <tr>
+      <td><code>--no-jsbatch</code></td>
+      <td>Disable JSBatchDeobfuscator virtual alphabet harvesting, chained SET reconstruction, and hybrid polyglot extraction</td>
+      <td align="center"><code>False</code></td>
+    </tr>
+    <tr>
       <td><code>--no-dse</code></td>
       <td>Disable Dead Store Elimination (DSE) for unreferenced temporary variables</td>
       <td align="center"><code>False</code></td>
@@ -451,7 +456,7 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
     <tr>
       <td><code>--version</code></td>
       <td>Display engine version, release tag, and author attribution</td>
-      <td align="center"><code>1.15.0</code></td>
+      <td align="center"><code>1.16.0</code></td>
     </tr>
   </tbody>
 </table>
@@ -487,16 +492,25 @@ python benchmarks/eval_corpus_runner.py --corpus BatCloak
 
 ### 4.5 Automated Verification Test Suites
 ```bash
-python -m unittest discover tests       # 142 comprehensive automated tests
+python -m unittest discover tests       # 286 comprehensive automated tests
+python tests/test_jsbatch.py            # 16 JSBatchDeobfuscator alphabet, slicing & polyglot tests
+python tests/test_simple_obfuscator.py  # 13 simple-batch-obfuscator chunk reassembly & stager tests
+python tests/test_cmd_deobfuscator.py   # 13 CMD-DeObfuscator chained env & quote widening tests
+python tests/test_machine1337.py        # 14 batobfuscate-machine1337 header & CJK tests
+python tests/test_batchtoapp.py         # 16 BatchToApp / DosX wrapper & operator tests
+python tests/test_exorcism.py           # 21 Exorcism CFG linearization & trampoline tests
+python tests/test_pandacrypter.py       # 19 PandaCrypter & Certutil stager decoding tests
+python tests/test_batchshield.py        # 13 BatchShield symbol table & env chain tests
+python tests/test_bedecode.py           # 12 BEDeCode onion stub peeling & PE forensics tests
 python tests/test_cradlecrafter.py      # 16 Invoke-CradleCrafter & stager tests
 python tests/test_dosfuscation.py       # 14 Invoke-DOSfuscation Bohannon loop tests
-python tests/test_abobus.py             # 14 Abobus Unicode noise, decoy & trap tests
+python tests/test_abobus.py             # 15 Abobus Unicode noise, decoy & trap tests
 python tests/test_oxidizer.py           # 10 0xidiz3r zero-literal bootstrap & alphabet tests
 python tests/test_somalifuscator.py     # 12 Somalifuscator Caesar inversion & KDOT tests
 python tests/test_batcloak.py           # 11 BatCloak, fake BOM & DSE tests
-python tests/test_benchmark_runner.py   # 42 benchmark suite & metrics tests
-python tests/test_cli.py                # 8 CLI flags, diff mode, and JSON telemetry tests
-python tests/test_suite.py              # 4 core AST deobfuscation & PE overlay tests
+python tests/test_benchmark_runner.py   # 52 benchmark suite & metrics tests
+python tests/test_cli.py                # 15 CLI flags, diff mode, and JSON telemetry tests
+python tests/test_suite.py              # 14 core AST deobfuscation & PE overlay tests
 ```
 
 </details>
@@ -522,23 +536,26 @@ batch-deobfuscator-re/
 │   └── eval_corpus_runner.py              # 28-Corpus Automated Evaluation & Scoring Engine
 │
 ├── deobfuscator/                          # 🛠️ Production CLI Toolchain Package (python -m deobfuscator)
-│   ├── __init__.py                        # Package initialization, v1.13.0 & Public API exports
+│   ├── __init__.py                        # Package initialization, v1.16.0 & Public API exports
 │   ├── __main__.py                        # Direct module execution entrypoint (-m deobfuscator)
 │   ├── cli.py                             # Rich CLI Interface (argparse, JSON export, Diff, Verbose)
 │   ├── core.py                            # Multi-Pass Fixed-Point AST Convergence Loop Coordinator
 │   ├── telemetry.py                       # Telemetry & Structured Forensic Reporting Aggregator
-│   ├── batcloak.py                        # BatCloak Fake BOM De-masking & Random Variable Pruning
-│   ├── somalifuscator.py                  # Somalifuscator Caesar Inversion & KDOT Array Slicing
-│   ├── oxidizer.py                        # 0xidiz3r Zero-Literal Bootstrap & Reversible Alphabet Inversion
-│   ├── abobus.py                          # Abobus Unicode Noise Filtering, Decoy & Trap Elimination
-│   ├── dosfuscation.py                    # Invoke-DOSfuscation Bohannon Loop Unwrapping & Advanced Slicing
-│   ├── cradlecrafter.py                   # Invoke-CradleCrafter & PowerShell Download Stager Recovery
-│   ├── bedecode.py                        # Batch-Encryption-DeCoder Runtime Stub Peeling & PE Forensics
-│   ├── batchshield.py                     # BatchShield Symbol Table & Compound Env Chain Resolver
-│   ├── pandacrypter.py                    # PandaCrypter & Certutil Stager Deobfuscator
-│   ├── exorcism.py                        # Exorcism Control Flow Normalizer, Trampolines & Opaque Predicates
-│   ├── batchtoapp.py                      # BatchToApp / DosX Native Wrapper & Operator Deobfuscation
+│   ├── jsbatch.py                         # JSBatchDeobfuscator Virtual Alphabet & Polyglot Extraction
+│   ├── simple_obfuscator.py               # simple-batch-obfuscator Var Infiltration & Chunk Reassembly
+│   ├── cmd_deobfuscator.py                # CMD-DeObfuscator Chained Env Variable & Syntax Normalizer
 │   ├── machine1337.py                     # batobfuscate-machine1337 Header Neutralizer & CJK Forensics
+│   ├── batchtoapp.py                      # BatchToApp / DosX Native Wrapper & Operator Deobfuscation
+│   ├── exorcism.py                        # Exorcism Control Flow Normalizer, Trampolines & Opaque Predicates
+│   ├── pandacrypter.py                    # PandaCrypter & Certutil Stager Deobfuscator
+│   ├── batchshield.py                     # BatchShield Symbol Table & Compound Env Chain Resolver
+│   ├── bedecode.py                        # Batch-Encryption-DeCoder Runtime Stub Peeling & PE Forensics
+│   ├── cradlecrafter.py                   # Invoke-CradleCrafter & PowerShell Download Stager Recovery
+│   ├── dosfuscation.py                    # Invoke-DOSfuscation Bohannon Loop Unwrapping & Advanced Slicing
+│   ├── abobus.py                          # Abobus Unicode Noise Filtering, Decoy & Trap Elimination
+│   ├── oxidizer.py                        # 0xidiz3r Zero-Literal Bootstrap & Reversible Alphabet Inversion
+│   ├── somalifuscator.py                  # Somalifuscator Caesar Inversion & KDOT Array Slicing
+│   ├── batcloak.py                        # BatCloak Fake BOM De-masking & Random Variable Pruning
 │   ├── normalizers.py                     # Carets, Quotes, &-Splits, Undefined Vars, Env Slicing
 │   └── diff.py                            # Terminal ANSI 256-Color Unified Diff Renderer
 │
@@ -555,7 +572,10 @@ batch-deobfuscator-re/
 │   ├── sigma_batch_obfuscation.yml        # Sigma Rules for Caret Evasion, Env Slicing, Exorcism Detours
 │   └── yara_batch_obfuscation.yar         # YARA Signatures for BOM Traps, Somalifuscator, UPX Wrappers
 │
-├── tests/                                 # ✅ Automated Verification Test Suites (244 Tests Total)
+├── tests/                                 # ✅ Automated Verification Test Suites (286 Tests Total)
+│   ├── test_jsbatch.py                    # 16 JSBatchDeobfuscator Alphabet, Slicing & Polyglot Tests
+│   ├── test_simple_obfuscator.py          # 13 simple-batch-obfuscator Chunk Reassembly & Var Tests
+│   ├── test_cmd_deobfuscator.py           # 13 CMD-DeObfuscator Chained Env & Quote Tests
 │   ├── test_machine1337.py                # 14 batobfuscate-machine1337 Header, CJK & Caret Tests
 │   ├── test_batchtoapp.py                 # 16 BatchToApp / DosX Wrapper & Operator Tests
 │   ├── test_exorcism.py                   # 21 Exorcism CFG Linearization, Trampoline & Predicate Tests
