@@ -160,8 +160,18 @@ from .jsbatch import (
     extract_polyglot_components,
     deobfuscate_jscript_code,
 )
+from .batchstealer import (
+    BatchStealerNormalizer,
+    normalize_batchstealer,
+    detect_batchstealer_signatures,
+    extract_c2_endpoints,
+    inventory_targeted_credentials,
+    extract_persistence_and_droppers,
+    analyze_exfiltration_channels,
+    extract_batchstealer_forensics,
+)
 
-__version__ = "1.16.0"
+__version__ = "1.17.0"
 __author__ = "Maya Thorne"
 __all__ = [
     "BatchDeobfuscator",
@@ -291,5 +301,13 @@ __all__ = [
     "resolve_chained_set_tokens",
     "extract_polyglot_components",
     "deobfuscate_jscript_code",
+    "BatchStealerNormalizer",
+    "normalize_batchstealer",
+    "detect_batchstealer_signatures",
+    "extract_c2_endpoints",
+    "inventory_targeted_credentials",
+    "extract_persistence_and_droppers",
+    "analyze_exfiltration_channels",
+    "extract_batchstealer_forensics",
 ]
 

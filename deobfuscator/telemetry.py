@@ -61,6 +61,9 @@ def assemble_deobfuscator_metadata(
     jsbatch_meta: Optional[Dict[str, Any]] = None,
     jsbatch_sig: Optional[Dict[str, Any]] = None,
     enable_jsbatch: bool = True,
+    batchstealer_meta: Optional[Dict[str, Any]] = None,
+    batchstealer_sig: Optional[Dict[str, Any]] = None,
+    enable_batchstealer: bool = True,
 ) -> Dict[str, Any]:
     """Assemble complete forensic telemetry across all specialized deobfuscator engines."""
     return {
@@ -240,5 +243,21 @@ def assemble_deobfuscator_metadata(
             "activex_objects": [],
             "extracted_urls": [],
             "polyglot_components": None,
+        },
+        "batchstealer_telemetry": batchstealer_meta or {
+            "signatures": batchstealer_sig or {},
+            "is_batchstealer": batchstealer_sig.get("is_batchstealer", False) if enable_batchstealer and batchstealer_sig else False,
+            "confidence": batchstealer_sig.get("confidence", 0.0) if enable_batchstealer and batchstealer_sig else 0.0,
+            "indicators": batchstealer_sig.get("indicators", []) if enable_batchstealer and batchstealer_sig else [],
+            "endpoints": {"discord_webhooks": [], "telegram_bots": [], "download_urls": [], "recon_services": [], "generic_c2": []},
+            "inventory": {"browsers": [], "messaging": [], "gaming": [], "crypto": [], "system_recon": []},
+            "persistence": {"scheduled_tasks": [], "registry_run_keys": [], "dropped_files": [], "vbs_runners": [], "self_deletion": False},
+            "exfiltration_channels": [],
+            "mitre_attack": [],
+            "extracted_discord_webhooks_count": 0,
+            "extracted_telegram_bots_count": 0,
+            "extracted_download_urls_count": 0,
+            "targeted_browsers_count": 0,
+            "targeted_gaming_platforms_count": 0,
         },
     }

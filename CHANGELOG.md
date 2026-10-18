@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.17.0] - 2026-10-18
+
+### Added
+- **BatchStealer Static Forensic Credential Analyzer & C2 Extraction Engine (`deobfuscator/batchstealer.py`)**:
+  - Heuristic signature detection (`detect_batchstealer_signatures`): classifies real-world BatchStealer malware specimens, Discord token harvesters, and info-stealers across 9 indicator categories (Discord webhooks, Telegram bot tokens, targeted browser databases, Discord LevelDB token storage, gaming and cryptocurrency configs, system discovery commands, persistence installations, defense evasion/self-deletion, and command caret masking) with quantitative confidence scoring.
+  - C2 and drop endpoint extraction (`extract_c2_endpoints`): statically unmasks Discord webhook URLs and token components (`discord.com/api/webhooks/<id>/<token>`), Telegram bot API endpoints (`api.telegram.org/bot<token>/...`), secondary dropper URLs, and public IP reconnaissance services (`api.ipify.org`, `ipinfo.io`).
+  - Targeted credential inventory cataloging (`inventory_targeted_credentials`): extracts targeted sensitive filesystem paths across 7 major browsers (Google Chrome, Opera / Opera GX, Mozilla Firefox, Microsoft Edge, Brave, Vivaldi, Yandex), Discord desktop client token databases (`%appdata%\\discord\\Local Storage\\leveldb`), gaming and launcher accounts (Steam `loginusers.vdf`, Minecraft `launcher_profiles.json`, Growtopia `save.dat`, osu! configs), cryptocurrency wallet storage, and system reconnaissance commands (`SystemInfo`, `tasklist`, `net user`).
+  - Persistence and evasion mechanism tracing (`trace_persistence_mechanisms`): detects scheduled tasks (`schtasks /create`), registry run keys (`CurrentVersion\\Run`), VBS hidden window runners (`WScript.Shell`), dropped staging files, and self-deletion commands (`del %~f0` / `del %0`).
+  - Exfiltration channel analyzer (`analyze_exfiltration_channels`): maps curl multipart form file attachments (`curl -F <field>=@<path> <webhook>`) and PowerShell JSON REST API transmissions.
+  - Automated MITRE ATT&CK technique mapping: correlates identified behaviors to standard MITRE Enterprise ATT&CK matrix IDs (T1555.003, T1552.001, T1082, T1016, T1053.005, T1547.001, T1564.001, T1070.004, T1071.001, T1105, T1027).
+  - Safe defanging mode (`normalize_batchstealer(defang_c2=True)`): neutralizes live Discord webhooks and Telegram bot tokens into safe analysis indicators (`hxxps://discord[.]com/api/webhooks/.../[DEFANGED_TOKEN]`) and strips anti-triage fake TOS disclaimer jumps.
+  - In-memory cryptographic buffer sanitization (`zeroize_dict`, `zeroize_bytes`): cryptographically sanitizes extracted C2 tokens, file paths, and forensic metadata dictionaries.
+  - `BatchStealerNormalizer` production class and `normalize_batchstealer` functional wrapper.
+- **Dedicated BatchStealer Verification Suite (`tests/test_batchstealer.py`)**:
+  - Added 20 comprehensive unit and integration tests covering signature heuristics, Discord webhook / Telegram bot extraction, credential target inventorying, persistence tracking, multipart exfiltration channel parsing, MITRE ATT&CK correlation, caret de-masking, C2 defanging, object-oriented normalizer class, cryptographic memory wiping, Corpus 16 (BatchStealer-Takaovi) parity, and full triage on real-world reference malware samples (expanding test suite to 306 tests).
+
+### Changed
+- Integrated BatchStealer forensic analyzer into core multi-pass convergence pipeline (`deobfuscator/core.py`, `deobfuscate_script`, `deobfuscate_bytes`) via `enable_batchstealer=True` (executing in Step 0.53 and post-convergence Step 4.5).
+- Updated telemetry aggregator (`deobfuscator/telemetry.py`) with `batchstealer_meta`, `batchstealer_sig`, `enable_batchstealer`, and `batchstealer_telemetry`.
+- Extended CLI toolchain (`deobfuscator/cli.py`) with `--no-batchstealer` and `--defang-c2` flags with formatted telemetry summary.
+- Synchronized standalone engine (`src/deobfuscator_engine.py`) with BatchStealer normalization pass.
+- Updated architecture map (`scripts/ARCHITECTURE_MAP.md`), task backlog, and bumped package version across `package.json`, `pyproject.toml`, and `deobfuscator/__init__.py` to v1.17.0.
+
 ## [1.16.0] - 2026-10-17
 
 ### Added

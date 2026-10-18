@@ -444,6 +444,16 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
       <td align="center"><code>False</code></td>
     </tr>
     <tr>
+      <td><code>--no-batchstealer</code></td>
+      <td>Disable BatchStealer static forensic analysis, credential inventorying, and C2 extraction</td>
+      <td align="center"><code>False</code></td>
+    </tr>
+    <tr>
+      <td><code>--defang-c2</code></td>
+      <td>Defang active Discord webhook and Telegram bot C2 endpoints into harmless indicators (hxxps://...)</td>
+      <td align="center"><code>False</code></td>
+    </tr>
+    <tr>
       <td><code>--no-dse</code></td>
       <td>Disable Dead Store Elimination (DSE) for unreferenced temporary variables</td>
       <td align="center"><code>False</code></td>
@@ -456,7 +466,7 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
     <tr>
       <td><code>--version</code></td>
       <td>Display engine version, release tag, and author attribution</td>
-      <td align="center"><code>1.16.0</code></td>
+      <td align="center"><code>1.17.0</code></td>
     </tr>
   </tbody>
 </table>
@@ -492,7 +502,8 @@ python benchmarks/eval_corpus_runner.py --corpus BatCloak
 
 ### 4.5 Automated Verification Test Suites
 ```bash
-python -m unittest discover tests       # 286 comprehensive automated tests
+python -m unittest discover tests       # 306 comprehensive automated tests
+python tests/test_batchstealer.py       # 20 BatchStealer forensic analyzer & C2 defanging tests
 python tests/test_jsbatch.py            # 16 JSBatchDeobfuscator alphabet, slicing & polyglot tests
 python tests/test_simple_obfuscator.py  # 13 simple-batch-obfuscator chunk reassembly & stager tests
 python tests/test_cmd_deobfuscator.py   # 13 CMD-DeObfuscator chained env & quote widening tests
@@ -536,11 +547,12 @@ batch-deobfuscator-re/
 │   └── eval_corpus_runner.py              # 28-Corpus Automated Evaluation & Scoring Engine
 │
 ├── deobfuscator/                          # 🛠️ Production CLI Toolchain Package (python -m deobfuscator)
-│   ├── __init__.py                        # Package initialization, v1.16.0 & Public API exports
+│   ├── __init__.py                        # Package initialization, v1.17.0 & Public API exports
 │   ├── __main__.py                        # Direct module execution entrypoint (-m deobfuscator)
 │   ├── cli.py                             # Rich CLI Interface (argparse, JSON export, Diff, Verbose)
 │   ├── core.py                            # Multi-Pass Fixed-Point AST Convergence Loop Coordinator
 │   ├── telemetry.py                       # Telemetry & Structured Forensic Reporting Aggregator
+│   ├── batchstealer.py                    # BatchStealer Static Forensic Credential Analyzer & C2 Defanger
 │   ├── jsbatch.py                         # JSBatchDeobfuscator Virtual Alphabet & Polyglot Extraction
 │   ├── simple_obfuscator.py               # simple-batch-obfuscator Var Infiltration & Chunk Reassembly
 │   ├── cmd_deobfuscator.py                # CMD-DeObfuscator Chained Env Variable & Syntax Normalizer
@@ -572,7 +584,8 @@ batch-deobfuscator-re/
 │   ├── sigma_batch_obfuscation.yml        # Sigma Rules for Caret Evasion, Env Slicing, Exorcism Detours
 │   └── yara_batch_obfuscation.yar         # YARA Signatures for BOM Traps, Somalifuscator, UPX Wrappers
 │
-├── tests/                                 # ✅ Automated Verification Test Suites (286 Tests Total)
+├── tests/                                 # ✅ Automated Verification Test Suites (306 Tests Total)
+│   ├── test_batchstealer.py               # 20 BatchStealer Forensic Analyzer & C2 Defanging Tests
 │   ├── test_jsbatch.py                    # 16 JSBatchDeobfuscator Alphabet, Slicing & Polyglot Tests
 │   ├── test_simple_obfuscator.py          # 13 simple-batch-obfuscator Chunk Reassembly & Var Tests
 │   ├── test_cmd_deobfuscator.py           # 13 CMD-DeObfuscator Chained Env & Quote Tests

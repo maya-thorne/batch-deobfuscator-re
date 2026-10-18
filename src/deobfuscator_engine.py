@@ -27,6 +27,7 @@ try:
     from deobfuscator.cmd_deobfuscator import normalize_cmd_deobfuscator
     from deobfuscator.simple_obfuscator import normalize_simple_obfuscator
     from deobfuscator.jsbatch import normalize_jsbatch
+    from deobfuscator.batchstealer import normalize_batchstealer
     HAS_SECURITY_MODULES = True
 except ImportError:
     try:
@@ -46,6 +47,7 @@ except ImportError:
         from deobfuscator.cmd_deobfuscator import normalize_cmd_deobfuscator
         from deobfuscator.simple_obfuscator import normalize_simple_obfuscator
         from deobfuscator.jsbatch import normalize_jsbatch
+        from deobfuscator.batchstealer import normalize_batchstealer
         HAS_SECURITY_MODULES = True
     except ImportError:
         HAS_SECURITY_MODULES = False
@@ -61,6 +63,7 @@ class BatchDeobfuscator:
                  enable_cmd_deobfuscator=True,
                  enable_simple_obfuscator=True,
                  enable_jsbatch=True,
+                 enable_batchstealer=True,
                  eliminate_dead_code=True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
@@ -80,6 +83,7 @@ class BatchDeobfuscator:
         self.enable_cmd_deobfuscator = enable_cmd_deobfuscator
         self.enable_simple_obfuscator = enable_simple_obfuscator
         self.enable_jsbatch = enable_jsbatch
+        self.enable_batchstealer = enable_batchstealer
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars = {}
         # Prepopulate default Windows environment variables commonly used for slicing
@@ -444,6 +448,10 @@ class BatchDeobfuscator:
         # Step 0.52: simple-batch-obfuscator random variable fragment infiltration & chunk assembly
         if self.enable_simple_obfuscator and HAS_SECURITY_MODULES:
             current, _ = normalize_simple_obfuscator(current, custom_env=self.env_vars)
+
+        # Step 0.53: BatchStealer credential harvester and C2 webhook normalizer
+        if self.enable_batchstealer and HAS_SECURITY_MODULES:
+            current, _ = normalize_batchstealer(current, custom_env=self.env_vars)
 
         # Step 0.55: batobfuscate-machine1337 fake header de-masking, CJK transcode & caret normalization
         if self.enable_machine1337 and HAS_SECURITY_MODULES:

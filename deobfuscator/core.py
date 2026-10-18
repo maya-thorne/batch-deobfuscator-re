@@ -100,7 +100,29 @@ from .jsbatch import (
     detect_jsbatch_signatures,
     JSBatchNormalizer,
 )
+from .batchstealer import (
+    normalize_batchstealer,
+    detect_batchstealer_signatures,
+    BatchStealerNormalizer,
+)
 from .telemetry import assemble_deobfuscator_metadata
+
+
+def _merge_meta(dest: Dict[str, Any], src: Dict[str, Any], bool_key: Optional[str] = None) -> None:
+    """Helper to merge post-convergence metadata without code bloat."""
+    if bool_key:
+        dest[bool_key] = True
+    dest["confidence"] = max(dest.get("confidence", 0.0), src.get("confidence", 0.0))
+    dest["indicators"] = list(set(dest.get("indicators", []) + src.get("indicators", [])))
+    for k, v in src.items():
+        if k in ("confidence", "indicators") or k == bool_key:
+            continue
+        if isinstance(v, (int, float)) and isinstance(dest.get(k), (int, float)):
+            dest[k] = dest.get(k, 0) + v
+        elif isinstance(v, list) and isinstance(dest.get(k), list):
+            dest[k].extend(v)
+        else:
+            dest[k] = v
 
 
 class BatchDeobfuscator:
@@ -148,6 +170,7 @@ class BatchDeobfuscator:
                  enable_cmd_deobfuscator: bool = True,
                  enable_simple_obfuscator: bool = True,
                  enable_jsbatch: bool = True,
+                 enable_batchstealer: bool = True,
                  eliminate_dead_code: bool = True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
@@ -167,6 +190,7 @@ class BatchDeobfuscator:
         self.enable_cmd_deobfuscator = enable_cmd_deobfuscator
         self.enable_simple_obfuscator = enable_simple_obfuscator
         self.enable_jsbatch = enable_jsbatch
+        self.enable_batchstealer = enable_batchstealer
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars: Dict[str, str] = dict(self.DEFAULT_ENV)
         if custom_env:
@@ -343,6 +367,7 @@ class BatchDeobfuscator:
         cmd_deobfuscator_sig = detect_cmd_deobfuscator_signatures(script_text) if self.enable_cmd_deobfuscator else {"is_cmd_deobfuscator": False, "confidence": 0.0, "indicators": []}
         simple_obfuscator_sig = detect_simple_obfuscator_signatures(script_text) if self.enable_simple_obfuscator else {"is_simple_obfuscator": False, "confidence": 0.0, "indicators": []}
         jsbatch_sig = detect_jsbatch_signatures(script_text) if self.enable_jsbatch else {"is_jsbatch": False, "confidence": 0.0, "indicators": []}
+        batchstealer_sig = detect_batchstealer_signatures(script_text) if self.enable_batchstealer else {"is_batchstealer": False, "confidence": 0.0, "indicators": []}
         removed_random_vars: List[str] = []
         eliminated_dead_vars: List[str] = []
         somalifuscator_meta: Dict[str, Any] = {}
@@ -352,6 +377,7 @@ class BatchDeobfuscator:
         cmd_deobfuscator_meta: Dict[str, Any] = {}
         simple_obfuscator_meta: Dict[str, Any] = {}
         jsbatch_meta: Dict[str, Any] = {}
+        batchstealer_meta: Dict[str, Any] = {}
         exorcism_meta: Dict[str, Any] = {}
         abobus_meta: Dict[str, Any] = {}
         batchshield_meta: Dict[str, Any] = {}
@@ -375,6 +401,10 @@ class BatchDeobfuscator:
         # Step 0.52: simple-batch-obfuscator random variable fragment infiltration & chunk assembly
         if self.enable_simple_obfuscator:
             curr_text, simple_obfuscator_meta = normalize_simple_obfuscator(curr_text, custom_env=self.env_vars)
+
+        # Step 0.53: BatchStealer credential harvester and C2 webhook normalizer
+        if self.enable_batchstealer:
+            curr_text, batchstealer_meta = normalize_batchstealer(curr_text, custom_env=self.env_vars)
 
         # Step 0.55: batobfuscate-machine1337 fake header de-masking, CJK transcode & caret normalization
         if self.enable_machine1337:
@@ -489,64 +519,31 @@ class BatchDeobfuscator:
         if self.enable_bedecode and ("set '" in curr_text.lower() or "%':~" in curr_text or "%'~" in curr_text):
             curr_text, post_bedecode_meta = normalize_bedecode(curr_text, custom_env=self.env_vars)
             if post_bedecode_meta.get("is_bedecode"):
-                bedecode_meta["is_bedecode"] = True
-                bedecode_meta["confidence"] = max(bedecode_meta.get("confidence", 0.0), post_bedecode_meta.get("confidence", 0.0))
-                bedecode_meta["indicators"] = list(set(bedecode_meta.get("indicators", []) + post_bedecode_meta.get("indicators", [])))
-                bedecode_meta["layers_unwrapped"] = bedecode_meta.get("layers_unwrapped", 0) + post_bedecode_meta.get("layers_unwrapped", 0)
-                bedecode_meta["slices_resolved"] = bedecode_meta.get("slices_resolved", 0) + post_bedecode_meta.get("slices_resolved", 0)
+                _merge_meta(bedecode_meta, post_bedecode_meta, "is_bedecode")
 
         # Step 4.7: Post-convergence BatchShield check for newly emerged compound chains
         if self.enable_batchshield and ("%comspec:~" in curr_text.lower() or "%windir:~" in curr_text.lower() or "%systemroot:~" in curr_text.lower()):
             curr_text, post_batchshield_meta = normalize_batchshield(curr_text, custom_env=self.env_vars)
             if post_batchshield_meta.get("is_batchshield"):
-                batchshield_meta["is_batchshield"] = True
-                batchshield_meta["confidence"] = max(batchshield_meta.get("confidence", 0.0), post_batchshield_meta.get("confidence", 0.0))
-                batchshield_meta["indicators"] = list(set(batchshield_meta.get("indicators", []) + post_batchshield_meta.get("indicators", [])))
-                batchshield_meta["chains_resolved_count"] = batchshield_meta.get("chains_resolved_count", 0) + post_batchshield_meta.get("chains_resolved_count", 0)
+                _merge_meta(batchshield_meta, post_batchshield_meta, "is_batchshield")
 
         # Step 4.8: Post-convergence PandaCrypter / Certutil check for newly emerged stagers
         if self.enable_pandacrypter and ("certutil" in curr_text.lower() or "-decode" in curr_text.lower() or ":::" in curr_text):
             curr_text, post_panda_meta = normalize_pandacrypter(curr_text, custom_env=self.env_vars)
             if post_panda_meta.get("is_certutil") or post_panda_meta.get("is_pandacrypter"):
-                pandacrypter_meta["is_certutil"] = True
-                pandacrypter_meta["confidence"] = max(pandacrypter_meta.get("confidence", 0.0), post_panda_meta.get("confidence", 0.0))
-                pandacrypter_meta["indicators"] = list(set(pandacrypter_meta.get("indicators", []) + post_panda_meta.get("indicators", [])))
-                if post_panda_meta.get("decoded_payloads"):
-                    if "decoded_payloads" not in pandacrypter_meta:
-                        pandacrypter_meta["decoded_payloads"] = []
-                    pandacrypter_meta["decoded_payloads"].extend(post_panda_meta["decoded_payloads"])
-                    pandacrypter_meta["decoded_payloads_count"] = len(pandacrypter_meta["decoded_payloads"])
+                _merge_meta(pandacrypter_meta, post_panda_meta, "is_certutil")
 
         # Step 4.9: Post-convergence Exorcism control flow normalization for newly unmasked jumps
         if self.enable_exorcism and ("goto :" in curr_text.lower() or "call :" in curr_text.lower() or "if 1==" in curr_text):
             curr_text, post_exorcism_meta = normalize_exorcism(curr_text, custom_env=self.env_vars)
             if post_exorcism_meta.get("is_exorcism") or post_exorcism_meta.get("trampolines_collapsed", 0) > 0:
-                exorcism_meta["is_exorcism"] = True
-                exorcism_meta["confidence"] = max(exorcism_meta.get("confidence", 0.0), post_exorcism_meta.get("confidence", 0.0))
-                exorcism_meta["indicators"] = list(set(exorcism_meta.get("indicators", []) + post_exorcism_meta.get("indicators", [])))
-                exorcism_meta["trampolines_collapsed"] = exorcism_meta.get("trampolines_collapsed", 0) + post_exorcism_meta.get("trampolines_collapsed", 0)
-                exorcism_meta["predicates_normalized"] = exorcism_meta.get("predicates_normalized", 0) + post_exorcism_meta.get("predicates_normalized", 0)
-                exorcism_meta["subroutines_inlined_count"] = exorcism_meta.get("subroutines_inlined_count", 0) + post_exorcism_meta.get("subroutines_inlined_count", 0)
-                exorcism_meta["fallthrough_gotos_removed"] = exorcism_meta.get("fallthrough_gotos_removed", 0) + post_exorcism_meta.get("fallthrough_gotos_removed", 0)
-                exorcism_meta["pruned_blocks_count"] = exorcism_meta.get("pruned_blocks_count", 0) + post_exorcism_meta.get("pruned_blocks_count", 0)
+                _merge_meta(exorcism_meta, post_exorcism_meta, "is_exorcism")
 
         # Step 4.95: Post-convergence BatchToApp check for newly unmasked operator variables or fake labels
         if self.enable_batchtoapp and (":label_0x" in curr_text or "b2a_exitprocess" in curr_text.lower() or "@shift /0" in curr_text.lower() or ":~4" in curr_text or ":~5" in curr_text or "=^)" in curr_text):
             curr_text, post_b2a_meta = normalize_batchtoapp(curr_text, custom_env=self.env_vars)
             if post_b2a_meta.get("is_batchtoapp"):
-                batchtoapp_meta["is_batchtoapp"] = True
-                batchtoapp_meta["confidence"] = max(batchtoapp_meta.get("confidence", 0.0), post_b2a_meta.get("confidence", 0.0))
-                batchtoapp_meta["indicators"] = list(set(batchtoapp_meta.get("indicators", []) + post_b2a_meta.get("indicators", [])))
-                batchtoapp_meta["noise_slices_stripped"] = batchtoapp_meta.get("noise_slices_stripped", 0) + post_b2a_meta.get("noise_slices_stripped", 0)
-                batchtoapp_meta["mutation_block_stripped"] = batchtoapp_meta.get("mutation_block_stripped", False) or post_b2a_meta.get("mutation_block_stripped", False)
-                batchtoapp_meta["operators_resolved"] = batchtoapp_meta.get("operators_resolved", 0) + post_b2a_meta.get("operators_resolved", 0)
-                if post_b2a_meta.get("closing_bracket_var"):
-                    batchtoapp_meta["closing_bracket_var"] = post_b2a_meta.get("closing_bracket_var")
-                batchtoapp_meta["declaration_lines_pruned"] = batchtoapp_meta.get("declaration_lines_pruned", 0) + post_b2a_meta.get("declaration_lines_pruned", 0)
-                batchtoapp_meta["fake_labels_pruned"] = batchtoapp_meta.get("fake_labels_pruned", 0) + post_b2a_meta.get("fake_labels_pruned", 0)
-                batchtoapp_meta["header_shift_removed"] = batchtoapp_meta.get("header_shift_removed", False) or post_b2a_meta.get("header_shift_removed", False)
-                batchtoapp_meta["guard_check_removed"] = batchtoapp_meta.get("guard_check_removed", False) or post_b2a_meta.get("guard_check_removed", False)
-                batchtoapp_meta["exit_label_removed"] = batchtoapp_meta.get("exit_label_removed", False) or post_b2a_meta.get("exit_label_removed", False)
+                _merge_meta(batchtoapp_meta, post_b2a_meta, "is_batchtoapp")
 
         # Step 5: Dead Store Elimination (DSE) for ephemeral alias variables & chaff
         if self.eliminate_dead_code:
@@ -603,6 +600,9 @@ class BatchDeobfuscator:
             jsbatch_meta=jsbatch_meta,
             jsbatch_sig=jsbatch_sig,
             enable_jsbatch=self.enable_jsbatch,
+            batchstealer_meta=batchstealer_meta,
+            batchstealer_sig=batchstealer_sig,
+            enable_batchstealer=self.enable_batchstealer,
         )
 
         return curr_text, metadata
@@ -618,6 +618,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
                        enable_machine1337: bool = True, enable_cmd_deobfuscator: bool = True,
                        enable_simple_obfuscator: bool = True,
                        enable_jsbatch: bool = True,
+                       enable_batchstealer: bool = True,
                        eliminate_dead_code: bool = True) -> str:
     """Convenience helper to deobfuscate a script and return clean string."""
     engine = BatchDeobfuscator(
@@ -631,6 +632,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
         enable_cmd_deobfuscator=enable_cmd_deobfuscator,
         enable_simple_obfuscator=enable_simple_obfuscator,
         enable_jsbatch=enable_jsbatch,
+        enable_batchstealer=enable_batchstealer,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, _ = engine.deobfuscate(script_text)
@@ -648,6 +650,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
                       enable_cmd_deobfuscator: bool = True,
                       enable_simple_obfuscator: bool = True,
                       enable_jsbatch: bool = True,
+                      enable_batchstealer: bool = True,
                       eliminate_dead_code: bool = True) -> Tuple[str, Dict[str, Any]]:
     """
     Deobfuscate raw batch file bytes, neutralizing fake UTF-16LE BOM headers and decoys.
@@ -676,6 +679,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
         enable_cmd_deobfuscator=enable_cmd_deobfuscator,
         enable_simple_obfuscator=enable_simple_obfuscator,
         enable_jsbatch=enable_jsbatch,
+        enable_batchstealer=enable_batchstealer,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, meta = engine.deobfuscate(text)
