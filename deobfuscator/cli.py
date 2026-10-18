@@ -13,6 +13,7 @@ from . import __version__
 from .core import BatchDeobfuscator
 from .normalizers import normalize_bom
 from .diff import generate_unified_diff
+from .batchstealer import normalize_batchstealer
 
 def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -170,6 +171,18 @@ Engineered by Maya Thorne.
     )
 
     parser.add_argument(
+        "--no-batchstealer",
+        action="store_true",
+        help="Disable BatchStealer credential harvester and C2 webhook forensic normalization"
+    )
+
+    parser.add_argument(
+        "--defang-c2",
+        action="store_true",
+        help="Defang active C2 Discord webhooks, Telegram bots, and external endpoints into safe indicators"
+    )
+
+    parser.add_argument(
         "--no-dse",
         action="store_true",
         help="Disable Dead Store Elimination (DSE) for unreferenced variables"
@@ -242,9 +255,12 @@ def main(args=None) -> int:
         enable_cmd_deobfuscator=not opts.no_cmd_deobfuscator,
         enable_simple_obfuscator=not opts.no_simple_obfuscator,
         enable_jsbatch=not opts.no_jsbatch,
+        enable_batchstealer=not opts.no_batchstealer,
         eliminate_dead_code=not opts.no_dse
     )
     clean_text, meta = engine.deobfuscate(script_text)
+    if opts.defang_c2:
+        clean_text, _ = normalize_batchstealer(clean_text, defang_c2=True)
     if b2a_pe_info:
         meta["batchtoapp_pe"] = b2a_pe_info
 
@@ -461,6 +477,36 @@ def main(args=None) -> int:
                 sys.stderr.write(f"     • Extracted ActiveX ProgIDs: {', '.join(jst['activex_objects'])}\n")
             if jst.get("extracted_urls"):
                 sys.stderr.write(f"     • Extracted C2 URLs: {', '.join(jst['extracted_urls'])}\n")
+        bst = meta.get("batchstealer_telemetry", {})
+        if bst.get("is_batchstealer") or (bst.get("signatures", {}) and bst["signatures"].get("is_batchstealer")) or bst.get("extracted_discord_webhooks_count", 0) > 0:
+            sig = bst.get("signatures", {})
+            conf = sig.get("confidence", bst.get("confidence", 0.0))
+            sys.stderr.write(f"  ↳ BatchStealer Malware Forensics Detected: True (Confidence: {conf})\n")
+            if bst.get("indicators") or sig.get("indicators"):
+                ind = bst.get("indicators") or sig.get("indicators", [])
+                sys.stderr.write(f"     • Indicators: {', '.join(ind)}\n")
+            endpoints = bst.get("endpoints", {})
+            if endpoints.get("discord_webhooks"):
+                sys.stderr.write(f"     • Extracted Discord Webhooks: {len(endpoints['discord_webhooks'])}\n")
+                for wh in endpoints["discord_webhooks"]:
+                    sys.stderr.write(f"       - {wh.get('defanged_url', wh.get('url'))}\n")
+            if endpoints.get("telegram_bots"):
+                sys.stderr.write(f"     • Extracted Telegram Bots: {len(endpoints['telegram_bots'])}\n")
+            if endpoints.get("download_urls"):
+                sys.stderr.write(f"     • Extracted Staging Download URLs: {', '.join(endpoints['download_urls'])}\n")
+            inv = bst.get("inventory", {})
+            if inv.get("browsers"):
+                b_names = [b.get("browser", "") for b in inv["browsers"]]
+                sys.stderr.write(f"     • Targeted Browsers: {', '.join(b_names)}\n")
+            if inv.get("messaging"):
+                m_names = [m.get("client", "") for m in inv["messaging"]]
+                sys.stderr.write(f"     • Targeted Messaging Clients: {', '.join(m_names)}\n")
+            if inv.get("gaming"):
+                g_names = [g.get("platform", "") for g in inv["gaming"]]
+                sys.stderr.write(f"     • Targeted Gaming Platforms: {', '.join(g_names)}\n")
+            if bst.get("mitre_attack"):
+                mitre_ids = [m.get("id", "") for m in bst["mitre_attack"]]
+                sys.stderr.write(f"     • MITRE ATT&CK Techniques: {', '.join(mitre_ids)}\n")
         if meta.get("batchtoapp_pe"):
             bpe = meta["batchtoapp_pe"]
             sys.stderr.write(f"  ↳ BatchToApp PE Wrapper Forensics:\n")
