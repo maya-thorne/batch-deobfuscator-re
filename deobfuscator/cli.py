@@ -177,6 +177,12 @@ Engineered by Maya Thorne.
     )
 
     parser.add_argument(
+        "--no-wirebits",
+        action="store_true",
+        help="Disable BatchObfuscator-wirebits escape decoding, PowerShell array casting, and char splicing resolution"
+    )
+
+    parser.add_argument(
         "--defang-c2",
         action="store_true",
         help="Defang active C2 Discord webhooks, Telegram bots, and external endpoints into safe indicators"
@@ -256,6 +262,7 @@ def main(args=None) -> int:
         enable_simple_obfuscator=not opts.no_simple_obfuscator,
         enable_jsbatch=not opts.no_jsbatch,
         enable_batchstealer=not opts.no_batchstealer,
+        enable_wirebits=not opts.no_wirebits,
         eliminate_dead_code=not opts.no_dse
     )
     clean_text, meta = engine.deobfuscate(script_text)
@@ -507,6 +514,30 @@ def main(args=None) -> int:
             if bst.get("mitre_attack"):
                 mitre_ids = [m.get("id", "") for m in bst["mitre_attack"]]
                 sys.stderr.write(f"     • MITRE ATT&CK Techniques: {', '.join(mitre_ids)}\n")
+        wbt = meta.get("wirebits_telemetry", {})
+        if wbt.get("is_wirebits") or (wbt.get("signatures", {}) and wbt["signatures"].get("is_wirebits")) or wbt.get("spliced_fragments_resolved", 0) > 0 or wbt.get("hex_escapes_decoded", 0) > 0:
+            sig = wbt.get("signatures", {})
+            conf = sig.get("confidence", wbt.get("confidence", 0.0))
+            sys.stderr.write(f"  ↳ BatchObfuscator-wirebits Detected: True (Confidence: {conf})\n")
+            if wbt.get("indicators") or sig.get("indicators"):
+                ind = wbt.get("indicators") or sig.get("indicators", [])
+                sys.stderr.write(f"     • Indicators: {', '.join(ind)}\n")
+            if wbt.get("headers_neutralized"):
+                sys.stderr.write(f"     • Neutralized Base64/BOM header & &cls preamble: True\n")
+            if wbt.get("banners_stripped_count"):
+                sys.stderr.write(f"     • Stripped TUI menu & banner noise: {wbt['banners_stripped_count']} lines\n")
+            if wbt.get("hex_escapes_decoded"):
+                sys.stderr.write(f"     • Decoded hexadecimal escapes: {wbt['hex_escapes_decoded']} tokens\n")
+            if wbt.get("octal_escapes_decoded"):
+                sys.stderr.write(f"     • Decoded octal escape sequences: {wbt['octal_escapes_decoded']} tokens\n")
+            if wbt.get("powershell_arrays_resolved"):
+                sys.stderr.write(f"     • Resolved PowerShell character arrays & joins: {wbt['powershell_arrays_resolved']} expressions\n")
+            if wbt.get("radix_arithmetic_normalized"):
+                sys.stderr.write(f"     • Normalized non-standard radix numbers: {wbt['radix_arithmetic_normalized']} constants\n")
+            if wbt.get("spliced_fragments_resolved"):
+                sys.stderr.write(f"     • Reassembled sequential char fragments: {wbt['spliced_fragments_resolved']} variables\n")
+            if wbt.get("dead_stores_pruned"):
+                sys.stderr.write(f"     • Pruned dead variable stores: {wbt['dead_stores_pruned']} assignments\n")
         if meta.get("batchtoapp_pe"):
             bpe = meta["batchtoapp_pe"]
             sys.stderr.write(f"  ↳ BatchToApp PE Wrapper Forensics:\n")

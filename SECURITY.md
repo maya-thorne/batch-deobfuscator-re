@@ -15,7 +15,7 @@ Security updates are applied to the latest release series on the `main` branch.
 2. **Authenticated Encryption & Forensics**: All containers verify integrity and authenticity prior to exposing plaintext. Forensic PE parsers execute static structural parsing without executing untrusted code.
 3. **Constant-Time Verification**: Authentication tags, MACs, and sensitive token comparisons execute in constant time to mitigate side-channel timing attacks.
 4. **Bounds, Recursion & ReDoS Protection**: Binary container parsers and AST normalizers enforce strict length checks, bounds validation on string slicing indices (`%VAR:~start,len%`), bounded loop convergence passes ($\le 15$), recursion depth limits ($\le 25$), and atomic regex patterns with non-backtracking character classes to prevent Denial of Service (ReDoS) or infinite hangs.
-5. **Forensic Parser & Anti-Evasion Defense**: Input decoders perform statistical wide-character density analysis to neutralize malformed fake UTF-16LE/BE BOM header traps (BatCloak, machine1337), Base64/Hex encoding stagers (PandaCrypter, Certutil), and runtime unpacker stubs (BEDeCode, BatchShield, Invoke-CradleCrafter). Intermediate payload buffers are zeroized in RAM to prevent forensic residue leakage.
+5. **Forensic Parser & Anti-Evasion Defense**: Input decoders perform statistical wide-character density analysis to neutralize malformed fake UTF-16LE/BE BOM header traps (BatCloak, machine1337, WireBits), Base64/Hex encoding stagers (PandaCrypter, Certutil), octal/hex escape sequences, and runtime unpacker stubs (BEDeCode, BatchShield, Invoke-CradleCrafter). Intermediate payload buffers and escape translation tables are zeroized in RAM to prevent forensic residue leakage.
 
 ## Reporting a Vulnerability
 

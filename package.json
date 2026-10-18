@@ -1,6 +1,6 @@
 {
   "name": "batch-deobfuscator-re",
-  "version": "1.17.0",
+  "version": "1.18.0",
   "description": "Windows Batch Multi-Pass Deobfuscator Engine, Ghidra PE Unpacker Forensics & 48+ Reference Archive",
   "scripts": {
     "verify-assets": "node scripts/verify_assets.mjs",
@@ -33,7 +33,9 @@
     "jsbatch",
     "polyglot-extraction",
     "batchstealer",
-    "credential-harvester"
+    "credential-harvester",
+    "wirebits",
+    "batchobfuscator"
   ],
   "author": "Maya Thorne",
   "license": "Apache-2.0"

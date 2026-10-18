@@ -170,8 +170,19 @@ from .batchstealer import (
     analyze_exfiltration_channels,
     extract_batchstealer_forensics,
 )
+from .wirebits import (
+    WireBitsNormalizer,
+    normalize_wirebits,
+    detect_wirebits_signatures,
+    neutralize_wirebits_headers,
+    decode_hex_escapes,
+    decode_octal_escapes,
+    resolve_char_casting_and_arrays,
+    normalize_radix_arithmetic,
+    resolve_wirebits_char_splicing,
+)
 
-__version__ = "1.17.0"
+__version__ = "1.18.0"
 __author__ = "Maya Thorne"
 __all__ = [
     "BatchDeobfuscator",
@@ -309,5 +320,14 @@ __all__ = [
     "extract_persistence_and_droppers",
     "analyze_exfiltration_channels",
     "extract_batchstealer_forensics",
+    "WireBitsNormalizer",
+    "normalize_wirebits",
+    "detect_wirebits_signatures",
+    "neutralize_wirebits_headers",
+    "decode_hex_escapes",
+    "decode_octal_escapes",
+    "resolve_char_casting_and_arrays",
+    "normalize_radix_arithmetic",
+    "resolve_wirebits_char_splicing",
 ]
 

@@ -28,6 +28,7 @@ try:
     from deobfuscator.simple_obfuscator import normalize_simple_obfuscator
     from deobfuscator.jsbatch import normalize_jsbatch
     from deobfuscator.batchstealer import normalize_batchstealer
+    from deobfuscator.wirebits import normalize_wirebits
     HAS_SECURITY_MODULES = True
 except ImportError:
     try:
@@ -48,6 +49,7 @@ except ImportError:
         from deobfuscator.simple_obfuscator import normalize_simple_obfuscator
         from deobfuscator.jsbatch import normalize_jsbatch
         from deobfuscator.batchstealer import normalize_batchstealer
+        from deobfuscator.wirebits import normalize_wirebits
         HAS_SECURITY_MODULES = True
     except ImportError:
         HAS_SECURITY_MODULES = False
@@ -64,6 +66,7 @@ class BatchDeobfuscator:
                  enable_simple_obfuscator=True,
                  enable_jsbatch=True,
                  enable_batchstealer=True,
+                 enable_wirebits=True,
                  eliminate_dead_code=True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
@@ -84,6 +87,7 @@ class BatchDeobfuscator:
         self.enable_simple_obfuscator = enable_simple_obfuscator
         self.enable_jsbatch = enable_jsbatch
         self.enable_batchstealer = enable_batchstealer
+        self.enable_wirebits = enable_wirebits
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars = {}
         # Prepopulate default Windows environment variables commonly used for slicing
@@ -117,6 +121,19 @@ class BatchDeobfuscator:
             "homedrive": "C:",
             "homepath": r"\Users\Administrator",
         })
+
+    def zeroize(self):
+        """Cryptographically sanitize internal symbol tables and buffers."""
+        if hasattr(self, "env_vars") and isinstance(self.env_vars, dict):
+            for k in list(self.env_vars.keys()):
+                self.env_vars[k] = ""
+            self.env_vars.clear()
+
+    def __del__(self):
+        try:
+            self.zeroize()
+        except Exception:
+            pass
 
     def strip_carets(self, text):
         """Strip carets outside quotes. If inside quotes, preserve them."""
@@ -453,6 +470,10 @@ class BatchDeobfuscator:
         if self.enable_batchstealer and HAS_SECURITY_MODULES:
             current, _ = normalize_batchstealer(current, custom_env=self.env_vars)
 
+        # Step 0.54: BatchObfuscator-wirebits header, escape, casting & char splicing normalization
+        if self.enable_wirebits and HAS_SECURITY_MODULES:
+            current, _ = normalize_wirebits(current, custom_env=self.env_vars)
+
         # Step 0.55: batobfuscate-machine1337 fake header de-masking, CJK transcode & caret normalization
         if self.enable_machine1337 and HAS_SECURITY_MODULES:
             current, _ = normalize_machine1337(current, custom_env=self.env_vars)
@@ -552,6 +573,10 @@ class BatchDeobfuscator:
         # Step 4.95: Post-convergence BatchToApp check for newly unmasked operator variables or fake labels
         if self.enable_batchtoapp and HAS_SECURITY_MODULES and (":label_0x" in current or "b2a_exitprocess" in current.lower() or "@shift /0" in current.lower() or ":~4" in current or ":~5" in current or "=^)" in current):
             current, _ = normalize_batchtoapp(current, custom_env=self.env_vars)
+
+        # Step 4.96: Post-convergence WireBits check for newly unmasked escape sequences or char splicing
+        if self.enable_wirebits and HAS_SECURITY_MODULES and ("\\x" in current or "\\0" in current or "%_1%" in current or "[char]" in current.lower()):
+            current, _ = normalize_wirebits(current, custom_env=self.env_vars)
 
         # Step 5: Dead Store Elimination for unreferenced variables and ephemeral aliases
         if self.eliminate_dead_code and HAS_SECURITY_MODULES:

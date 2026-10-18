@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.0] - 2026-10-18
+
+### Added
+- **BatchObfuscator-wirebits Evasion Normalizer & Radix Escape Decoding Engine (`deobfuscator/wirebits.py`)**:
+  - Heuristic signature detection (`detect_wirebits_signatures`): classifies BatchObfuscator (wirebits) signatures and evasion techniques across 6 indicator categories (Base64 preamble `//4mY2xzDQo=`, UTF-16LE fake BOM `\xff\xfe&cls\r\n`, TUI box menu banners, sequential character splicing `%_1%%_2%...`, octal/hex escape clusters, PowerShell `[char]0xHH` casting, and non-standard radix arithmetic in `set /a`) with quantitative confidence scoring.
+  - Header preamble and decorative TUI banner/box menu stripping (`neutralize_wirebits_headers`): strips Base64 error-suppression preambles (`//4mY2xzDQo=`, `\xff\xfe&cls\r\n`), Unicode box-drawing character borders (`+───+`, `|`, `╰┈➤`, `BatchObfuscator by wirebits`), and interactive menu selections (`[1] Start`, `[2] Exit`), recovering clean batch execution payloads.
+  - Hexadecimal and octal escape sequence decoding (`decode_hex_escapes`, `decode_octal_escapes`): safely parses non-standard radix escapes (`\x41`, `\u0041`, `\101`, `\0101`) to readable ASCII / UTF-8 characters while preserving binary bytes and control characters.
+  - PowerShell character casting and array reconstruction (`resolve_char_casting_and_arrays`): resolves `[char]0x41+[char]0x42...` casting expressions and `-join (0x41,0x42|%{[char]$_})` pipelines into readable command strings.
+  - Non-standard radix arithmetic normalization (`normalize_radix_arithmetic`): evaluates hexadecimal (`0xHH`), octal (`0OO`), and custom radix (`base#num`) arithmetic in `set /a` calculations into canonical decimal equivalents.
+  - Sequential character fragment splicing (`resolve_wirebits_char_splicing`): reconstructs single-character fragmented command streams (`set _1=p&set _2=o...&%_1%%_2%...`) into contiguous command lines while performing Dead Store Elimination (DSE) on temporary assignment fragments.
+  - In-memory cryptographic buffer sanitization (`zeroize_dict`, `zeroize_bytes`): cryptographically wipes decoded buffers, intermediate character tables, and forensic metadata structures upon completion.
+  - `WireBitsNormalizer` production class and `normalize_wirebits` functional wrapper.
+- **Dedicated BatchObfuscator-wirebits Verification Suite (`tests/test_wirebits.py`)**:
+  - Added 28 comprehensive unit and integration tests covering signature heuristics, header/banner neutralization, hex/octal escape decoding, PowerShell char array reconstruction, radix arithmetic resolution, sequential fragment splicing, object-oriented normalizer class, cryptographic memory wiping, and Corpus 19 parity (expanding test suite from 306 to 334 tests).
+
+### Changed
+- Integrated WireBits normalizer into core multi-pass convergence pipeline (`deobfuscator/core.py`, `deobfuscate_script`, `deobfuscate_bytes`) via `enable_wirebits=True` (executing in Step 0.54 and post-convergence Step 4.96).
+- Updated telemetry aggregator (`deobfuscator/telemetry.py`) with `wirebits_meta`, `wirebits_sig`, `enable_wirebits`, and `wirebits_telemetry`.
+- Extended CLI toolchain (`deobfuscator/cli.py`) with `--no-wirebits` flag and formatted telemetry reporting section.
+- Synchronized standalone engine (`src/deobfuscator_engine.py`) with WireBits normalization passes.
+- Updated architecture map (`scripts/ARCHITECTURE_MAP.md`), task backlog, and bumped package version across `package.json`, `pyproject.toml`, and `deobfuscator/__init__.py` to v1.18.0.
+
 ## [1.17.0] - 2026-10-18
 
 ### Added

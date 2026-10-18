@@ -105,6 +105,13 @@ from .batchstealer import (
     detect_batchstealer_signatures,
     BatchStealerNormalizer,
 )
+from .wirebits import (
+    normalize_wirebits,
+    detect_wirebits_signatures,
+    neutralize_wirebits_headers,
+    WireBitsNormalizer,
+    SPLICED_VAR_REF_RE,
+)
 from .telemetry import assemble_deobfuscator_metadata
 
 
@@ -171,6 +178,7 @@ class BatchDeobfuscator:
                  enable_simple_obfuscator: bool = True,
                  enable_jsbatch: bool = True,
                  enable_batchstealer: bool = True,
+                 enable_wirebits: bool = True,
                  eliminate_dead_code: bool = True):
         self.max_passes = max_passes
         self.strip_undefined = strip_undefined
@@ -191,6 +199,7 @@ class BatchDeobfuscator:
         self.enable_simple_obfuscator = enable_simple_obfuscator
         self.enable_jsbatch = enable_jsbatch
         self.enable_batchstealer = enable_batchstealer
+        self.enable_wirebits = enable_wirebits
         self.eliminate_dead_code = eliminate_dead_code
         self.env_vars: Dict[str, str] = dict(self.DEFAULT_ENV)
         if custom_env:
@@ -248,6 +257,7 @@ class BatchDeobfuscator:
             local_parens = 0
             i = eq_idx + 1
             n = len(line)
+
             while i < n:
                 ch = line[i]
                 if ch == '"':
@@ -350,7 +360,7 @@ class BatchDeobfuscator:
         start_time = time.perf_counter()
         curr_text = script_text
 
-        # Heuristic detection for metadata
+        # Heuristic detection for metadata across specialized engines
         batcloak_sig = detect_batcloak_signatures(None, script_text)
         somalifuscator_sig = detect_somalifuscator_signatures(script_text)
         oxidizer_sig = detect_oxidizer_signatures(script_text)
@@ -368,23 +378,14 @@ class BatchDeobfuscator:
         simple_obfuscator_sig = detect_simple_obfuscator_signatures(script_text) if self.enable_simple_obfuscator else {"is_simple_obfuscator": False, "confidence": 0.0, "indicators": []}
         jsbatch_sig = detect_jsbatch_signatures(script_text) if self.enable_jsbatch else {"is_jsbatch": False, "confidence": 0.0, "indicators": []}
         batchstealer_sig = detect_batchstealer_signatures(script_text) if self.enable_batchstealer else {"is_batchstealer": False, "confidence": 0.0, "indicators": []}
+        wirebits_sig = detect_wirebits_signatures(script_text) if self.enable_wirebits else {"is_wirebits": False, "confidence": 0.0, "indicators": []}
+
         removed_random_vars: List[str] = []
         eliminated_dead_vars: List[str] = []
-        somalifuscator_meta: Dict[str, Any] = {}
-        oxidizer_meta: Dict[str, Any] = {}
-        batchtoapp_meta: Dict[str, Any] = {}
-        machine1337_meta: Dict[str, Any] = {}
-        cmd_deobfuscator_meta: Dict[str, Any] = {}
-        simple_obfuscator_meta: Dict[str, Any] = {}
-        jsbatch_meta: Dict[str, Any] = {}
-        batchstealer_meta: Dict[str, Any] = {}
-        exorcism_meta: Dict[str, Any] = {}
-        abobus_meta: Dict[str, Any] = {}
-        batchshield_meta: Dict[str, Any] = {}
-        bedecode_meta: Dict[str, Any] = {}
-        dosfuscation_meta: Dict[str, Any] = {}
-        cradle_meta: Dict[str, Any] = {}
-        pandacrypter_meta: Dict[str, Any] = {}
+        somalifuscator_meta, oxidizer_meta, batchtoapp_meta, machine1337_meta = {}, {}, {}, {}
+        cmd_deobfuscator_meta, simple_obfuscator_meta, jsbatch_meta = {}, {}, {}
+        batchstealer_meta, exorcism_meta, abobus_meta, batchshield_meta = {}, {}, {}, {}
+        bedecode_meta, dosfuscation_meta, cradle_meta, pandacrypter_meta, wirebits_meta = {}, {}, {}, {}, {}
 
         # Step 0: Split multi-line chained statements (&-splits outside quotes)
         if self.split_chains:
@@ -405,6 +406,10 @@ class BatchDeobfuscator:
         # Step 0.53: BatchStealer credential harvester and C2 webhook normalizer
         if self.enable_batchstealer:
             curr_text, batchstealer_meta = normalize_batchstealer(curr_text, custom_env=self.env_vars)
+
+        # Step 0.54: BatchObfuscator-wirebits header, escape, casting & char splicing normalization
+        if self.enable_wirebits:
+            curr_text, wirebits_meta = normalize_wirebits(curr_text, custom_env=self.env_vars)
 
         # Step 0.55: batobfuscate-machine1337 fake header de-masking, CJK transcode & caret normalization
         if self.enable_machine1337:
@@ -464,19 +469,13 @@ class BatchDeobfuscator:
             processed_lines = []
 
             for line in lines:
-                # 1. Strip carets outside quotes
                 l = strip_carets(line)
-                # 2. Strip empty double quotes
                 l = strip_empty_quotes(l)
-                # 3. Resolve variables, slicing, and undefined variables
                 l = self.resolve_variables(l)
-                # 4. Harvest dynamic SET commands on resolved line
                 self.extract_and_set_vars(l)
                 processed_lines.append(l.strip())
 
             curr_text = "\n".join(processed_lines)
-
-            # Record telemetry for this pass
             diff_chars = abs(len(curr_text) - len(prev_pass_text))
             self.pass_history.append({
                 "pass": p,
@@ -485,7 +484,6 @@ class BatchDeobfuscator:
                 "converged": (curr_text == prev_pass_text)
             })
 
-            # Check mathematical fixed-point convergence
             if curr_text == prev_pass_text:
                 break
 
@@ -493,27 +491,13 @@ class BatchDeobfuscator:
         if self.enable_jsbatch and ("cscript" in curr_text.lower() or "/* ::" in curr_text or "@codesection" in curr_text.lower() or "%ab9:~" in curr_text.lower()):
             curr_text, post_jsbatch_meta = normalize_jsbatch(curr_text, custom_env=self.env_vars)
             if post_jsbatch_meta.get("is_jsbatch") or post_jsbatch_meta.get("is_polyglot"):
-                jsbatch_meta["is_jsbatch"] = True
-                jsbatch_meta["confidence"] = max(jsbatch_meta.get("confidence", 0.0), post_jsbatch_meta.get("confidence", 0.0))
-                jsbatch_meta["slices_resolved"] = jsbatch_meta.get("slices_resolved", 0) + post_jsbatch_meta.get("slices_resolved", 0)
-                jsbatch_meta["chained_tokens_resolved"] = jsbatch_meta.get("chained_tokens_resolved", 0) + post_jsbatch_meta.get("chained_tokens_resolved", 0)
+                _merge_meta(jsbatch_meta, post_jsbatch_meta, "is_jsbatch")
 
         # Step 4.5: Post-convergence CradleCrafter check for newly assembled stagers
         if self.enable_cradlecrafter and ("powershell" in curr_text.lower() or "-enc" in curr_text.lower() or "download" in curr_text.lower()):
             curr_text, post_cradle_meta = normalize_cradlecrafter(curr_text, custom_env=self.env_vars)
             if post_cradle_meta.get("is_cradle"):
-                cradle_meta["is_cradle"] = True
-                cradle_meta["confidence"] = max(cradle_meta.get("confidence", 0.0), post_cradle_meta.get("confidence", 0.0))
-                cradle_meta["indicators"] = list(set(cradle_meta.get("indicators", []) + post_cradle_meta.get("indicators", [])))
-                cradle_meta["signatures"] = post_cradle_meta.get("signatures", cradle_meta.get("signatures", {}))
-            if post_cradle_meta.get("decoded_payloads"):
-                if "decoded_payloads" not in cradle_meta:
-                    cradle_meta["decoded_payloads"] = []
-                cradle_meta["decoded_payloads"].extend(post_cradle_meta["decoded_payloads"])
-                cradle_meta["decoded_payloads_count"] = len(cradle_meta["decoded_payloads"])
-                cradle_meta["extracted_urls"] = list(set(cradle_meta.get("extracted_urls", []) + post_cradle_meta.get("extracted_urls", [])))
-                cradle_meta["extracted_destinations"] = list(set(cradle_meta.get("extracted_destinations", []) + post_cradle_meta.get("extracted_destinations", [])))
-                cradle_meta["cradle_methods"] = list(set(cradle_meta.get("cradle_methods", []) + post_cradle_meta.get("cradle_methods", [])))
+                _merge_meta(cradle_meta, post_cradle_meta, "is_cradle")
 
         # Step 4.6: Post-convergence BEDeCode check for newly emerged table stubs
         if self.enable_bedecode and ("set '" in curr_text.lower() or "%':~" in curr_text or "%'~" in curr_text):
@@ -545,6 +529,12 @@ class BatchDeobfuscator:
             if post_b2a_meta.get("is_batchtoapp"):
                 _merge_meta(batchtoapp_meta, post_b2a_meta, "is_batchtoapp")
 
+        # Step 4.96: Post-convergence WireBits check for newly unmasked escape sequences or char splicing
+        if self.enable_wirebits and ("\\x" in curr_text or "\\0" in curr_text or "%_1%" in curr_text or "[char]" in curr_text.lower() or SPLICED_VAR_REF_RE.search(curr_text)):
+            curr_text, post_wb_meta = normalize_wirebits(curr_text, custom_env=self.env_vars)
+            if post_wb_meta.get("is_wirebits"):
+                _merge_meta(wirebits_meta, post_wb_meta, "is_wirebits")
+
         # Step 5: Dead Store Elimination (DSE) for ephemeral alias variables & chaff
         if self.eliminate_dead_code:
             curr_text, eliminated_dead_vars = eliminate_dead_stores(curr_text)
@@ -552,57 +542,25 @@ class BatchDeobfuscator:
         elapsed_ms = (time.perf_counter() - start_time) * 1000.0
 
         metadata = assemble_deobfuscator_metadata(
-            elapsed_ms=elapsed_ms,
-            pass_history=self.pass_history,
-            env_vars=self.env_vars,
-            default_env=self.DEFAULT_ENV,
-            batcloak_sig=batcloak_sig,
-            removed_random_vars=removed_random_vars,
-            eliminated_dead_vars=eliminated_dead_vars,
-            somalifuscator_meta=somalifuscator_meta,
-            somalifuscator_sig=somalifuscator_sig,
-            oxidizer_meta=oxidizer_meta,
-            oxidizer_sig=oxidizer_sig,
-            abobus_meta=abobus_meta,
-            abobus_sig=abobus_sig,
-            enable_abobus=self.enable_abobus,
-            dosfuscation_meta=dosfuscation_meta,
-            dosfuscation_sig=dosfuscation_sig,
-            enable_dosfuscation=self.enable_dosfuscation,
-            cradle_meta=cradle_meta,
-            cradle_sig=cradle_sig,
-            enable_cradlecrafter=self.enable_cradlecrafter,
-            bedecode_meta=bedecode_meta,
-            bedecode_sig=bedecode_sig,
-            enable_bedecode=self.enable_bedecode,
-            batchshield_meta=batchshield_meta,
-            batchshield_sig=batchshield_sig,
-            enable_batchshield=self.enable_batchshield,
-            pandacrypter_meta=pandacrypter_meta,
-            pandacrypter_sig=pandacrypter_sig,
-            certutil_sig=certutil_sig,
-            enable_pandacrypter=self.enable_pandacrypter,
-            exorcism_meta=exorcism_meta,
-            exorcism_sig=exorcism_sig,
-            enable_exorcism=self.enable_exorcism,
-            batchtoapp_meta=batchtoapp_meta,
-            batchtoapp_sig=batchtoapp_sig,
-            enable_batchtoapp=self.enable_batchtoapp,
-            machine1337_meta=machine1337_meta,
-            machine1337_sig=machine1337_sig,
-            enable_machine1337=self.enable_machine1337,
-            cmd_deobfuscator_meta=cmd_deobfuscator_meta,
-            cmd_deobfuscator_sig=cmd_deobfuscator_sig,
-            enable_cmd_deobfuscator=self.enable_cmd_deobfuscator,
-            simple_obfuscator_meta=simple_obfuscator_meta,
-            simple_obfuscator_sig=simple_obfuscator_sig,
-            enable_simple_obfuscator=self.enable_simple_obfuscator,
-            jsbatch_meta=jsbatch_meta,
-            jsbatch_sig=jsbatch_sig,
-            enable_jsbatch=self.enable_jsbatch,
-            batchstealer_meta=batchstealer_meta,
-            batchstealer_sig=batchstealer_sig,
-            enable_batchstealer=self.enable_batchstealer,
+            elapsed_ms=elapsed_ms, pass_history=self.pass_history, env_vars=self.env_vars,
+            default_env=self.DEFAULT_ENV, batcloak_sig=batcloak_sig,
+            removed_random_vars=removed_random_vars, eliminated_dead_vars=eliminated_dead_vars,
+            somalifuscator_meta=somalifuscator_meta, somalifuscator_sig=somalifuscator_sig,
+            oxidizer_meta=oxidizer_meta, oxidizer_sig=oxidizer_sig,
+            abobus_meta=abobus_meta, abobus_sig=abobus_sig, enable_abobus=self.enable_abobus,
+            dosfuscation_meta=dosfuscation_meta, dosfuscation_sig=dosfuscation_sig, enable_dosfuscation=self.enable_dosfuscation,
+            cradle_meta=cradle_meta, cradle_sig=cradle_sig, enable_cradlecrafter=self.enable_cradlecrafter,
+            bedecode_meta=bedecode_meta, bedecode_sig=bedecode_sig, enable_bedecode=self.enable_bedecode,
+            batchshield_meta=batchshield_meta, batchshield_sig=batchshield_sig, enable_batchshield=self.enable_batchshield,
+            pandacrypter_meta=pandacrypter_meta, pandacrypter_sig=pandacrypter_sig, certutil_sig=certutil_sig, enable_pandacrypter=self.enable_pandacrypter,
+            exorcism_meta=exorcism_meta, exorcism_sig=exorcism_sig, enable_exorcism=self.enable_exorcism,
+            batchtoapp_meta=batchtoapp_meta, batchtoapp_sig=batchtoapp_sig, enable_batchtoapp=self.enable_batchtoapp,
+            machine1337_meta=machine1337_meta, machine1337_sig=machine1337_sig, enable_machine1337=self.enable_machine1337,
+            cmd_deobfuscator_meta=cmd_deobfuscator_meta, cmd_deobfuscator_sig=cmd_deobfuscator_sig, enable_cmd_deobfuscator=self.enable_cmd_deobfuscator,
+            simple_obfuscator_meta=simple_obfuscator_meta, simple_obfuscator_sig=simple_obfuscator_sig, enable_simple_obfuscator=self.enable_simple_obfuscator,
+            jsbatch_meta=jsbatch_meta, jsbatch_sig=jsbatch_sig, enable_jsbatch=self.enable_jsbatch,
+            batchstealer_meta=batchstealer_meta, batchstealer_sig=batchstealer_sig, enable_batchstealer=self.enable_batchstealer,
+            wirebits_meta=wirebits_meta, wirebits_sig=wirebits_sig, enable_wirebits=self.enable_wirebits,
         )
 
         return curr_text, metadata
@@ -619,6 +577,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
                        enable_simple_obfuscator: bool = True,
                        enable_jsbatch: bool = True,
                        enable_batchstealer: bool = True,
+                       enable_wirebits: bool = True,
                        eliminate_dead_code: bool = True) -> str:
     """Convenience helper to deobfuscate a script and return clean string."""
     engine = BatchDeobfuscator(
@@ -633,6 +592,7 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
         enable_simple_obfuscator=enable_simple_obfuscator,
         enable_jsbatch=enable_jsbatch,
         enable_batchstealer=enable_batchstealer,
+        enable_wirebits=enable_wirebits,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, _ = engine.deobfuscate(script_text)
@@ -640,22 +600,24 @@ def deobfuscate_script(script_text: str, max_passes: int = 15, strip_undefined: 
 
 
 def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool = True,
-                      split_chains: bool = True, enable_batcloak: bool = True,
-                      enable_somalifuscator: bool = True, enable_oxidizer: bool = True,
-                      enable_abobus: bool = True, enable_dosfuscation: bool = True,
-                      enable_cradlecrafter: bool = True, enable_bedecode: bool = True,
-                      enable_batchshield: bool = True, enable_pandacrypter: bool = True,
-                      enable_exorcism: bool = True, enable_batchtoapp: bool = True,
-                      enable_machine1337: bool = True,
-                      enable_cmd_deobfuscator: bool = True,
-                      enable_simple_obfuscator: bool = True,
-                      enable_jsbatch: bool = True,
-                      enable_batchstealer: bool = True,
-                      eliminate_dead_code: bool = True) -> Tuple[str, Dict[str, Any]]:
+                       split_chains: bool = True, enable_batcloak: bool = True,
+                       enable_somalifuscator: bool = True, enable_oxidizer: bool = True,
+                       enable_abobus: bool = True, enable_dosfuscation: bool = True,
+                       enable_cradlecrafter: bool = True, enable_bedecode: bool = True,
+                       enable_batchshield: bool = True, enable_pandacrypter: bool = True,
+                       enable_exorcism: bool = True, enable_batchtoapp: bool = True,
+                       enable_machine1337: bool = True,
+                       enable_cmd_deobfuscator: bool = True,
+                       enable_simple_obfuscator: bool = True,
+                       enable_jsbatch: bool = True,
+                       enable_batchstealer: bool = True,
+                       enable_wirebits: bool = True,
+                       eliminate_dead_code: bool = True) -> Tuple[str, Dict[str, Any]]:
     """
     Deobfuscate raw batch file bytes, neutralizing fake UTF-16LE BOM headers and decoys.
     If binary data is a BatchToApp PE executable, extracts embedded batch script payload.
     If binary data has machine1337 multi-BOM header, extracts clean decoded script.
+    If binary data has WireBits header (//4mY2xzDQo= / \xff\xfe&cls\r\n), neutralizes header.
     Returns:
         Tuple[clean_script_text, forensic_metadata]
     """
@@ -680,6 +642,7 @@ def deobfuscate_bytes(data: bytes, max_passes: int = 15, strip_undefined: bool =
         enable_simple_obfuscator=enable_simple_obfuscator,
         enable_jsbatch=enable_jsbatch,
         enable_batchstealer=enable_batchstealer,
+        enable_wirebits=enable_wirebits,
         eliminate_dead_code=eliminate_dead_code,
     )
     clean_text, meta = engine.deobfuscate(text)
