@@ -64,6 +64,9 @@ def assemble_deobfuscator_metadata(
     batchstealer_meta: Optional[Dict[str, Any]] = None,
     batchstealer_sig: Optional[Dict[str, Any]] = None,
     enable_batchstealer: bool = True,
+    wirebits_meta: Optional[Dict[str, Any]] = None,
+    wirebits_sig: Optional[Dict[str, Any]] = None,
+    enable_wirebits: bool = True,
 ) -> Dict[str, Any]:
     """Assemble complete forensic telemetry across all specialized deobfuscator engines."""
     return {
@@ -259,5 +262,20 @@ def assemble_deobfuscator_metadata(
             "extracted_download_urls_count": 0,
             "targeted_browsers_count": 0,
             "targeted_gaming_platforms_count": 0,
+        },
+        "wirebits_telemetry": wirebits_meta or {
+            "signatures": wirebits_sig or {},
+            "is_wirebits": wirebits_sig.get("is_wirebits", False) if enable_wirebits and wirebits_sig else False,
+            "confidence": wirebits_sig.get("confidence", 0.0) if enable_wirebits and wirebits_sig else 0.0,
+            "indicators": wirebits_sig.get("indicators", []) if enable_wirebits and wirebits_sig else [],
+            "headers_neutralized": False,
+            "banners_stripped_count": 0,
+            "hex_escapes_decoded": 0,
+            "octal_escapes_decoded": 0,
+            "powershell_arrays_resolved": 0,
+            "radix_arithmetic_normalized": 0,
+            "spliced_fragments_resolved": 0,
+            "dead_stores_pruned": 0,
+            "assembled_tokens": [],
         },
     }
