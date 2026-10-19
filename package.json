@@ -1,6 +1,6 @@
 {
   "name": "batch-deobfuscator-re",
-  "version": "1.18.0",
+  "version": "1.19.0",
   "description": "Windows Batch Multi-Pass Deobfuscator Engine, Ghidra PE Unpacker Forensics & 48+ Reference Archive",
   "scripts": {
     "verify-assets": "node scripts/verify_assets.mjs",
@@ -13,6 +13,8 @@
     "reverse-engineering",
     "malware-analysis",
     "forensics",
+    "assemblyline",
+    "cccs-assemblyline",
     "batcloak",
     "somalifuscator",
     "0xidiz3r",

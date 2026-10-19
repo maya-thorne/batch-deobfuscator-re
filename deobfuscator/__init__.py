@@ -181,8 +181,25 @@ from .wirebits import (
     normalize_radix_arithmetic,
     resolve_wirebits_char_splicing,
 )
+from .assemblyline_models import (
+    AssemblylineResult,
+    AssemblylineSection,
+    AssemblylineHeuristic,
+    AssemblylineExtractedFile,
+    CCCS_HEURISTICS,
+    KNOWN_LOLBAS_BINARIES,
+    CUSTOM_BATCH_ID,
+    CUSTOM_PS1_ID,
+    truncate_command,
+)
+from .assemblyline import (
+    AssemblylineBridge,
+    extract_batch_traits,
+    generate_assemblyline_report,
+    export_assemblyline_result,
+)
 
-__version__ = "1.18.0"
+__version__ = "1.19.0"
 __author__ = "Maya Thorne"
 __all__ = [
     "BatchDeobfuscator",
@@ -329,5 +346,18 @@ __all__ = [
     "resolve_char_casting_and_arrays",
     "normalize_radix_arithmetic",
     "resolve_wirebits_char_splicing",
+    "AssemblylineResult",
+    "AssemblylineSection",
+    "AssemblylineHeuristic",
+    "AssemblylineExtractedFile",
+    "CCCS_HEURISTICS",
+    "KNOWN_LOLBAS_BINARIES",
+    "CUSTOM_BATCH_ID",
+    "CUSTOM_PS1_ID",
+    "truncate_command",
+    "AssemblylineBridge",
+    "extract_batch_traits",
+    "generate_assemblyline_report",
+    "export_assemblyline_result",
 ]
 

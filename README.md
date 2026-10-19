@@ -328,7 +328,11 @@ batch-deobfuscator samples/02_caret_and_delimiters_sample.bat --diff
 # 4. Export forensic telemetry & resolved symbol table in JSON format
 batch-deobfuscator samples/03_dynamic_substitution_table_sample.bat --format json
 
-# 5. Direct Python module execution (zero installation required)
+# 5. Export Canadian Centre for Cyber Security (CCCS) Assemblyline 4 Service Result JSON
+batch-deobfuscator samples/03_dynamic_substitution_table_sample.bat --format assemblyline
+batch-deobfuscator samples/03_dynamic_substitution_table_sample.bat --assemblyline-out report.json
+
+# 6. Direct Python module execution (zero installation required)
 python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
 ```
 
@@ -365,8 +369,13 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
     </tr>
     <tr>
       <td><code>--format</code></td>
-      <td>Output format: <code>text</code> for script only, or <code>json</code> for forensic telemetry &amp; symbol table</td>
+      <td>Output format: <code>text</code> for clean script only, <code>json</code> for telemetry &amp; symbols, or <code>assemblyline</code> for CCCS Assemblyline 4 Service Result JSON</td>
       <td align="center"><code>text</code></td>
+    </tr>
+    <tr>
+      <td><code>--assemblyline-out</code></td>
+      <td>Destination path to export CCCS Assemblyline 4 Service Result JSON report and extracted stagers</td>
+      <td align="center"><code>None</code></td>
     </tr>
     <tr>
       <td><code>--no-batcloak</code></td>
@@ -553,11 +562,13 @@ batch-deobfuscator-re/
 │   └── eval_corpus_runner.py              # 28-Corpus Automated Evaluation & Scoring Engine
 │
 ├── deobfuscator/                          # 🛠️ Production CLI Toolchain Package (python -m deobfuscator)
-│   ├── __init__.py                        # Package initialization, v1.18.0 & Public API exports
+│   ├── __init__.py                        # Package initialization, v1.19.0 & Public API exports
 │   ├── __main__.py                        # Direct module execution entrypoint (-m deobfuscator)
-│   ├── cli.py                             # Rich CLI Interface (argparse, JSON export, Diff, Verbose)
+│   ├── cli.py                             # Rich CLI Interface (argparse, JSON export, Diff, Verbose, Assemblyline)
 │   ├── core.py                            # Multi-Pass Fixed-Point AST Convergence Loop Coordinator
 │   ├── telemetry.py                       # Telemetry & Structured Forensic Reporting Aggregator
+│   ├── assemblyline.py                    # CCCS Assemblyline Service Interoperability Bridge & Report Generator
+│   ├── assemblyline_models.py             # CCCS Assemblyline 4 Service Result Ontology & Data Structures
 │   ├── wirebits.py                        # BatchObfuscator-wirebits Evasion Normalizer & Radix Decoding
 │   ├── batchstealer.py                    # BatchStealer Static Forensic Credential Analyzer & C2 Defanger
 │   ├── jsbatch.py                         # JSBatchDeobfuscator Virtual Alphabet & Polyglot Extraction
@@ -591,7 +602,8 @@ batch-deobfuscator-re/
 │   ├── sigma_batch_obfuscation.yml        # Sigma Rules for Caret Evasion, Env Slicing, Exorcism Detours
 │   └── yara_batch_obfuscation.yar         # YARA Signatures for BOM Traps, Somalifuscator, UPX Wrappers
 │
-├── tests/                                 # ✅ Automated Verification Test Suites (334 Tests Total)
+├── tests/                                 # ✅ Automated Verification Test Suites (357 Tests Total)
+│   ├── test_assemblyline.py               # 20 CCCS Assemblyline Bridge, Heuristics 1-10 & Export Tests
 │   ├── test_wirebits.py                   # 28 BatchObfuscator-wirebits Escape & Splicing Tests
 │   ├── test_batchstealer.py               # 20 BatchStealer Forensic Analyzer & C2 Defanging Tests
 │   ├── test_jsbatch.py                    # 16 JSBatchDeobfuscator Alphabet, Slicing & Polyglot Tests
@@ -672,7 +684,17 @@ batch-deobfuscator-re/
     <tr>
       <td><strong><code>deobfuscator/<wbr>cli.py</code></strong></td>
       <td>CLI Interface</td>
-      <td>Full-featured terminal runner with <code>argparse</code>, JSON telemetry export, color diff display, and output redirection.</td>
+      <td>Full-featured terminal runner with <code>argparse</code>, JSON telemetry export, Assemblyline format export, color diff display, and output redirection.</td>
+    </tr>
+    <tr>
+      <td><strong><code>deobfuscator/<wbr>assemblyline.py</code></strong></td>
+      <td>Assemblyline Bridge</td>
+      <td>CCCS Assemblyline 4 Service Result interoperability bridge, 10-heuristic detector suite, secondary artifact extractor, and JSON exporter.</td>
+    </tr>
+    <tr>
+      <td><strong><code>deobfuscator/<wbr>assemblyline_<wbr>models.py</code></strong></td>
+      <td>Assemblyline Ontology</td>
+      <td>Data models and schemas for Assemblyline sections, heuristics, signatures, extracted artifacts, and cryptographic memory zeroization.</td>
     </tr>
     <tr>
       <td><strong><code>deobfuscator/<wbr>core.py</code></strong></td>
@@ -708,6 +730,11 @@ batch-deobfuscator-re/
       <td><strong><code>rules/<wbr>yara_<wbr>batch_<wbr>obfuscation.yar</code></strong></td>
       <td>EDR Signatures</td>
       <td>Production YARA rules matching BOM tampering, Somalifuscator character scrambling, UPX stubs, and BatCloak patterns.</td>
+    </tr>
+    <tr>
+      <td><strong><code>tests/<wbr>test_<wbr>assemblyline.py</code></strong></td>
+      <td>Assemblyline Bridge Tests</td>
+      <td>20 unit and integration tests covering CCCS heuristics 1-10, trait extraction, LOLBAS detection, stager extraction, and JSON schema compliance.</td>
     </tr>
     <tr>
       <td><strong><code>tests/<wbr>test_<wbr>cli.py</code></strong></td>
