@@ -66,9 +66,14 @@ Engineered by Maya Thorne.
 
     parser.add_argument(
         "--format",
-        choices=["text", "json"],
+        choices=["text", "json", "assemblyline"],
         default="text",
-        help="Output format: 'text' (default) or 'json' (with full forensic telemetry)"
+        help="Output format: 'text' (default), 'json', or 'assemblyline' (CCCS Assemblyline 4 Service Result JSON)"
+    )
+
+    parser.add_argument(
+        "--assemblyline-out",
+        help="Export CCCS Assemblyline 4 analysis report directly to specified JSON file path"
     )
 
     parser.add_argument(
@@ -564,6 +569,23 @@ def main(args=None) -> int:
         if opts.verbose or opts.diff:
             sys.stderr.write(f"[+] Clean script written to: {out_path}\n")
 
+    if opts.assemblyline_out or opts.format == "assemblyline":
+        from .assemblyline import AssemblylineBridge
+        bridge = AssemblylineBridge()
+        al_res = bridge.generate_service_result(
+            script_text=script_text,
+            deobfuscated_text=clean_text,
+            meta=meta,
+            file_path=str(input_path),
+            working_dir=str(Path(opts.assemblyline_out).parent) if opts.assemblyline_out else None,
+        )
+        if opts.assemblyline_out:
+            al_out_path = al_res.save(opts.assemblyline_out)
+            if opts.verbose:
+                sys.stderr.write(f"[+] CCCS Assemblyline report written to: {al_out_path}\n")
+        if opts.format == "assemblyline":
+            print(al_res.to_json())
+
     if opts.diff:
         diff_output = generate_unified_diff(
             script_text,
@@ -579,7 +601,7 @@ def main(args=None) -> int:
             "deobfuscated_script": clean_text
         }
         print(json.dumps(payload, indent=2, ensure_ascii=False))
-    elif not opts.output:
+    elif opts.format != "assemblyline" and not opts.output and not opts.assemblyline_out:
         # If output file not specified, print clean script to stdout
         sys.stdout.write(clean_text + ("\n" if not clean_text.endswith("\n") else ""))
 

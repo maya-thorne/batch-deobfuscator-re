@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.19.0] - 2026-10-19
+
+### Added
+- **CCCS Assemblyline Service Interoperability Bridge (`deobfuscator/assemblyline.py`, `deobfuscator/assemblyline_models.py`)**:
+  - Full ontology compliance with Canadian Centre for Cyber Security (CCCS) Assemblyline 4 Service Result format (`extra.sections`, `extra.score`, `files.extracted`, `results.heuristics`, `results.tags`, `temp_submission_data`).
+  - Standard CCCS 10-heuristic detector suite:
+    - Heuristic 1 (`Additional command grouping after command normalization`): detects hidden command groups revealed during normalization.
+    - Heuristic 2 (`Possible rare LOLBAS found`): scans normalized commands for LOLBAS utilities (powershell, certutil, bitsadmin, mshta, rundll32, cscript, etc.) with `complex_one_liner` signature boost.
+    - Heuristic 3 (`Execution of variable content`): identifies commands executing dynamic variable contents (`%var%`, `!var!`).
+    - Heuristic 4 (`Multiple variable were used on the same line`): flags high-density variable expansion lines (>10 variables).
+    - Heuristic 5 (`External file download in batch script`): extracts download commands (curl, certutil -urlcache, bitsadmin, PowerShell download cradles) with destination evaluation and signature scoring (`downloads_file_to_temp`, `downloads_file_to_programdata`, `downloaded_file_to_different_name`, `downloaded_file_to_different_extension`) and network tags (`network.static.uri`, `network.static.ip`, `network.static.domain`).
+    - Heuristic 6 (`Complexe One-Liner`): flags dense one-liners expanding into multi-line scripts.
+    - Heuristic 7 (`Windows Utility Manipulation`): tracks utility copy, move, and rename operations targeting system executables (`cmd.exe`, `certutil.exe`, `powershell.exe`).
+    - Heuristic 8 (`File creation using set /p`): tracks file generation via `set /p` prompt redirection and extracts output artifacts.
+    - Heuristic 9 (`Execution of manipulated content`): detects direct invocation of manipulated or redirected files.
+    - Heuristic 10 (`Rundll32 execution`): detects rundll32 execution with `internet_download` signature scoring.
+  - Specialized engine forensic section: aggregates detections across all 17 multi-pass normalization engines (BatCloak, Somalifuscator, 0xidiz3r, Abobus, Invoke-DOSfuscation, Invoke-CradleCrafter, BEDeCode, BatchShield, PandaCrypter, Exorcism, BatchToApp, machine1337, CMD-DeObfuscator, simple-batch-obfuscator, JSBatch, BatchStealer, WireBits) with MITRE ATT&CK technique tags.
+  - Artifact extraction pipeline: extracts root deobfuscated batch file (`<sha256[:10]>_deobfuscated.bat`) and secondary stagers (PowerShell cradles, embedded BatchToApp scripts, polyglots).
+  - CLI integration: added `--format assemblyline` and `--assemblyline-out <path>` options for direct JSON export.
+  - In-memory cryptographic buffer sanitization (`zeroize_dict`, `zeroize_bytes`): wipes report structures and extracted file byte buffers upon completion.
+- **Dedicated CCCS Assemblyline Verification Suite (`tests/test_assemblyline.py`)**:
+  - Added 20 comprehensive unit and integration tests covering heuristic models, section hierarchies, trait extraction, LOLBAS detection, download destination scoring, one-liner expansion, utility manipulation, file extraction, memory zeroization, CLI export, and schema conformance (expanding test suite from 337 to 357 tests).
+
+### Changed
+- Extended CLI toolchain (`deobfuscator/cli.py`) with `--format assemblyline` and `--assemblyline-out` options.
+- Updated module architecture map (`scripts/ARCHITECTURE_MAP.md`), task backlog, and bumped package version across `package.json`, `pyproject.toml`, and `deobfuscator/__init__.py` to v1.19.0.
+
 ## [1.18.0] - 2026-10-18
 
 ### Added
