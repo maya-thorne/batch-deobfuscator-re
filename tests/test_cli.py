@@ -131,7 +131,18 @@ class TestBatchDeobfuscatorCLI(unittest.TestCase):
             if temp_pe.exists():
                 temp_pe.unlink()
 
+    def test_cli_web_flag_help(self):
+        res = self.run_cli(["--help"])
+        self.assertEqual(res.returncode, 0)
+        self.assertIn("--web", res.stdout)
+        self.assertIn("--dashboard", res.stdout)
+        self.assertIn("--port", res.stdout)
+
+    def test_cli_no_args_error(self):
+        res = self.run_cli([])
+        self.assertEqual(res.returncode, 2)
+        self.assertIn("required: input", res.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()
-

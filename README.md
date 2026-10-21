@@ -332,7 +332,12 @@ batch-deobfuscator samples/03_dynamic_substitution_table_sample.bat --format jso
 batch-deobfuscator samples/03_dynamic_substitution_table_sample.bat --format assemblyline
 batch-deobfuscator samples/03_dynamic_substitution_table_sample.bat --assemblyline-out report.json
 
-# 6. Direct Python module execution (zero installation required)
+# 6. Launch interactive cyber-forensic web dashboard & real-time entropy heatmap
+batch-deobfuscator --web
+batch-deobfuscator --web --port 8080 --host 127.0.0.1
+batch-deobfuscator samples/01_env_slicing_sample.bat --web
+
+# 7. Direct Python module execution (zero installation required)
 python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
 ```
 
@@ -376,6 +381,26 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
       <td><code>--assemblyline-out</code></td>
       <td>Destination path to export CCCS Assemblyline 4 Service Result JSON report and extracted stagers</td>
       <td align="center"><code>None</code></td>
+    </tr>
+    <tr>
+      <td><code>--web, --dashboard</code></td>
+      <td>Launch interactive browser-based cyber-forensics dashboard &amp; real-time entropy heatmap visualizer</td>
+      <td align="center"><code>False</code></td>
+    </tr>
+    <tr>
+      <td><code>--port</code></td>
+      <td>Server port for the web dashboard HTTP service</td>
+      <td align="center"><code>8080</code></td>
+    </tr>
+    <tr>
+      <td><code>--host</code></td>
+      <td>Server bind address for the web dashboard (local loopback default)</td>
+      <td align="center"><code>127.0.0.1</code></td>
+    </tr>
+    <tr>
+      <td><code>--no-browser</code></td>
+      <td>Do not automatically open the default web browser when starting the dashboard</td>
+      <td align="center"><code>False</code></td>
     </tr>
     <tr>
       <td><code>--no-batcloak</code></td>
@@ -480,17 +505,34 @@ python -m deobfuscator samples/01_env_slicing_sample.bat --verbose
     <tr>
       <td><code>--version</code></td>
       <td>Display engine version, release tag, and author attribution</td>
-      <td align="center"><code>1.18.0</code></td>
+      <td align="center"><code>1.20.0</code></td>
     </tr>
   </tbody>
 </table>
 
-### 4.3 Static PE Packer Forensic Analyzer (`src/pe_packer_forensics.py`)
+### 4.3 Interactive Forensic Web Dashboard & Spatial Entropy Heatmap GUI
+Launch the zero-dependency browser workbench via `--web` to inspect obfuscation density in real time:
+```bash
+# Launch on default port (http://127.0.0.1:8080)
+batch-deobfuscator --web
+
+# Launch with custom bind host, port, and pre-loaded sample
+batch-deobfuscator samples/01_env_slicing_sample.bat --web --port 9000 --no-browser
+```
+
+**Key Dashboard Capabilities**:
+- **Zero-Leakage Architecture**: 100% self-hosted with zero external CDNs, fonts, or network telemetry.
+- **Spatial Shannon Entropy ($H$) Heatmap**: Continuous color-coded density strip (Emerald Green -> Cyan -> Amber -> Red -> Purple) across file offsets and per-line metrics.
+- **Live 18-Engine Signature Matrix**: Real-time detection across BatCloak, 0xidiz3r, Somalifuscator, Abobus, DOSfuscation, CradleCrafter, BEDeCode, BatchShield, PandaCrypter, Exorcism, BatchToApp, machine1337, CMD-DeObfuscator, simple-batch-obfuscator, JSBatch, BatchStealer, and WireBits.
+- **CCCS Assemblyline 10-Trait Scorecard**: Heuristic scoring for LOLBAS, command grouping, variable execution, external download staging, and one-liner expansion.
+- **REST API Suite**: Standardized endpoints (`/api/analyze`, `/api/deobfuscate`, `/api/health`, `/api/heuristics`, `/api/samples`) for automated headless integration.
+
+### 4.4 Static PE Packer Forensic Analyzer (`src/pe_packer_forensics.py`)
 ```bash
 python src/pe_packer_forensics.py references/github_arsenal/bat2exe-islamadel/bat2exe_12.exe
 ```
 
-### 4.4 28-Corpus Automated Benchmark Evaluation Harness (`benchmarks/eval_corpus_runner.py`)
+### 4.5 28-Corpus Automated Benchmark Evaluation Harness (`benchmarks/eval_corpus_runner.py`)
 Standardized multi-metric benchmark evaluating deobfuscation quality, convergence stability, Shannon entropy reduction, and oracle token recovery across 28 real-world batch obfuscators and threat archetypes:
 
 ```bash
@@ -509,15 +551,18 @@ python benchmarks/eval_corpus_runner.py --corpus BatCloak
 | :--- | :---: | :---: |
 | **Total Corpora Evaluated** | **28 / 28** | Complete |
 | **Verification Pass Rate** | **100.0% (28/28)** | Passed |
-| **Mean Composite Score** | **96.2 / 100.0** | Grade: A+ |
-| **Mean Convergence Passes** | **1.96 passes** | Deterministic |
-| **Mean Execution Latency** | **&lt; 0.7 ms / corpus** | High Performance |
-| **Core Enhancements Tested** | `&-splits`, BatCloak Fake BOM, `%RANDOM%` Pruning, Caesar Inversion, Zero-Literal Bootstrap, Abobus Unicode Noise, DOSfuscation Slicing, CradleCrafter Stagers & BEDeCode Stubs | Verified |
+| **Mean Composite Score** | **96.7 / 100.0** | Grade: A+ |
+| **Mean Convergence Passes** | **1.64 passes** | Deterministic |
+| **Mean Execution Latency** | **&lt; 5.5 ms / corpus** | High Performance |
+| **Core Enhancements Tested** | `&-splits`, BatCloak Fake BOM, `%RANDOM%` Pruning, Caesar Inversion, Zero-Literal Bootstrap, Abobus Unicode Noise, DOSfuscation Slicing, CradleCrafter Stagers, BEDeCode Stubs & Web Dashboard | Verified |
 
-### 4.5 Automated Verification Test Suites
+### 4.6 Automated Verification Test Suites
 ```bash
-python -m unittest discover tests       # 334 comprehensive automated tests
-python tests/test_wirebits.py           # 28 BatchObfuscator-wirebits escape decoding & fragment splicing tests
+python -m unittest discover tests       # 400 comprehensive automated tests
+python tests/test_dashboard.py          # 21 Forensic Web Dashboard & REST API tests
+python tests/test_entropy_heatmap.py    # 20 Shannon spatial entropy & gradient tests
+python tests/test_assemblyline.py       # 20 CCCS Assemblyline bridge & heuristic tests
+python tests/test_wirebits.py           # 28 BatchObfuscator-wirebits escape decoding tests
 python tests/test_batchstealer.py       # 20 BatchStealer forensic analyzer & C2 defanging tests
 python tests/test_jsbatch.py            # 16 JSBatchDeobfuscator alphabet, slicing & polyglot tests
 python tests/test_simple_obfuscator.py  # 13 simple-batch-obfuscator chunk reassembly & stager tests
