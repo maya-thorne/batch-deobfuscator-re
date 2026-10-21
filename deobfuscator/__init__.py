@@ -3,6 +3,9 @@ batch-deobfuscator: Production-grade CLI Toolchain & Multi-Pass Static Batch Nor
 Engineered by Maya Thorne.
 """
 
+__version__ = "1.20.0"
+__author__ = "Maya Thorne"
+
 from .core import BatchDeobfuscator, deobfuscate_script, deobfuscate_bytes
 from .normalizers import (
     strip_carets,
@@ -198,9 +201,24 @@ from .assemblyline import (
     generate_assemblyline_report,
     export_assemblyline_result,
 )
+from .entropy_heatmap import (
+    calculate_shannon_entropy,
+    entropy_to_color,
+    calculate_line_entropy,
+    calculate_sliding_window_entropy,
+    calculate_block_entropy,
+    detect_entropy_anomalies,
+    analyze_entropy_profile,
+)
+from .dashboard_assets import get_dashboard_html
+from .dashboard_server import (
+    create_dashboard_server,
+    start_dashboard_background,
+    run_dashboard,
+    run_all_detectors,
+    BUILTIN_SAMPLES,
+)
 
-__version__ = "1.19.0"
-__author__ = "Maya Thorne"
 __all__ = [
     "BatchDeobfuscator",
     "deobfuscate_script",
@@ -359,5 +377,18 @@ __all__ = [
     "extract_batch_traits",
     "generate_assemblyline_report",
     "export_assemblyline_result",
+    "calculate_shannon_entropy",
+    "entropy_to_color",
+    "calculate_line_entropy",
+    "calculate_sliding_window_entropy",
+    "calculate_block_entropy",
+    "detect_entropy_anomalies",
+    "analyze_entropy_profile",
+    "get_dashboard_html",
+    "create_dashboard_server",
+    "start_dashboard_background",
+    "run_dashboard",
+    "run_all_detectors",
+    "BUILTIN_SAMPLES",
 ]
 

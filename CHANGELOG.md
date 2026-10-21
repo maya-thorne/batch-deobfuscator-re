@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.0] - 2026-10-21
+
+### Added
+- **Interactive Forensic Web Dashboard & Spatial Entropy Heatmap (`deobfuscator/dashboard_assets.py`, `deobfuscator/dashboard_styles.py`, `deobfuscator/dashboard_scripts.py`, `deobfuscator/dashboard_server.py`)**:
+  - Full-featured, self-contained single-page application (SPA) with zero external CDN dependencies (100% inline CSS and vanilla JS, zero external network requests or tracking).
+  - High-performance, non-blocking `ThreadingHTTPServer` servicing REST API endpoints:
+    - `GET /`: Serves the responsive cyber-forensic dark UI dashboard.
+    - `GET /api/health`: Health probe reporting server status, version, and active engine counts.
+    - `GET /api/heuristics`: Catalog of standard CCCS heuristics and specialized engine signatures.
+    - `GET /api/samples`: Catalog of built-in sample corpora presets for one-click browser evaluation.
+    - `GET /api/samples/<id>`: Returns batch script payload for the selected preset sample.
+    - `POST /api/analyze`: Fast static analysis returning spatial Shannon entropy, statistical anomaly spikes, 18-engine signatures, and CCCS traits.
+    - `POST /api/deobfuscate`: Full multi-pass iterative deobfuscation with before/after entropy deltas ($\Delta H$), unified syntax diff, convergence telemetry, and extracted stagers.
+  - Multi-pane workspace layout:
+    - Input script editor with live character/line counters, preset selector, and debounced real-time entropy profiling.
+    - Spatial entropy heatmap horizontal strip providing visual density gradients across script byte offsets.
+    - Line-by-line entropy inspector with colored indicators and anomaly tags.
+    - Multi-tab output pane displaying deobfuscated script, unified colorized diff view, live 18-engine detection matrix, and CCCS 10-trait scorecard.
+    - One-click clipboard copy and `.bat` script file download triggers.
+- **Shannon Entropy Spatial Profiling & Gradient Mapping Engine (`deobfuscator/entropy_heatmap.py`)**:
+  - Exact Shannon entropy calculation ($H = -\sum p \log_2(p)$) supporting character and binary byte buffers.
+  - Sliding-window entropy computation (`calculate_sliding_window_entropy`) for fine-grained localized density scans.
+  - Line-by-line entropy distribution (`calculate_line_entropy`) with normalized score ratios and level classifications (Safe, Mild, Moderate, High, Critical).
+  - Spatial block entropy aggregation (`calculate_block_entropy`) for compact UI heatmap strip rendering.
+  - Statistical anomaly and payload spike detection (`detect_entropy_anomalies`) using standard deviation thresholds to pinpoint embedded Base64 blobs, compressed streams, and substitution ciphers.
+  - Continuous cyber-forensic color gradient interpolation (`entropy_to_color`) across Emerald Green, Cyan, Amber, Orange-Red, and Purple-Crimson.
+  - Memory wiping (`zeroize_dict`, `zeroize_bytes`) for forensic analysis structures and byte buffers.
+- **CLI Web Dashboard Launcher (`deobfuscator/cli.py`)**:
+  - Added `--web` and `--dashboard` launcher flags to start the interactive web GUI.
+  - Added `--port` (default: 8080), `--host` (default: 127.0.0.1), and `--no-browser` options.
+  - Optional pre-loading of local batch script files directly into the web dashboard workspace.
+- **Comprehensive Test Suites (`tests/test_entropy_heatmap.py`, `tests/test_dashboard.py`)**:
+  - Added 20 unit tests for Shannon entropy, sliding windows, line distribution, color gradients, anomaly spikes, and zeroize safety.
+  - Added 21 integration tests for HTTP REST endpoints, SPA HTML assets, background daemon threading, signature detections, CORS headers, payload size limit enforcement, error handling, and clean shutdown (expanding test suite from 357 to 400 tests).
+
+### Changed
+- Refactored `deobfuscator/__init__.py` to expose dashboard server and entropy profiling APIs and bumped package version to v1.20.0 across `package.json`, `pyproject.toml`, and source metadata.
+- Updated `scripts/ARCHITECTURE_MAP.md` and `ROADMAP.md` reflecting v1.20.0 deliverables.
+
 ## [1.19.0] - 2026-10-19
 
 ### Added

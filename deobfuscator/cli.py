@@ -43,7 +43,35 @@ Engineered by Maya Thorne.
 
     parser.add_argument(
         "input",
-        help="Path to obfuscated .bat or .cmd script file"
+        nargs="?",
+        default=None,
+        help="Path to obfuscated .bat or .cmd script file (optional if --web is specified)"
+    )
+
+    parser.add_argument(
+        "--web", "--dashboard",
+        action="store_true",
+        dest="web_dashboard",
+        help="Launch interactive real-time forensic web dashboard and entropy heatmap viewer"
+    )
+
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=8080,
+        help="Port for web dashboard server (default: 8080)"
+    )
+
+    parser.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="Bind address for web dashboard server (default: 127.0.0.1)"
+    )
+
+    parser.add_argument(
+        "--no-browser",
+        action="store_true",
+        help="Do not auto-open browser when launching web dashboard"
     )
 
     parser.add_argument(
@@ -224,6 +252,25 @@ def main(args=None) -> int:
 
     parser = create_parser()
     opts = parser.parse_args(args)
+
+    if opts.web_dashboard:
+        from .dashboard_server import run_dashboard, BUILTIN_SAMPLES
+        if opts.input:
+            input_p = Path(opts.input)
+            if input_p.exists():
+                BUILTIN_SAMPLES["CLI_Input"] = {
+                    "name": f"File: {input_p.name}",
+                    "script": input_p.read_text(encoding="utf-8", errors="replace"),
+                }
+        run_dashboard(
+            host=opts.host,
+            port=opts.port,
+            open_browser=not opts.no_browser,
+        )
+        return 0
+
+    if not opts.input:
+        parser.error("the following arguments are required: input (or --web to launch dashboard)")
 
     input_path = Path(opts.input)
     if not input_path.exists():
